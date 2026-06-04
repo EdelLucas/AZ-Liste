@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Neon Control</title>
+    <title>Admin Dashboard | Secure Control</title>
     <style>
-        /* DESIGN: NEON CYBER / GAME CONTROL CENTER */
+        /* NEON CYBER DESIGN MIT STATUS-FARBEN */
         :root {
             --bg-color: #050508;       /* Tiefschwarz */
             --card-bg: #0b0c10;        /* Dunkles Panel */
             --accent-color: #00f2fe;   /* Neon Cyan */
-            --danger-color: #ff0055;   /* Neon Pink/Rot */
             --text-main: #ffffff;
             --text-muted: #666d7a;
             --border-color: #1f2330;
+
+            /* Status Farben */
+            --status-rot: #ff0055;     /* Dringend */
+            --status-gelb: #ffcc00;    /* Kann warten */
+            --status-gruen: #00ff66;   /* Wurde gecheckt */
         }
 
         body {
-            font-family: 'Consolas', 'Courier New', Courier, monospace; /* Gaming / Code Look */
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
@@ -27,6 +31,43 @@
         .container {
             max-width: 1300px;
             margin: 0 auto;
+        }
+
+        /* LOGIN SCREEN STYLING */
+        #loginScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            padding: 40px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box h2 {
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-color);
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+
+        /* MAIN DASHBOARD (Standardmäßig versteckt) */
+        #dashboardContent {
+            display: none;
         }
 
         header {
@@ -39,17 +80,9 @@
         header h1 {
             font-size: 2.2rem;
             margin: 0;
-            color: var(--text-main);
             text-shadow: 0 0 10px var(--accent-color);
             text-transform: uppercase;
             letter-spacing: 2px;
-        }
-
-        header p {
-            color: var(--text-muted);
-            margin: 8px 0 0 0;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
         }
 
         .grid {
@@ -62,13 +95,8 @@
             background: var(--card-bg);
             padding: 25px;
             border-radius: 4px;
-            border: 1px solid var(--accent-color);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.15);
-        }
-
-        .card.pccheck-card {
-            border-color: var(--danger-color);
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.15);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.02);
         }
 
         h2 {
@@ -77,12 +105,11 @@
             text-transform: uppercase;
             margin-bottom: 25px;
             letter-spacing: 1px;
+            color: var(--accent-color);
+            text-shadow: 0 0 5px rgba(0, 242, 254, 0.3);
         }
 
-        .sus-title { color: var(--accent-color); text-shadow: 0 0 5px rgba(0, 242, 254, 0.5); }
-        .pccheck-title { color: var(--danger-color); text-shadow: 0 0 5px rgba(255, 0, 85, 0.5); }
-
-        /* Formular Styling */
+        /* Formulare & Inputs */
         .form-group {
             display: flex;
             flex-direction: column;
@@ -90,10 +117,10 @@
             margin-bottom: 25px;
         }
 
-        input {
+        input, select {
             background: #000000;
             border: 1px solid var(--border-color);
-            color: #00f2fe;
+            color: #ffffff;
             padding: 12px;
             border-radius: 2px;
             font-size: 1rem;
@@ -101,24 +128,10 @@
             transition: all 0.3s;
         }
 
-        input::placeholder {
-            color: #333b4d;
-        }
-
-        input:focus {
+        input:focus, select:focus {
             border-color: var(--accent-color);
             box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
-            background: #04060a;
             outline: none;
-        }
-
-        .pccheck-card input {
-            color: var(--danger-color);
-        }
-
-        .pccheck-card input:focus {
-            border-color: var(--danger-color);
-            box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
         }
 
         button {
@@ -142,17 +155,6 @@
             box-shadow: 0 0 15px var(--accent-color);
         }
 
-        .btn-pccheck {
-            color: var(--danger-color);
-            border-color: var(--danger-color);
-        }
-
-        .btn-pccheck:hover {
-            background: var(--danger-color);
-            color: #000;
-            box-shadow: 0 0 15px var(--danger-color);
-        }
-
         /* Listen & Items */
         .data-list {
             list-style: none;
@@ -168,21 +170,20 @@
             border-radius: 2px;
             margin-bottom: 15px;
             border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent-color);
             position: relative;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .data-item.pccheck-item {
-            border-left-color: var(--danger-color);
-        }
+        /* Dynamische Randfarben basierend auf dem Status */
+        .data-item.border-rot { border-left: 5px solid var(--status-rot); box-shadow: 0 0 8px rgba(255, 0, 85, 0.1); }
+        .data-item.border-gelb { border-left: 5px solid var(--status-gelb); box-shadow: 0 0 8px rgba(255, 204, 0, 0.1); }
+        .data-item.border-gruen { border-left: 5px solid var(--status-gruen); box-shadow: 0 0 8px rgba(0, 255, 102, 0.1); }
 
         .data-item .title {
             font-weight: bold;
             font-size: 1.1rem;
-            color: #ffffff;
         }
 
         .data-item .info {
@@ -194,12 +195,32 @@
             color: var(--accent-color);
             text-decoration: none;
             font-size: 0.9rem;
-            margin-top: 5px;
+            margin-top: 2px;
             display: inline-block;
         }
 
-        .data-item a:hover {
-            text-shadow: 0 0 5px var(--accent-color);
+        /* Status Badge Text */
+        .status-badge {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 2px;
+            width: fit-content;
+        }
+        .badge-rot { background: rgba(255, 0, 85, 0.2); color: var(--status-rot); border: 1px solid var(--status-rot); }
+        .badge-gelb { background: rgba(255, 204, 0, 0.2); color: var(--status-gelb); border: 1px solid var(--status-gelb); }
+        .badge-gruen { background: rgba(0, 255, 102, 0.2); color: var(--status-gruen); border: 1px solid var(--status-gruen); }
+
+        /* Inline Status-Wechsler */
+        .status-select-inline {
+            background: #050508;
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+            width: 150px;
+            margin-top: 5px;
         }
 
         .delete-btn {
@@ -216,39 +237,60 @@
         }
 
         .delete-btn:hover {
-            color: var(--danger-color);
-            text-shadow: 0 0 5px var(--danger-color);
+            color: var(--status-rot);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<!-- LOGIN INTERFACE -->
+<div id="loginScreen">
+    <div class="login-box">
+        <h2>// ACCESS_DENIED</h2>
+        <div class="form-group">
+            <input type="password" id="passwordInput" placeholder="PASSWORT EINGEBEN" onkeydown="if(event.key === 'Enter') checkPassword()">
+            <button onclick="checkPassword()">AUTHORISIEREN</button>
+        </div>
+    </div>
+</div>
+
+<!-- HAUPT MONITORING DASHBOARD -->
+<div id="dashboardContent" class="container">
     <header>
-        <h1>SYSTEM // CONTROL_CENTER</h1>
-        <p>Grand RP - Admin Management Mode</p>
+        <h1>SYSTEM // SECURE_MONITORING</h1>
+        <p>Grand RP - Internes Admin & PC-Check System</p>
     </header>
 
     <div class="grid">
         <!-- Sektion: Verdächtige Spieler -->
         <div class="card">
-            <h2 class="sus-title">> SUS_PLAYER_TRACKER</h2>
+            <h2>> SUS_PLAYER_TRACKER</h2>
             <div class="form-group">
                 <input type="text" id="susName" placeholder="[SPIELER NAME]">
                 <input type="text" id="susId" placeholder="[SPIELER ID]">
                 <input type="text" id="susProof" placeholder="[BEWEIS LINK]">
-                <button onclick="addEntry('sus')">Eintrag initialisieren</button>
+                <select id="susStatus">
+                    <option value="rot" style="color:var(--status-rot)">Rot - Dringend</option>
+                    <option value="gelb" style="color:var(--status-gelb)">Gelb - Kann warten</option>
+                    <option value="gruen" style="color:var(--status-gruen)">Grün - Wurde gecheckt</option>
+                </select>
+                <button onclick="addEntry('sus')">Datenbank initialisieren</button>
             </div>
             <ul id="susList" class="data-list"></ul>
         </div>
 
         <!-- Sektion: PC-Checker -->
-        <div class="card pccheck-card">
-            <h2 class="pccheck-title">> PC_CHECK_QUEUE</h2>
+        <div class="card">
+            <h2>> PC_CHECK_QUEUE</h2>
             <div class="form-group">
                 <input type="text" id="pcName" placeholder="[SPIELER NAME / ID]">
                 <input type="text" id="pcReason" placeholder="[VERDACHT / GRUND]">
-                <button class="btn-pccheck" onclick="addEntry('pc')">PC-Check anfordern</button>
+                <select id="pcStatus">
+                    <option value="rot" style="color:var(--status-rot)">Rot - Dringend</option>
+                    <option value="gelb" style="color:var(--status-gelb)">Gelb - Kann warten</option>
+                    <option value="gruen" style="color:var(--status-gruen)">Grün - Wurde gecheckt</option>
+                </select>
+                <button onclick="addEntry('pc')">PC-Check anfordern</button>
             </div>
             <ul id="pcList" class="data-list"></ul>
         </div>
@@ -256,20 +298,32 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        loadData();
-    });
+    // Sicherheits-Passwort (hier anpassen!)
+    const ADMIN_PASSWORD = "admin123";
+
+    function checkPassword() {
+        const input = document.getElementById('passwordInput').value;
+        if (input === ADMIN_PASSWORD) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+            loadData(); // Erst nach Login Daten laden
+        } else {
+            alert("ZUGRIFF VERWEIGERT: Passwort inkorrekt.");
+            document.getElementById('passwordInput').value = '';
+        }
+    }
 
     function addEntry(type) {
         if (type === 'sus') {
             const name = document.getElementById('susName').value.trim();
             const id = document.getElementById('susId').value.trim();
             const proof = document.getElementById('susProof').value.trim();
+            const status = document.getElementById('susStatus').value;
 
             if (!name || !id) return alert("ERROR: Name und ID erforderlich!");
 
-            const item = { id: Date.now(), name, playerId: id, proof };
-            saveToStorage('neonSusData', item);
+            const item = { id: Date.now(), name, playerId: id, proof, status };
+            saveToStorage('secureSusData', item);
             
             document.getElementById('susName').value = '';
             document.getElementById('susId').value = '';
@@ -278,11 +332,12 @@
         } else if (type === 'pc') {
             const name = document.getElementById('pcName').value.trim();
             const reason = document.getElementById('pcReason').value.trim();
+            const status = document.getElementById('pcStatus').value;
 
             if (!name) return alert("ERROR: Name oder ID erforderlich!");
 
-            const item = { id: Date.now(), name, reason: reason || 'Kein spezifischer Verdacht' };
-            saveToStorage('neonPcData', item);
+            const item = { id: Date.now(), name, reason: reason || 'Kein spezifischer Verdacht', status };
+            saveToStorage('securePcData', item);
 
             document.getElementById('pcName').value = '';
             document.getElementById('pcReason').value = '';
@@ -297,6 +352,16 @@
         localStorage.setItem(key, JSON.stringify(data));
     }
 
+    function updateStatus(key, itemId, newStatus) {
+        let data = JSON.parse(localStorage.getItem(key)) || [];
+        const index = data.findIndex(item => item.id === itemId);
+        if (index !== -1) {
+            data[index].status = newStatus;
+            localStorage.setItem(key, JSON.stringify(data));
+            loadData();
+        }
+    }
+
     function deleteEntry(key, id) {
         let data = JSON.parse(localStorage.getItem(key)) || [];
         data = data.filter(item => item.id !== id);
@@ -305,30 +370,57 @@
     }
 
     function loadData() {
+        // Falls noch nicht eingeloggt, Funktion abbrechen
+        if (document.getElementById('dashboardContent').style.display !== 'block') return;
+
+        // Sus Player auslesen
         const susList = document.getElementById('susList');
         susList.innerHTML = '';
-        const susData = JSON.parse(localStorage.getItem('neonSusData')) || [];
+        const susData = JSON.parse(localStorage.getItem('secureSusData')) || [];
         susData.reverse().forEach(item => {
             const li = document.createElement('li');
-            li.className = 'data-item';
+            li.className = `data-item border-${item.status}`;
+            
+            let statusText = item.status === 'rot' ? 'Dringend' : item.status === 'gelb' ? 'Kann warten' : 'Wurde gecheckt';
+
             li.innerHTML = `
                 <div class="title">${item.name} <span style="color:var(--text-muted); font-size:0.9rem;">(ID: ${item.playerId})</span></div>
+                <div class="status-badge badge-${item.status}">${statusText}</div>
                 ${item.proof ? `<a href="${item.proof}" target="_blank">// BEWEIS_LINK ÖFFNEN</a>` : '<span class="info">Kein Beweis</span>'}
-                <button class="delete-btn" onclick="deleteEntry('neonSusData', ${item.id})">×</button>
+                
+                <select class="status-select-inline" onchange="updateStatus('secureSusData', ${item.id}, this.value)">
+                    <option value="rot" ${item.status === 'rot' ? 'selected' : ''}>Status: Rot</option>
+                    <option value="gelb" ${item.status === 'gelb' ? 'selected' : ''}>Status: Gelb</option>
+                    <option value="gruen" ${item.status === 'gruen' ? 'selected' : ''}>Status: Grün</option>
+                </select>
+
+                <button class="delete-btn" onclick="deleteEntry('secureSusData', ${item.id})">×</button>
             `;
             susList.appendChild(li);
         });
 
+        // PC-Check auslesen
         const pcList = document.getElementById('pcList');
         pcList.innerHTML = '';
-        const pcData = JSON.parse(localStorage.getItem('neonPcData')) || [];
+        const pcData = JSON.parse(localStorage.getItem('securePcData')) || [];
         pcData.reverse().forEach(item => {
             const li = document.createElement('li');
-            li.className = 'data-item pccheck-item';
+            li.className = `data-item border-${item.status}`;
+
+            let statusText = item.status === 'rot' ? 'Dringend' : item.status === 'gelb' ? 'Kann warten' : 'Wurde gecheckt';
+
             li.innerHTML = `
-                <div class="title" style="color:var(--danger-color);">${item.name}</div>
-                <div class="info"><strong>Status:</strong> ${item.reason}</div>
-                <button class="delete-btn" onclick="deleteEntry('neonPcData', ${item.id})">×</button>
+                <div class="title">${item.name}</div>
+                <div class="status-badge badge-${item.status}">${statusText}</div>
+                <div class="info"><strong>Verdacht:</strong> ${item.reason}</div>
+                
+                <select class="status-select-inline" onchange="updateStatus('securePcData', ${item.id}, this.value)">
+                    <option value="rot" ${item.status === 'rot' ? 'selected' : ''}>Status: Rot</option>
+                    <option value="gelb" ${item.status === 'gelb' ? 'selected' : ''}>Status: Gelb</option>
+                    <option value="gruen" ${item.status === 'gruen' ? 'selected' : ''}>Status: Grün</option>
+                </select>
+
+                <button class="delete-btn" onclick="deleteEntry('securePcData', ${item.id})">×</button>
             `;
             pcList.appendChild(li);
         });
