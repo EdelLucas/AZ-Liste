@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIB - Sus Player Datenbank</title>
+    <title>FIB - Central Registry</title>
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #070a12 0%, #0f1424 100%);
-            --glass-bg: rgba(21, 27, 43, 0.8);
-            --glass-input: rgba(31, 39, 54, 0.6);
+            --bg-gradient: linear-gradient(135deg, #060913 0%, #0b1120 100%);
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-input: rgba(30, 41, 59, 0.5);
             --accent: #3b82f6;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --glass-border: rgba(255, 255, 255, 0.06);
+            --text-muted: #64748b;
+            --glass-border: rgba(255, 255, 255, 0.04);
             
-            /* Status- & Badge-Farben */
+            /* Clean Matte Status-Farben */
             --rot: #ef4444;
             --gelb: #f59e0b;
             --gruen: #10b981;
@@ -52,13 +52,13 @@
 
         .login-box {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             padding: 40px;
-            border-radius: 24px;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            width: 320px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            width: 300px;
         }
 
         .login-box input {
@@ -68,9 +68,10 @@
             border: 1px solid var(--glass-border);
             color: white;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 8px;
             margin-bottom: 15px;
             text-align: center;
+            font-family: inherit;
         }
 
         .login-box button {
@@ -79,7 +80,7 @@
             color: white;
             border: none;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
         }
@@ -92,32 +93,30 @@
             margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
         }
 
         header h1 {
-            font-size: 1.8rem;
-            font-weight: 800;
+            font-size: 1.6rem;
+            font-weight: 700;
             margin: 0;
-            background: linear-gradient(to right, #fff, var(--text-muted));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
         }
 
-        /* KOMPAKTER EINTRAGS-BEREICH (OBEN) */
+        /* COMPACT INPUT BAR */
         .input-bar {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            padding: 20px;
-            border-radius: 16px;
+            padding: 16px;
+            border-radius: 12px;
             margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         }
 
         .input-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
             gap: 10px;
             align-items: end;
         }
@@ -125,14 +124,14 @@
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
         }
 
         .input-group label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: 0.5px;
         }
 
@@ -141,40 +140,39 @@
             border: 1px solid var(--glass-border);
             color: var(--text-main);
             padding: 10px 12px;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 0.85rem;
             font-family: inherit;
             transition: all 0.2s;
         }
 
         input:focus, select:focus {
-            border-color: rgba(59, 130, 246, 0.5);
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(30, 41, 59, 0.7);
             outline: none;
         }
 
         .add-btn {
-            background: linear-gradient(135deg, var(--accent) 0%, #1d4ed8 100%);
+            background: var(--accent);
             color: white;
             border: none;
-            padding: 11px;
-            border-radius: 8px;
-            font-weight: 700;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: opacity 0.2s;
         }
 
-        .add-btn:hover {
-            filter: brightness(1.1);
-        }
+        .add-btn:hover { opacity: 0.9; }
 
-        /* LISTE / TABELLEN-STIL */
+        /* CLEAN TABLE DESIGN */
         .table-container {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             overflow-x: auto;
         }
 
@@ -186,19 +184,18 @@
         }
 
         th {
-            background: rgba(255, 255, 255, 0.03);
             color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             padding: 16px;
             border-bottom: 1px solid var(--glass-border);
             letter-spacing: 0.5px;
         }
 
         td {
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
             white-space: nowrap;
             vertical-align: middle;
         }
@@ -207,69 +204,106 @@
             background: rgba(255, 255, 255, 0.01);
         }
 
-        /* BADGES FÜR DIE LISTE */
-        .badge {
+        /* INLINE EDITABLE INPUTS (FÜR DIE TABELLE) */
+        .inline-edit {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-main);
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .inline-edit:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .inline-edit:focus {
+            background: var(--glass-input);
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        /* CLEAN TOGGLE BADGES (KLICKBAR) */
+        .toggle-badge {
             font-size: 0.75rem;
             font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 6px;
-            text-align: center;
-            display: inline-block;
-        }
-        .bg-ja { background: rgba(239, 68, 68, 0.15); color: #fc8181; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .bg-nein { background: rgba(16, 185, 129, 0.15); color: #68d391; border: 1px solid rgba(16, 185, 129, 0.2); }
-        
-        /* Status Spalten-Auswahl */
-        .status-select {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
-            color: white;
-            font-size: 0.75rem;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
-            font-weight: 600;
+            user-select: none;
+            display: inline-block;
+            text-align: center;
+            min-width: 45px;
+            transition: all 0.15s ease;
         }
-        .status-rot { color: #fc8181; border-color: rgba(239, 68, 68, 0.4); }
-        .status-gelb { color: #fbd38d; border-color: rgba(245, 158, 11, 0.4); }
-        .status-gruen { color: #68d391; border-color: rgba(16, 185, 129, 0.4); }
+        .badge-ja { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .badge-nein { background: rgba(16, 185, 129, 0.08); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.15); }
 
-        /* Clip & Action Buttons */
-        .clip-btn {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.3);
+        /* INTERAKTIVER CLEANER STATUS-PUNKT */
+        .status-dot-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            gap: 8px;
+            user-select: none;
             padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            width: fit-content;
+        }
+        .status-dot-container:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-rot { background: var(--rot); box-shadow: 0 0 8px var(--rot); }
+        .dot-gelb { background: var(--gelb); box-shadow: 0 0 8px var(--gelb); }
+        .dot-gruen { background: var(--gruen); box-shadow: 0 0 8px var(--gruen); }
+
+        .status-text {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .text-rot { color: #f87171; }
+        .text-gelb { color: #fbbf24; }
+        .text-gruen { color: #34d399; }
+
+        /* ACTION ELEMENTS */
+        .clip-link {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 5px 10px;
             border-radius: 6px;
             text-decoration: none;
             font-size: 0.75rem;
             font-weight: 600;
-            display: inline-block;
+            transition: all 0.2s;
         }
-
-        .clip-btn:hover {
+        .clip-link:hover {
             background: var(--accent);
             color: white;
-        }
-
-        .no-clip {
-            color: var(--text-muted);
-            font-style: italic;
-            font-size: 0.8rem;
         }
 
         .delete-btn {
             background: none;
             border: none;
-            color: var(--text-muted);
+            color: #475569;
             cursor: pointer;
-            font-size: 1.1rem;
-            padding: 0 5px;
+            font-size: 1.2rem;
+            transition: color 0.2s;
         }
-
-        .delete-btn:hover {
-            color: var(--rot);
-        }
+        .delete-btn:hover { color: var(--rot); }
     </style>
 </head>
 <body>
@@ -277,42 +311,45 @@
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
     <div class="login-box">
-        <h2 style="margin-top:0; font-size:1.3rem;">FIB Terminal Login</h2>
-        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Autorisierung erforderlich</p>
-        <input type="password" id="passwordInput" placeholder="Passwort" onkeydown="if(event.key === 'Enter') checkPassword()">
-        <button onclick="checkPassword()">Verbinden</button>
+        <h2 style="margin-top:0; font-size:1.2rem; font-weight:600;">FIB Database Secure Auth</h2>
+        <input type="password" id="passwordInput" placeholder="Passwort eingeben" onkeydown="if(event.key === 'Enter') checkPassword()">
+        <button onclick="checkPassword()">Authorize</button>
     </div>
 </div>
 
-<!-- MAIN DASHBOARD LISTE -->
+<!-- DASHBOARD MAIN -->
 <div id="dashboardContent" class="container">
     <header>
-        <h1>FIB Sus Player Index & Live-Tracker</h1>
-        <div style="font-size: 0.85rem; color: var(--text-muted);" id="counter">Einträge: 0</div>
+        <h1>Intelligence Registry Index</h1>
+        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;" id="counter">DATENSÄTZE: 0</div>
     </header>
 
-    <!-- OBERE LEISTE: NEUER EINTRAG -->
+    <!-- OBEN: KOMPAKTE EINGABE -->
     <div class="input-bar">
         <div class="input-grid">
             <div class="input-group">
                 <label>Name</label>
-                <input type="text" id="pName" placeholder="Spieler Name">
+                <input type="text" id="pName" placeholder="Name">
             </div>
             <div class="input-group">
                 <label>ID</label>
-                <input type="text" id="pId" placeholder="Spieler ID">
+                <input type="text" id="pId" placeholder="ID">
+            </div>
+            <div class="input-group">
+                <label>Familie</label>
+                <input type="text" id="pFamilie" placeholder="Familienname">
             </div>
             <div class="input-group" style="grid-column: span 2;">
                 <label>Grund / Verdacht</label>
-                <input type="text" id="pGrund" placeholder="z.B. Hitbox-Verdacht">
+                <input type="text" id="pGrund" placeholder="Verdachtsmoment">
             </div>
             <div class="input-group">
                 <label>Social ID</label>
-                <input type="text" id="pSocId" placeholder="Social ID">
+                <input type="text" id="pSocId" placeholder="SC-ID">
             </div>
             <div class="input-group">
                 <label>Social Name</label>
-                <input type="text" id="pSocName" placeholder="Social Name">
+                <input type="text" id="pSocName" placeholder="SC-Name">
             </div>
             <div class="input-group">
                 <label>Gefleckt</label>
@@ -344,8 +381,8 @@
                 </select>
             </div>
             <div class="input-group">
-                <label>Proof / Clip Link</label>
-                <input type="text" id="pProof" placeholder="Link einfügen">
+                <label>Proof Link</label>
+                <input type="text" id="pProof" placeholder="URL">
             </div>
             <div class="input-group">
                 <label>Status</label>
@@ -359,7 +396,7 @@
         </div>
     </div>
 
-    <!-- DIE TABELLARISCHE LISTE -->
+    <!-- DIE REINE TABELLEN-LISTE -->
     <div class="table-container">
         <table>
             <thead>
@@ -367,6 +404,7 @@
                     <th>Status</th>
                     <th>Name</th>
                     <th>ID</th>
+                    <th>Familie</th>
                     <th>Grund / Verdacht</th>
                     <th>Social ID</th>
                     <th>Social Name</th>
@@ -375,13 +413,11 @@
                     <th>PC-C. Verweigert am</th>
                     <th>Bann Ablauf</th>
                     <th>Perma</th>
-                    <th>Proof / Clips</th>
-                    <th style="width: 40px;"></th>
+                    <th>Proof / Clip</th>
+                    <th style="width: 30px;"></th>
                 </tr>
             </thead>
-            <tbody id="playerTableBody">
-                <!-- Dynamische Listeneinträge landen hier -->
-            </tbody>
+            <tbody id="playerTableBody"></tbody>
         </table>
     </div>
 </div>
@@ -404,13 +440,13 @@
     function addPlayer() {
         const name = document.getElementById('pName').value.trim();
         const id = document.getElementById('pId').value.trim();
-        
-        if (!name || !id) return alert("Bitte Name und ID eintragen!");
+        if (!name || !id) return alert("Bitte Name und ID ausfüllen!");
 
         const player = {
             dbId: Date.now(),
             name,
             id,
+            familie: document.getElementById('pFamilie').value.trim() || '-',
             grund: document.getElementById('pGrund').value.trim() || '-',
             socId: document.getElementById('pSocId').value.trim() || '-',
             socName: document.getElementById('pSocName').value.trim() || '-',
@@ -423,34 +459,62 @@
             status: document.getElementById('pStatus').value
         };
 
-        let data = JSON.parse(localStorage.getItem('lstData')) || [];
+        let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
         data.push(player);
-        localStorage.setItem('lstData', JSON.stringify(data));
+        localStorage.setItem('fibCleanData', JSON.stringify(data));
 
-        // Input Felder leeren
+        // Reset inputs
         document.getElementById('pName').value = ''; document.getElementById('pId').value = '';
-        document.getElementById('pGrund').value = ''; document.getElementById('pSocId').value = '';
-        document.getElementById('pSocName').value = ''; document.getElementById('pPcVerweigert').value = '';
-        document.getElementById('pBannAblauf').value = ''; document.getElementById('pProof').value = '';
+        document.getElementById('pFamilie').value = ''; document.getElementById('pGrund').value = '';
+        document.getElementById('pSocId').value = ''; document.getElementById('pSocName').value = '';
+        document.getElementById('pPcVerweigert').value = ''; document.getElementById('pBannAblauf').value = '';
+        document.getElementById('pProof').value = '';
 
         loadData();
     }
 
-    function updateStatus(dbId, newStatus) {
-        let data = JSON.parse(localStorage.getItem('lstData')) || [];
+    // UPDATER FÜR TEXTFELDER
+    function updateField(dbId, field, value) {
+        let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
         const index = data.findIndex(p => p.dbId === dbId);
         if (index !== -1) {
-            data[index].status = newStatus;
-            localStorage.setItem('lstData', JSON.stringify(data));
+            data[index][field] = value.trim() || '-';
+            localStorage.setItem('fibCleanData', JSON.stringify(data));
+        }
+    }
+
+    // UPDATER FÜR TOGGLES (JA/NEIN)
+    function toggleBadge(dbId, field) {
+        let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
+        const index = data.findIndex(p => p.dbId === dbId);
+        if (index !== -1) {
+            data[index][field] = data[index][field] === 'Ja' ? 'Nein' : 'Ja';
+            localStorage.setItem('fibCleanData', JSON.stringify(data));
+            loadData();
+        }
+    }
+
+    // UPDATER FÜR STATUS (ROT -> GELB -> GRÜN)
+    function rotateStatus(dbId) {
+        let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
+        const index = data.findIndex(p => p.dbId === dbId);
+        if (index !== -1) {
+            const current = data[index].status;
+            let next = 'rot';
+            if (current === 'rot') next = 'gelb';
+            else if (current === 'gelb') next = 'gruen';
+            
+            data[index].status = next;
+            localStorage.setItem('fibCleanData', JSON.stringify(data));
             loadData();
         }
     }
 
     function deletePlayer(dbId) {
-        if(confirm("Eintrag unwiderruflich löschen?")) {
-            let data = JSON.parse(localStorage.getItem('lstData')) || [];
+        if(confirm("Eintrag entfernen?")) {
+            let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
             data = data.filter(p => p.dbId !== dbId);
-            localStorage.setItem('lstData', JSON.stringify(data));
+            localStorage.setItem('fibCleanData', JSON.stringify(data));
             loadData();
         }
     }
@@ -461,37 +525,51 @@
         const tbody = document.getElementById('playerTableBody');
         tbody.innerHTML = '';
         
-        const data = JSON.parse(localStorage.getItem('lstData')) || [];
-        document.getElementById('counter').innerText = `Einträge: ${data.length}`;
+        const data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
+        document.getElementById('counter').innerText = `DATENSÄTZE: ${data.length}`;
 
-        // Die neuesten Einträge oben anzeigen
         data.reverse().forEach(p => {
             const tr = document.createElement('tr');
 
-            // Klassen für die farbige Status-Auswahlbox ermitteln
-            let statusClass = p.status === 'rot' ? 'status-rot' : p.status === 'gelb' ? 'status-gelb' : 'status-gruen';
+            // Bezeichnungen für Status-Punkt ermitteln
+            let statusLabel = p.status === 'rot' ? 'Rot' : p.status === 'gelb' ? 'Gelb' : 'Grün';
 
             tr.innerHTML = `
+                <!-- Clean Status Indicator (Klickbar zum Wechseln) -->
                 <td>
-                    <select class="status-select ${statusClass}" onchange="updateStatus(${p.dbId}, this.value)">
-                        <option value="rot" class="status-rot" ${p.status === 'rot' ? 'selected' : ''}>🔴 ROT</option>
-                        <option value="gelb" class="status-gelb" ${p.status === 'gelb' ? 'selected' : ''}>🟡 GELB</option>
-                        <option value="gruen" class="status-gruen" ${p.status === 'gruen' ? 'selected' : ''}>🟢 GRÜN</option>
-                    </select>
+                    <div class="status-dot-container" onclick="rotateStatus(${p.dbId})">
+                        <span class="status-dot dot-${p.status}"></span>
+                        <span class="status-text text-${p.status}">${statusLabel}</span>
+                    </div>
                 </td>
-                <td style="font-weight: 700; color: #fff;">${p.name}</td>
-                <td><span style="color: var(--text-muted); font-family: monospace;">${p.id}</span></td>
-                <td>${p.grund}</td>
-                <td>${p.socId}</td>
-                <td>${p.socName}</td>
-                <td><span class="badge ${p.gefleckt === 'Ja' ? 'bg-ja' : 'bg-nein'}">${p.gefleckt}</span></td>
-                <td><span class="badge ${p.recheck === 'Ja' ? 'bg-ja' : 'bg-nein'}">${p.recheck}</span></td>
-                <td>${p.pcVerweigert}</td>
-                <td>${p.bannAblauf}</td>
-                <td><span class="badge ${p.perma === 'Ja' ? 'bg-ja' : 'bg-nein'}">${p.perma}</span></td>
+                
+                <!-- Direkt editierbare Textfelder -->
+                <td><input type="text" class="inline-edit" style="font-weight:700;" value="${p.name}" onchange="updateField(${p.dbId}, 'name', this.value)"></td>
+                <td><input type="text" class="inline-edit" style="font-family:monospace; color:var(--text-muted);" value="${p.id}" onchange="updateField(${p.dbId}, 'id', this.value)"></td>
+                <td><input type="text" class="inline-edit" value="${p.familie}" onchange="updateField(${p.dbId}, 'familie', this.value)"></td>
+                <td><input type="text" class="inline-edit" value="${p.grund}" onchange="updateField(${p.dbId}, 'grund', this.value)"></td>
+                <td><input type="text" class="inline-edit" value="${p.socId}" onchange="updateField(${p.dbId}, 'socId', this.value)"></td>
+                <td><input type="text" class="inline-edit" value="${p.socName}" onchange="updateField(${p.dbId}, 'socName', this.value)"></td>
+                
+                <!-- Klickbare interaktive Ja/Nein Badges -->
+                <td><span class="toggle-badge ${p.gefleckt === 'Ja' ? 'badge-ja' : 'badge-nein'}" onclick="toggleBadge(${p.dbId}, 'gefleckt')">${p.gefleckt}</span></td>
+                <td><span class="toggle-badge ${p.recheck === 'Ja' ? 'badge-ja' : 'badge-nein'}" onclick="toggleBadge(${p.dbId}, 'recheck')">${p.recheck}</span></td>
+                
+                <!-- Weitere editierbare Textfelder -->
+                <td><input type="text" class="inline-edit" value="${p.pcVerweigert}" onchange="updateField(${p.dbId}, 'pcVerweigert', this.value)"></td>
+                <td><input type="text" class="inline-edit" value="${p.bannAblauf}" onchange="updateField(${p.dbId}, 'bannAblauf', this.value)"></td>
+                
+                <!-- Klickbare Perma Badge -->
+                <td><span class="toggle-badge ${p.perma === 'Ja' ? 'badge-ja' : 'badge-nein'}" onclick="toggleBadge(${p.dbId}, 'perma')">${p.perma}</span></td>
+                
+                <!-- Proof Link / Input Kombi -->
                 <td>
-                    ${p.proof ? `<a href="${p.proof}" target="_blank" class="clip-btn">🎬 Clip öffnen</a>` : '<span class="no-clip">Kein Clip</span>'}
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" class="inline-edit" style="font-size:0.75rem; color:var(--text-muted); max-width:80px;" value="${p.proof}" placeholder="Link bearb." onchange="updateField(${p.dbId}, 'proof', this.value)">
+                        ${p.proof && p.proof !== '-' ? `<a href="${p.proof}" target="_blank" class="clip-link">Clip</a>` : ''}
+                    </div>
                 </td>
+                
                 <td>
                     <button class="delete-btn" onclick="deletePlayer(${p.dbId})">×</button>
                 </td>
