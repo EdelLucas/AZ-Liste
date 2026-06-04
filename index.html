@@ -3,122 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | PC-Checker</title>
+    <title>Admin Dashboard | PC-Check & Tracker</title>
     <style>
+        /* DESIGN 3: CLEAN & MINIMAL (OFFICE / DATA FOCUSED) */
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #38bdf8;
-            --danger-color: #ef4444;
-            --text-color: #f1f5f9;
-            --border-color: #334155;
+            --bg-color: #0f172a;       /* Edles Dunkelblau-Grau */
+            --card-bg: #1e293b;        /* Etwas helleres Panel-Blau */
+            --accent-color: #3b82f6;   /* Klares Admin-Blau */
+            --danger-color: #ef4444;   /* PC-Check Warn-Rot */
+            --text-main: #f8fafc;      /* Nahezu Weiß */
+            --text-muted: #94a3b8;     /* Muted Grau für IDs und Infos */
+            --border-color: #334155;   /* Dezente Trennlinien */
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 30px;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
         header {
-            text-align: center;
-            padding-bottom: 30px;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 30px;
+            text-align: left;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
         }
 
-        h1 { color: var(--accent-color); margin: 0; }
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        header h1 span {
+            color: var(--accent-color);
+            font-weight: 400;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin: 6px 0 0 0;
+            font-size: 0.95rem;
+        }
 
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            gap: 30px;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         }
 
-        .urgent-card {
-            border-top: 4px solid var(--danger-color);
+        h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        h2 { margin-top: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .sus-title { color: var(--accent-color); }
+        .pccheck-title { color: var(--danger-color); }
 
         /* Formular Styling */
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 25px;
         }
 
         input {
-            background: var(--bg-color);
+            background: #0f172a;
             border: 1px solid var(--border-color);
             color: white;
-            padding: 10px;
+            padding: 12px 14px;
             border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent-color);
+            background: #131d31;
             outline: none;
         }
 
-        input:focus { border-color: var(--accent-color); }
+        .pccheck-card input:focus {
+            border-color: var(--danger-color);
+        }
 
         button {
             background: var(--accent-color);
-            color: var(--bg-color);
+            color: white;
             border: none;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: filter 0.2s;
         }
 
-        button:hover { opacity: 0.8; }
+        button:hover {
+            filter: brightness(1.1);
+        }
 
-        .btn-urgent { background: var(--danger-color); color: white; }
+        .btn-pccheck {
+            background: var(--danger-color);
+        }
 
-        /* Listen Styling */
+        /* Listen & Items */
         .data-list {
             list-style: none;
             padding: 0;
+            margin: 0;
+            max-height: 450px;
+            overflow-y: auto;
         }
 
         .data-item {
-            background: var(--bg-color);
-            padding: 12px;
+            background: #131d31;
+            padding: 16px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             border-left: 4px solid var(--accent-color);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .data-item.urgent-item { border-left-color: var(--danger-color); }
+        .data-item.pccheck-item {
+            border-left-color: var(--danger-color);
+            background: #1e1b29; /* Leicht rötlich-dunkler Touch */
+        }
 
-        .data-item strong { display: block; color: var(--accent-color); }
-        .data-item small { color: #94a3b8; }
-        .data-item a { color: #fbbf24; text-decoration: none; font-size: 0.9rem; }
+        .data-item .title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ffffff;
+        }
+
+        .data-item .info {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .data-item a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .data-item a:hover {
+            text-decoration: underline;
+        }
 
         .delete-btn {
             position: absolute;
-            right: 10px;
-            top: 10px;
+            right: 16px;
+            top: 16px;
             background: none;
-            color: var(--danger-color);
-            font-size: 1.2rem;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
             cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .delete-btn:hover {
+            color: var(--danger-color);
         }
     </style>
 </head>
@@ -126,79 +204,119 @@
 
 <div class="container">
     <header>
-        <h1>Admin Monitoring System</h1>
-        <p>Grand RP - Checker Tool</p>
+        <h1>Admin Dashboard <span>| Control Center</span></h1>
+        <p>Übersicht für verdächtige Spieler und aktive PC-Checker Anfragen</p>
     </header>
 
     <div class="grid">
         <!-- Sektion: Verdächtige Spieler -->
         <div class="card">
-            <h2>🔍 Sus Player Tracker</h2>
+            <h2 class="sus-title">🔍 Sus Player Tracker</h2>
             <div class="form-group">
                 <input type="text" id="susName" placeholder="Spieler Name">
-                <input type="text" id="susId" placeholder="ID">
-                <input type="text" id="susProof" placeholder="Beweis Link (Imgur/YouTube)">
-                <button onclick="addEntry('sus')">Eintragen</button>
+                <input type="text" id="susId" placeholder="ID (z.B. 48329)">
+                <input type="text" id="susProof" placeholder="Beweis Link (YouTube, Medaltv, Imgur)">
+                <button onclick="addEntry('sus')">Eintrag hinzufügen</button>
             </div>
             <ul id="susList" class="data-list"></ul>
         </div>
 
-        <!-- Sektion: Dringende Fälle -->
-        <div class="card urgent-card">
-            <h2>🚨 Dringend Ziehen</h2>
+        <!-- Sektion: PC-Checker -->
+        <div class="card pccheck-card">
+            <h2 class="pccheck-title">🚨 PC-Checker Warteschlange</h2>
             <div class="form-group">
-                <input type="text" id="urgentName" placeholder="Name oder ID">
-                <input type="text" id="urgentReason" placeholder="Grund (z.B. PC Check)">
-                <button class="btn-urgent" onclick="addEntry('urgent')">Hinzufügen</button>
+                <input type="text" id="pcName" placeholder="Name / ID des Spielers">
+                <input type="text" id="pcReason" placeholder="Verdacht (z.B. No-Drag, Triggerbot, Hitbox)">
+                <button class="btn-pccheck" onclick="addEntry('pc')">PC-Check anfordern</button>
             </div>
-            <ul id="urgentList" class="data-list"></ul>
+            <ul id="pcList" class="data-list"></ul>
         </div>
     </div>
 </div>
 
 <script>
+    // Beim Laden der Seite Daten aus dem Speicher laden
+    document.addEventListener("DOMContentLoaded", () => {
+        loadData();
+    });
+
     function addEntry(type) {
         if (type === 'sus') {
-            const name = document.getElementById('susName').value;
-            const id = document.getElementById('susId').value;
-            const proof = document.getElementById('susProof').value;
+            const name = document.getElementById('susName').value.trim();
+            const id = document.getElementById('susId').value.trim();
+            const proof = document.getElementById('susProof').value.trim();
 
             if (!name || !id) return alert("Bitte Name und ID ausfüllen!");
 
-            const list = document.getElementById('susList');
-            const item = document.createElement('li');
-            item.className = 'data-item';
-            item.innerHTML = `
-                <strong>${name} (ID: ${id})</strong>
-                <a href="${proof}" target="_blank">🔗 Beweis ansehen</a>
-                <span class="delete-btn" onclick="this.parentElement.remove()">×</span>
-            `;
-            list.prepend(item);
+            const item = { id: Date.now(), name, playerId: id, proof };
+            saveToStorage('cleanSusData', item);
             
-            // Felder leeren
             document.getElementById('susName').value = '';
             document.getElementById('susId').value = '';
             document.getElementById('susProof').value = '';
 
-        } else if (type === 'urgent') {
-            const name = document.getElementById('urgentName').value;
-            const reason = document.getElementById('urgentReason').value;
+        } else if (type === 'pc') {
+            const name = document.getElementById('pcName').value.trim();
+            const reason = document.getElementById('pcReason').value.trim();
 
-            if (!name) return alert("Bitte Name/ID eingeben!");
+            if (!name) return alert("Bitte Name oder ID eingeben!");
 
-            const list = document.getElementById('urgentList');
-            const item = document.createElement('li');
-            item.className = 'data-item urgent-item';
-            item.innerHTML = `
-                <strong>${name}</strong>
-                <small>Grund: ${reason || 'Keine Angabe'}</small>
-                <span class="delete-btn" onclick="this.parentElement.remove()">×</span>
-            `;
-            list.prepend(item);
+            const item = { id: Date.now(), name, reason: reason || 'Kein spezifischer Verdacht angegeben' };
+            saveToStorage('cleanPcData', item);
 
-            document.getElementById('urgentName').value = '';
-            document.getElementById('urgentReason').value = '';
+            document.getElementById('pcName').value = '';
+            document.getElementById('pcReason').value = '';
         }
+        
+        loadData(); // Listen aktualisieren
+    }
+
+    // In LocalStorage speichern
+    function saveToStorage(key, item) {
+        let data = JSON.parse(localStorage.getItem(key)) || [];
+        data.push(item);
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    // Aus LocalStorage löschen
+    function deleteEntry(key, id) {
+        let data = JSON.parse(localStorage.getItem(key)) || [];
+        data = data.filter(item => item.id !== id);
+        localStorage.setItem(key, JSON.stringify(data));
+        loadData();
+    }
+
+    // Daten auslesen und darstellen
+    function loadData() {
+        // Sus Player auslesen
+        const susList = document.getElementById('susList');
+        susList.innerHTML = '';
+        const susData = JSON.parse(localStorage.getItem('cleanSusData')) || [];
+        susData.reverse().forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'data-item';
+            li.innerHTML = `
+                <div class="title">${item.name} <span style="color:var(--text-muted); font-size:0.9rem; font-weight:normal;">(ID: ${item.playerId})</span></div>
+                ${item.proof ? `<a href="${item.proof}" target="_blank">➔ Beweis ansehen</a>` : '<span class="info">Kein Beweislink</span>'}
+                <button class="delete-btn" onclick="deleteEntry('cleanSusData', ${item.id})">×</button>
+            `;
+            susList.appendChild(li);
+        });
+
+        // PC-Check auslesen
+        const pcList = document.getElementById('pcList');
+        pcList.innerHTML = '';
+        const pcData = JSON.parse(localStorage.getItem('cleanPcData')) || [];
+        pcData.reverse().forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'data-item pccheck-item';
+            li.innerHTML = `
+                <div class="title" style="color:var(--danger-color);">${item.name}</div>
+                <div class="info"><strong>Verdacht:</strong> ${item.reason}</div>
+                <button class="delete-btn" onclick="deleteEntry('cleanPcData', ${item.id})">×</button>
+            `;
+            pcList.appendChild(li);
+        });
     }
 </script>
 
