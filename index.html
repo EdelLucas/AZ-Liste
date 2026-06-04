@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | PC-Check & Tracker</title>
+    <title>Admin Dashboard | Neon Control</title>
     <style>
-        /* DESIGN 3: CLEAN & MINIMAL (OFFICE / DATA FOCUSED) */
+        /* DESIGN: NEON CYBER / GAME CONTROL CENTER */
         :root {
-            --bg-color: #0f172a;       /* Edles Dunkelblau-Grau */
-            --card-bg: #1e293b;        /* Etwas helleres Panel-Blau */
-            --accent-color: #3b82f6;   /* Klares Admin-Blau */
-            --danger-color: #ef4444;   /* PC-Check Warn-Rot */
-            --text-main: #f8fafc;      /* Nahezu Weiß */
-            --text-muted: #94a3b8;     /* Muted Grau für IDs und Infos */
-            --border-color: #334155;   /* Dezente Trennlinien */
+            --bg-color: #050508;       /* Tiefschwarz */
+            --card-bg: #0b0c10;        /* Dunkles Panel */
+            --accent-color: #00f2fe;   /* Neon Cyan */
+            --danger-color: #ff0055;   /* Neon Pink/Rot */
+            --text-main: #ffffff;
+            --text-muted: #666d7a;
+            --border-color: #1f2330;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Consolas', 'Courier New', Courier, monospace; /* Gaming / Code Look */
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
             padding: 30px;
-            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -31,103 +30,127 @@
         }
 
         header {
-            text-align: left;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+            padding-bottom: 25px;
+            border-bottom: 1px dashed var(--accent-color);
             margin-bottom: 40px;
         }
 
         header h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
+            font-size: 2.2rem;
             margin: 0;
             color: var(--text-main);
-        }
-
-        header h1 span {
-            color: var(--accent-color);
-            font-weight: 400;
+            text-shadow: 0 0 10px var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         header p {
             color: var(--text-muted);
-            margin: 6px 0 0 0;
-            font-size: 0.95rem;
+            margin: 8px 0 0 0;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
         }
 
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 35px;
         }
 
         .card {
             background: var(--card-bg);
             padding: 25px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            border-radius: 4px;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.15);
+        }
+
+        .card.pccheck-card {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.15);
         }
 
         h2 {
             margin-top: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
         }
 
-        .sus-title { color: var(--accent-color); }
-        .pccheck-title { color: var(--danger-color); }
+        .sus-title { color: var(--accent-color); text-shadow: 0 0 5px rgba(0, 242, 254, 0.5); }
+        .pccheck-title { color: var(--danger-color); text-shadow: 0 0 5px rgba(255, 0, 85, 0.5); }
 
         /* Formular Styling */
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
             margin-bottom: 25px;
         }
 
         input {
-            background: #0f172a;
+            background: #000000;
             border: 1px solid var(--border-color);
-            color: white;
-            padding: 12px 14px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s, background-color 0.2s;
+            color: #00f2fe;
+            padding: 12px;
+            border-radius: 2px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input::placeholder {
+            color: #333b4d;
         }
 
         input:focus {
             border-color: var(--accent-color);
-            background: #131d31;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+            background: #04060a;
             outline: none;
+        }
+
+        .pccheck-card input {
+            color: var(--danger-color);
         }
 
         .pccheck-card input:focus {
             border-color: var(--danger-color);
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
         }
 
         button {
-            background: var(--accent-color);
-            color: white;
-            border: none;
+            background: transparent;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
             padding: 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
+            border-radius: 2px;
+            font-weight: bold;
+            font-size: 1rem;
+            font-family: inherit;
             cursor: pointer;
-            transition: filter 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
         }
 
         button:hover {
-            filter: brightness(1.1);
+            background: var(--accent-color);
+            color: #000;
+            box-shadow: 0 0 15px var(--accent-color);
         }
 
         .btn-pccheck {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-pccheck:hover {
             background: var(--danger-color);
+            color: #000;
+            box-shadow: 0 0 15px var(--danger-color);
         }
 
         /* Listen & Items */
@@ -140,63 +163,61 @@
         }
 
         .data-item {
-            background: #131d31;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
+            background: #000000;
+            padding: 15px;
+            border-radius: 2px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
             border-left: 4px solid var(--accent-color);
             position: relative;
             display: flex;
             flex-direction: column;
             gap: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .data-item.pccheck-item {
             border-left-color: var(--danger-color);
-            background: #1e1b29; /* Leicht rötlich-dunkler Touch */
         }
 
         .data-item .title {
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: bold;
+            font-size: 1.1rem;
             color: #ffffff;
         }
 
         .data-item .info {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         .data-item a {
-            color: #60a5fa;
+            color: var(--accent-color);
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-top: 4px;
+            font-size: 0.9rem;
+            margin-top: 5px;
             display: inline-block;
         }
 
         .data-item a:hover {
-            text-decoration: underline;
+            text-shadow: 0 0 5px var(--accent-color);
         }
 
         .delete-btn {
             position: absolute;
-            right: 16px;
-            top: 16px;
+            right: 15px;
+            top: 15px;
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             cursor: pointer;
             line-height: 1;
             padding: 0;
-            transition: color 0.2s;
         }
 
         .delete-btn:hover {
             color: var(--danger-color);
+            text-shadow: 0 0 5px var(--danger-color);
         }
     </style>
 </head>
@@ -204,29 +225,29 @@
 
 <div class="container">
     <header>
-        <h1>Admin Dashboard <span>| Control Center</span></h1>
-        <p>Übersicht für verdächtige Spieler und aktive PC-Checker Anfragen</p>
+        <h1>SYSTEM // CONTROL_CENTER</h1>
+        <p>Grand RP - Admin Management Mode</p>
     </header>
 
     <div class="grid">
         <!-- Sektion: Verdächtige Spieler -->
         <div class="card">
-            <h2 class="sus-title">🔍 Sus Player Tracker</h2>
+            <h2 class="sus-title">> SUS_PLAYER_TRACKER</h2>
             <div class="form-group">
-                <input type="text" id="susName" placeholder="Spieler Name">
-                <input type="text" id="susId" placeholder="ID (z.B. 48329)">
-                <input type="text" id="susProof" placeholder="Beweis Link (YouTube, Medaltv, Imgur)">
-                <button onclick="addEntry('sus')">Eintrag hinzufügen</button>
+                <input type="text" id="susName" placeholder="[SPIELER NAME]">
+                <input type="text" id="susId" placeholder="[SPIELER ID]">
+                <input type="text" id="susProof" placeholder="[BEWEIS LINK]">
+                <button onclick="addEntry('sus')">Eintrag initialisieren</button>
             </div>
             <ul id="susList" class="data-list"></ul>
         </div>
 
         <!-- Sektion: PC-Checker -->
         <div class="card pccheck-card">
-            <h2 class="pccheck-title">🚨 PC-Checker Warteschlange</h2>
+            <h2 class="pccheck-title">> PC_CHECK_QUEUE</h2>
             <div class="form-group">
-                <input type="text" id="pcName" placeholder="Name / ID des Spielers">
-                <input type="text" id="pcReason" placeholder="Verdacht (z.B. No-Drag, Triggerbot, Hitbox)">
+                <input type="text" id="pcName" placeholder="[SPIELER NAME / ID]">
+                <input type="text" id="pcReason" placeholder="[VERDACHT / GRUND]">
                 <button class="btn-pccheck" onclick="addEntry('pc')">PC-Check anfordern</button>
             </div>
             <ul id="pcList" class="data-list"></ul>
@@ -235,7 +256,6 @@
 </div>
 
 <script>
-    // Beim Laden der Seite Daten aus dem Speicher laden
     document.addEventListener("DOMContentLoaded", () => {
         loadData();
     });
@@ -246,10 +266,10 @@
             const id = document.getElementById('susId').value.trim();
             const proof = document.getElementById('susProof').value.trim();
 
-            if (!name || !id) return alert("Bitte Name und ID ausfüllen!");
+            if (!name || !id) return alert("ERROR: Name und ID erforderlich!");
 
             const item = { id: Date.now(), name, playerId: id, proof };
-            saveToStorage('cleanSusData', item);
+            saveToStorage('neonSusData', item);
             
             document.getElementById('susName').value = '';
             document.getElementById('susId').value = '';
@@ -259,26 +279,24 @@
             const name = document.getElementById('pcName').value.trim();
             const reason = document.getElementById('pcReason').value.trim();
 
-            if (!name) return alert("Bitte Name oder ID eingeben!");
+            if (!name) return alert("ERROR: Name oder ID erforderlich!");
 
-            const item = { id: Date.now(), name, reason: reason || 'Kein spezifischer Verdacht angegeben' };
-            saveToStorage('cleanPcData', item);
+            const item = { id: Date.now(), name, reason: reason || 'Kein spezifischer Verdacht' };
+            saveToStorage('neonPcData', item);
 
             document.getElementById('pcName').value = '';
             document.getElementById('pcReason').value = '';
         }
         
-        loadData(); // Listen aktualisieren
+        loadData();
     }
 
-    // In LocalStorage speichern
     function saveToStorage(key, item) {
         let data = JSON.parse(localStorage.getItem(key)) || [];
         data.push(item);
         localStorage.setItem(key, JSON.stringify(data));
     }
 
-    // Aus LocalStorage löschen
     function deleteEntry(key, id) {
         let data = JSON.parse(localStorage.getItem(key)) || [];
         data = data.filter(item => item.id !== id);
@@ -286,34 +304,31 @@
         loadData();
     }
 
-    // Daten auslesen und darstellen
     function loadData() {
-        // Sus Player auslesen
         const susList = document.getElementById('susList');
         susList.innerHTML = '';
-        const susData = JSON.parse(localStorage.getItem('cleanSusData')) || [];
+        const susData = JSON.parse(localStorage.getItem('neonSusData')) || [];
         susData.reverse().forEach(item => {
             const li = document.createElement('li');
             li.className = 'data-item';
             li.innerHTML = `
-                <div class="title">${item.name} <span style="color:var(--text-muted); font-size:0.9rem; font-weight:normal;">(ID: ${item.playerId})</span></div>
-                ${item.proof ? `<a href="${item.proof}" target="_blank">➔ Beweis ansehen</a>` : '<span class="info">Kein Beweislink</span>'}
-                <button class="delete-btn" onclick="deleteEntry('cleanSusData', ${item.id})">×</button>
+                <div class="title">${item.name} <span style="color:var(--text-muted); font-size:0.9rem;">(ID: ${item.playerId})</span></div>
+                ${item.proof ? `<a href="${item.proof}" target="_blank">// BEWEIS_LINK ÖFFNEN</a>` : '<span class="info">Kein Beweis</span>'}
+                <button class="delete-btn" onclick="deleteEntry('neonSusData', ${item.id})">×</button>
             `;
             susList.appendChild(li);
         });
 
-        // PC-Check auslesen
         const pcList = document.getElementById('pcList');
         pcList.innerHTML = '';
-        const pcData = JSON.parse(localStorage.getItem('cleanPcData')) || [];
+        const pcData = JSON.parse(localStorage.getItem('neonPcData')) || [];
         pcData.reverse().forEach(item => {
             const li = document.createElement('li');
             li.className = 'data-item pccheck-item';
             li.innerHTML = `
                 <div class="title" style="color:var(--danger-color);">${item.name}</div>
-                <div class="info"><strong>Verdacht:</strong> ${item.reason}</div>
-                <button class="delete-btn" onclick="deleteEntry('cleanPcData', ${item.id})">×</button>
+                <div class="info"><strong>Status:</strong> ${item.reason}</div>
+                <button class="delete-btn" onclick="deleteEntry('neonPcData', ${item.id})">×</button>
             `;
             pcList.appendChild(li);
         });
