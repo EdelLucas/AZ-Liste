@@ -3,503 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIB Director - Bewerbung: Tim Chessee</title>
+    <title>Admin Dashboard | Management</title>
     <style>
         :root {
-            --bg-deep: #030406; /* Tiefschwarz */
-            --bg-panel: rgba(7, 10, 15, 0.88); /* Dunkelblau-Schwarz mit hoher Deckkraft für Lesbarkeit */
-            --gold-main: #d4af37; /* Klassisches Gold */
-            --gold-glow: rgba(212, 175, 55, 0.15);
-            --border-color: rgba(212, 175, 55, 0.25); /* Goldene Rahmenlinien */
-            --text-bright: #f4f6f9;
-            --text-dark: #8fa0b5; /* Taktisches Blau-Grau für Nebentexte */
-            --accent-blue: #1e3a8a; /* Dunkelblau für Akzente */
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --danger-color: #ef4444;
+            --text-color: #f1f5f9;
+            --border-color: #334155;
         }
 
-        /* Fullscreen Reset */
-        html, body {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--bg-deep);
-            
-            /* --- HIER DEIN EIGENES BILD ANPASSEN --- */
-            background-image: 
-                linear-gradient(rgba(3, 4, 6, 0.85), rgba(3, 4, 6, 0.85)), 
-                url('bilder/hintergrund.jpg'); 
-            
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-blend-mode: multiply;
-            
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: var(--text-bright);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
         }
 
-        .dashboard-container {
-            width: 100vw;
-            height: 100vh;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        h1 { color: var(--accent-color); margin: 0; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .urgent-card {
+            border-top: 4px solid var(--danger-color);
+        }
+
+        h2 { margin-top: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+
+        /* Formular Styling */
+        .form-group {
             display: flex;
             flex-direction: column;
-            background: var(--bg-panel);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        /* Edler Header */
-        .dashboard-header {
-            padding: 25px 40px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            flex-shrink: 0;
-            background: rgba(3, 4, 6, 0.6);
-        }
-
-        .brand-zone {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .badge-icon {
-            font-family: "Georgia", serif;
-            font-weight: 700;
-            font-size: 20px;
-            letter-spacing: 1px;
-            padding: 8px 16px;
-            border: 1px solid var(--gold-main);
-            color: var(--gold-main);
-            border-radius: 4px;
-            text-transform: uppercase;
-            background: rgba(212, 175, 55, 0.03);
-            box-shadow: 0 0 15px var(--gold-glow);
-        }
-
-        .brand-text h1 {
-            margin: 0;
-            font-size: 24px;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .brand-text p {
-            margin: 4px 0 0 0;
-            font-size: 11px;
-            color: var(--gold-main);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-        }
-
-        /* ZENTRIERTE NAVIGATION */
-        .navigation-bar {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 12px 40px;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0;
-        }
-
-        .nav-item {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-dark);
-            padding: 10px 24px;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .nav-item:hover {
-            color: var(--gold-main);
-            border-color: rgba(212, 175, 55, 0.3);
-            background: rgba(212, 175, 55, 0.02);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, var(--accent-blue), #080c14);
-            color: var(--gold-main);
-            border-color: var(--gold-main);
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 10px var(--gold-glow);
-        }
-
-        /* Main Workspace */
-        .workspace {
-            display: flex;
-            flex-grow: 1;
-            height: calc(100vh - 150px); 
-        }
-
-        .content-vault {
-            flex-grow: 1;
-            padding: 50px 60px;
-            overflow-y: auto;
-            box-sizing: border-box;
-            background: radial-gradient(circle at center, rgba(30, 58, 138, 0.05) 0%, transparent 75%);
-        }
-
-        /* Scrollbar Design */
-        .content-vault::-webkit-scrollbar { width: 6px; }
-        .content-vault::-webkit-scrollbar-track { background: transparent; }
-        .content-vault::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 3px; }
-        .content-vault::-webkit-scrollbar-thumb:hover { background: var(--gold-main); }
-
-        .content-section {
-            display: none;
-            max-width: 950px;
-            margin: 0 auto;
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        h2 {
-            margin-top: 0;
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        h2::before {
-            content: '';
-            display: inline-block;
-            width: 3px;
-            height: 20px;
-            background: var(--gold-main);
-            box-shadow: 0 0 8px var(--gold-main);
-        }
-
-        h3 {
-            font-size: 14px;
-            color: var(--gold-main);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            border-bottom: 1px dashed rgba(212, 175, 55, 0.2);
-            padding-bottom: 5px;
-        }
-
-        /* Informations-Kacheln */
-        .profile-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        /* 3er-Spalten-Layout für die OOC-Sachen */
-        .profile-grid-ooc {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .profile-card {
-            background: rgba(30, 58, 138, 0.12);
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            padding: 20px;
-            border-radius: 6px;
-            transition: border-color 0.3s ease;
-        }
-
-        .profile-card:hover {
-            border-color: rgba(212, 175, 55, 0.4);
-        }
-
-        .card-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            color: var(--gold-main);
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-        }
-
-        .card-value {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-bright);
-        }
-
-        /* Listen & Texte */
-        ul {
-            padding-left: 0;
-            list-style: none;
-        }
-
-        li {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 18px;
-            line-height: 1.7;
-            color: #e2e8f0;
-            font-size: 15.5px;
-        }
-
-        li::before {
-            content: '♦';
-            position: absolute;
-            left: 0;
-            color: var(--gold-main);
-            font-size: 12px;
-            top: 1px;
-        }
-
-        p {
-            line-height: 1.8;
-            color: #e2e8f0;
-            font-size: 15.5px;
-        }
-
-        .highlight-box {
-            background: linear-gradient(90deg, rgba(30, 58, 138, 0.25), transparent);
-            border-left: 2px solid var(--gold-main);
-            padding: 20px;
-            border-radius: 0 6px 6px 0;
-            margin-bottom: 35px;
-            font-size: 15.5px;
-            color: #ffffff;
-        }
-
-        /* Miro-Board Einbindung */
-        .miro-container {
-            margin-top: 30px;
+        input {
+            background: var(--bg-color);
             border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px;
             border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            outline: none;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        input:focus { border-color: var(--accent-color); }
+
+        button {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
         }
 
-        /* Mobile Anpassung */
-        @media (max-width: 900px) {
-            .navigation-bar { flex-wrap: wrap; justify-content: center; padding: 10px; }
-            .nav-item { font-size: 11px; padding: 8px 14px; }
-            .content-vault { padding: 30px 20px; }
-            .profile-grid, .profile-grid-ooc { grid-template-columns: 1fr; }
+        button:hover { opacity: 0.8; }
+
+        .btn-urgent { background: var(--danger-color); color: white; }
+
+        /* Listen Styling */
+        .data-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .data-item {
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent-color);
+            position: relative;
+        }
+
+        .data-item.urgent-item { border-left-color: var(--danger-color); }
+
+        .data-item strong { display: block; color: var(--accent-color); }
+        .data-item small { color: #94a3b8; }
+        .data-item a { color: #fbbf24; text-decoration: none; font-size: 0.9rem; }
+
+        .delete-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: none;
+            color: var(--danger-color);
+            font-size: 1.2rem;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="dashboard-container">
-    <!-- Header -->
-    <div class="dashboard-header">
-        <div class="brand-zone">
-            <div class="badge-icon">OFFICIAL</div>
-            <div class="brand-text">
-                <h1>FEDERAL INVESTIGATION BUREAU</h1>
-                <p>Bewerbung des Director // vom FIB</p>
+<div class="container">
+    <header>
+        <h1>Admin Monitoring System</h1>
+        <p>Grand RP - Management Tool</p>
+    </header>
+
+    <div class="grid">
+        <!-- Sektion: Verdächtige Spieler -->
+        <div class="card">
+            <h2>🔍 Sus Player Tracker</h2>
+            <div class="form-group">
+                <input type="text" id="susName" placeholder="Spieler Name">
+                <input type="text" id="susId" placeholder="ID">
+                <input type="text" id="susProof" placeholder="Beweis Link (Imgur/YouTube)">
+                <button onclick="addEntry('sus')">Eintragen</button>
             </div>
+            <ul id="susList" class="data-list"></ul>
         </div>
-    </div>
 
-    <!-- ZENTRIERTE NAVIGATION -->
-    <nav class="navigation-bar">
-        <button class="nav-item active" onclick="openSection('intro')">Einführung</button>
-        <button class="nav-item" onclick="openSection('about')">Infos zu Mir</button>
-        <button class="nav-item" onclick="openSection('why-me')">Warum Tim Chessee?</button>
-        <button class="nav-item" onclick="openSection('concept')">Orgakonzept</button>
-        <button class="nav-item" onclick="openSection('changes')">Das möchte ich Ändern</button>
-        <button class="nav-item" onclick="openSection('conclusion')">Schluss</button>
-    </nav>
-
-    <!-- Content-Bereich -->
-    <div class="workspace">
-        <div class="content-vault">
-            
-            <!-- 1. EINFÜHRUNG -->
-            <div id="intro" class="content-section active">
-                <h2>Einführung</h2>
-                <div class="highlight-box">
-                    Sehr geehrte Admins,<br>
-                    hiermit möchte ich mich als Director des Federal Investigation Bureau Bewerben.
-                </div>
-                <p>
-                    Mein Name ist Tim Chessee und ein großer Teil meiner Laufbahn auf GrandRP war eng mit dem Federal Investigation Bureau verbunden. Über die Jahre hinweg durfte ich die Behörde in unterschiedlichen Rollen begleiten, Verantwortung übernehmen und gemeinsam mit vielen engagierten Mitarbeitern an ihrer Entwicklung mitwirken. Besonders meine Zeit innerhalb der FIBCO hat meinen Blick auf die Organisation geprägt und mir gezeigt, wie wichtig verlässliche Führung, starke Strukturen und motivierte Mitarbeiter für den langfristigen Erfolg einer Behörde sind.
-                </p>
-                <p>
-                    Nach vielen Jahren im Bureau möchte ich nun den nächsten Schritt gehen und mich für die Leitung des Federal Investigation Bureau bewerben. Die folgenden Abschnitte sollen einen Einblick in meine Motivation, meine Vorstellungen für die Organisation sowie meine Ziele für deren zukünftige Entwicklung geben.
-                </p>
+        <!-- Sektion: Dringende Fälle -->
+        <div class="card urgent-card">
+            <h2>🚨 Dringend Ziehen</h2>
+            <div class="form-group">
+                <input type="text" id="urgentName" placeholder="Name oder ID">
+                <input type="text" id="urgentReason" placeholder="Grund (z.B. PC Check)">
+                <button class="btn-urgent" onclick="addEntry('urgent')">Hinzufügen</button>
             </div>
-
-            <!-- 2. INFOS ZU MIT -->
-            <div id="about" class="content-section">
-                <h2>Infos zu Mir</h2>
-                <p>Registrierte Personalstammdaten des Bewerbers:</p>
-                
-                <h3>OOC-Sektion (Out-Of-Character)</h3>
-                <div class="profile-grid-ooc">
-                    <div class="profile-card">
-                        <div class="card-label">Name (OOC)</div>
-                        <div class="card-value">Leo</div>
-                    </div>
-                    <div class="profile-card">
-                        <div class="card-label">Alter</div>
-                        <div class="card-value">17</div>
-                    </div>
-                    <div class="profile-card">
-                        <div class="card-label">Discord</div>
-                        <div class="card-value">leo_1._.</div>
-                    </div>
-                </div>
-
-                <h3>IC-Sektion (In-Character)</h3>
-                <div class="profile-grid">
-                    <div class="profile-card">
-                        <div class="card-label">Name (IC)</div>
-                        <div class="card-value">Tim Chessee</div>
-                    </div>
-                    <div class="profile-card">
-                        <div class="card-label">ID</div>
-                        <div class="card-value">264694</div>
-                    </div>
-                    <div class="profile-card">
-                        <div class="card-label">Visum</div>
-                        <div class="card-value">[DEINE VISUMSSTUFE HIER EINTRAGEN, Z.B. STUFE 32]</div>
-                    </div>
-                    <div class="profile-card">
-                        <div class="card-label">Onlinezeit</div>
-                        <div class="card-value">4 - 6 Stunden pro Tag</div>
-                    </div>
-                    <div class="profile-card" style="grid-column: span 2;">
-                        <div class="card-label">Bisherige Führungserfahrungen</div>
-                        <div class="card-value">[HIER DEINE ÄMTER AUFZÄHLEN, Z.B.: LANGJÄHRIGE TÄTIGKEIT IN DER FIBCO / ABTEILUNGSLEITUNGEN O.Ä.]</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. WARUM TIM CHESSEE? -->
-            <div id="why-me" class="content-section">
-                <h2>Warum Tim Chessee?</h2>
-                <div class="highlight-box">
-                    Die Frage ist nicht nur, wer das FIB leiten kann, sondern wer das Fundament besitzt, um die Fraktion langfristig stabil und attraktiv zu halten.
-                </div>
-                <p>
-                    Wenn ich auf meine Zeit im Federal Investigation Bureau zurückblicke, fällt es mir schwer, sie auf ein paar einzelne Momente zu reduzieren. Ein großer Teil meiner Laufbahn auf diesem Server war mit dieser Organisation verbunden. Ich habe unterschiedliche Führungen erlebt, gute Zeiten und schwierige Phasen miterlebt und dabei beobachten können, wie sich das Bureau über die Jahre entwickelt hat.
-                </p>
-                <p>
-                    Besonders durch meine Tätigkeit innerhalb der FIBCO durfte ich die Behörde aus einer Perspektive kennenlernen, die weit über den normalen Dienstalltag hinausgeht. Viele Entscheidungen, Entwicklungen und Herausforderungen habe ich nicht nur miterlebt, sondern aktiv begleitet. Dadurch entstand mit der Zeit nicht nur Erfahrung, sondern auch eine starke Verbundenheit mit der Organisation.
-                </p>
-                <p>
-                    Rückblickend haben mich dabei vor allem die Menschen geprägt, mit denen ich zusammenarbeiten durfte. Insbesondere Persönlichkeiten wie Gojira Bukur und Eko Plaste haben meinen Blick auf Führung und Organisationsentwicklung nachhaltig beeinflusst. Von beiden konnte ich viel lernen. Nicht nur über den Umgang mit Mitarbeitern oder die Leitung einer Behörde, sondern auch darüber, wie wichtig Verantwortungsbewusstsein, Verlässlichkeit und Weitsicht für eine funktionierende Organisation sind.
-                </p>
-                <p>
-                    Wer mich kennt, weiß außerdem, dass ich nie der Lauteste im Raum war. Ich habe nie versucht, mich durch große Reden oder ständige Aufmerksamkeit in den Vordergrund zu stellen. Stattdessen habe ich immer versucht, durch meine Arbeit, meine Präsenz und meine Zuverlässigkeit zu überzeugen. Genau diesen Ansatz möchte ich auch als Leader verfolgen.
-                </p>
-                <p>
-                    Ich bewerbe mich heute nicht, weil ich unbedingt einen höheren Rang erreichen möchte. Ich bewerbe mich, weil ich nach all den Jahren überzeugt bin, dass ich die Erfahrung, die Kontakte und das Verständnis für diese Behörde mitbringe, um sie gemeinsam mit ihren Mitgliedern erfolgreich in die Zukunft zu führen.
-                </p>
-
-                <h3 style="margin-top: 40px;">Und was zeichnet mich aus?</h3>
-                <ul>
-                    <li><strong>Zuhören können:</strong> Während meiner Zeit im Federal Investigation Bureau habe ich mit vielen unterschiedlichen Menschen zusammengearbeitet. Dabei wurde mir bewusst, dass gute Führung nicht bedeutet, immer selbst die besten Ideen zu haben. Viel wichtiger ist es, die richtigen Menschen zusammenzubringen, unterschiedliche Meinungen zu berücksichtigen und Entscheidungen zu treffen, die der gesamten Organisation zugutekommen.</li>
-                    <li><strong>Tiefgehende Strukturerfahrung:</strong> Durch meine langjährige Tätigkeit innerhalb der FIBCO konnte ich Erfahrungen sammeln, die weit über den normalen Dienstbetrieb hinausgehen. Ich habe erlebt, welche Strukturen funktionieren, welche Fehler sich wiederholen und welche Maßnahmen langfristig erfolgreich sind. Dieses Wissen möchte ich nutzen, um die Organisation weiterzuentwickeln.</li>
-                    <li><strong>Fairness & Transparenz:</strong> Ich lege großen Wert auf Fairness, Transparenz und Verlässlichkeit. Mitarbeiter sollen wissen, woran sie sind und was von ihnen erwartet wird. Gleichzeitig sollen gute Leistungen anerkannt werden und jeder die Möglichkeit erhalten, sich innerhalb der Organisation einzubringen.</li>
-                    <li><strong>Verantwortung im Ernstfall:</strong> Darüber hinaus bin ich überzeugt davon, dass eine Führungskraft nicht nur in guten Zeiten präsent sein muss. Gerade dann, wenn Probleme entstehen oder schwierige Entscheidungen getroffen werden müssen, ist es wichtig, Verantwortung zu übernehmen und für die Organisation einzustehen.</li>
-                </ul>
-            </div>
-
-            <!-- 4. ORGAKONZEPT -->
-            <div id="concept" class="content-section">
-                <h2>Organisationskonzept</h2>
-                <p>
-                    Mein Ziel ist kein vollständiger Neuanfang, sondern die Weiterentwicklung einer Organisation, die bereits über viele erfahrene und engagierte Mitglieder verfügt.
-                </p>
-                <p>Das Federal Investigation Bureau soll unter meiner Leitung auf drei grundlegenden Prinzipien aufbauen:</p>
-                
-                <ul>
-                    <li><strong>Erfahrung bewahren:</strong> Viele Mitarbeiter verfügen über wertvolles Wissen und langjährige Erfahrung. Dieses Wissen darf nicht verloren gehen. Erfahrene Agents sollen aktiv in Ausbildungs- und Entwicklungsprozesse eingebunden werden, um ihr Wissen an die nächste Generation weiterzugeben.</li>
-                    <li><strong>Mitarbeiter fördern:</strong> Jede Organisation ist nur so stark wie ihre Mitglieder. Deshalb sollen Ausbildung, Betreuung und persönliche Entwicklung einen deutlich höheren Stellenwert erhalten. Jeder Mitarbeiter soll die Möglichkeit haben, Verantwortung zu übernehmen und sich innerhalb der Behörde weiterzuentwickeln.</li>
-                    <li><strong>Aktivität schaffen:</strong> Eine aktive Behörde erzeugt automatisch Rollenspiel. Ermittlungen, Schulungen, gemeinsame Operationen und interne Projekte sollen dafür sorgen, dass Mitglieder aller Dienstgrade dauerhaft eingebunden werden und sinnvolle Beschäftigung finden.</li>
-                </ul>
-
-                <p>
-                    Langfristig wünsche ich mir ein Federal Investigation Bureau, das für Kompetenz, Aktivität und Professionalität steht. Eine Organisation, die ihre Traditionen bewahrt, offen für neue Ideen bleibt und sowohl intern als auch extern Respekt genießt. Nach all den Jahren, die ich innerhalb dieser Behörde verbringen durfte, wäre es für mich eine besondere Ehre, gemeinsam mit ihren Mitgliedern die nächsten Kapitel ihrer Geschichte zu gestalten.
-                </p>
-
-                <!-- Interaktives Miro-Board-Fenster -->
-                <div class="miro-container">
-                    <iframe width="100%" height="550" src="https://miro.com/app/live-embed/uXjVHPGQxDs=/?autoplay=true" frameBorder="0" scrolling="no" allowFullScreen></iframe>
-                </div>
-            </div>
-
-            <!-- 5. DAS MÖCHTE ICH ÄNDERN -->
-            <div id="changes" class="content-section">
-                <h2>Das möchte ich Ändern</h2>
-                <p>
-                    Meiner Meinung nach lebt das Federal Investigation Bureau von den Geschichten, die innerhalb der Behörde entstehen. Genau deshalb sollte das Hauptaugenmerk nicht ausschließlich auf kurzfristigen Aktionen liegen, sondern auf langfristigem und nachhaltigem Rollenspiel.
-                </p>
-                <ul>
-                    <li><strong>Langfristige Ermittlungskampagnen:</strong> Ich möchte Ermittlungen fördern, die sich über längere Zeiträume entwickeln und mehrere Abteilungen sowie andere Staatsfraktionen einbinden. Große Verfahren, verdeckte Ermittlungen und gemeinsame Operationen schaffen oftmals deutlich mehr Rollenspiel als spontane Einzelaktionen.</li>
-                    <li><strong>Förderung der Eigeninitiative:</strong> Gleichzeitig halte ich es für wichtig, dass Mitarbeiter mehr Möglichkeiten erhalten, eigene Ideen einzubringen. Nicht jede gute Idee muss aus der Führungsebene kommen. Viele der besten Projekte entstehen durch engagierte Agents, die Verantwortung übernehmen und eigene Konzepte entwickeln möchten. Diese Eigeninitiative möchte ich gezielt fördern.</li>
-                    <li><strong>Nachhaltiger Aufbau von Strukturen:</strong> Ein weiterer Schwerpunkt wird die Ausbildung neuer Mitarbeiter sein. Jeder Agent soll die Möglichkeit erhalten, sich weiterzuentwickeln und innerhalb der Organisation seinen eigenen Weg zu gehen. Langfristig profitiert jede Behörde davon, wenn Wissen weitergegeben wird und neue Führungspersönlichkeiten aufgebaut werden.</li>
-                    <li><strong>Verlässliche Partnerschaften:</strong> Darüber hinaus möchte ich die Zusammenarbeit mit anderen staatlichen Organisationen weiter stärken. Das Federal Investigation Bureau sollte als verlässlicher Partner innerhalb des Staates wahrgenommen werden und gemeinsam mit anderen Behörden für abwechslungsreiches und qualitativ hochwertiges Rollenspiel sorgen.</li>
-                </ul>
-            </div>
-
-            <!-- 6. SCHLUSS -->
-            <div id="conclusion" class="content-section">
-                <h2>Schlusswort</h2>
-                <p>
-                    Ehrlich gesagt hätte ich vor einigen Jahren selbst nicht gedacht, irgendwann eine Bewerbung für die Leitung des Federal Investigation Bureau zu schreiben.
-                </p>
-                <p>
-                    Ein großer Teil meiner Zeit auf GrandRP war mit dieser Behörde verbunden. Ich habe hier vieles gelernt, starke Führungspersönlichkeiten erlebt und mit Menschen zusammengearbeitet, die mich bis heute geprägt haben. Gerade deshalb fällt es mir schwer, das FIB objektiv zu betrachten. Für mich ist es deutlich mehr als nur eine Fraktion, in der ich meinen Dienst verrichte.
-                </p>
-                <p>
-                    Ob als Agent, innerhalb der FIBCO oder in Gesprächen mit Kollegen und Vorgesetzten, mein Ziel war es immer, einen positiven Beitrag für die Organisation zu leisten. Die Bewerbung ist für mich deshalb nicht der Abschluss dieses Weges, sondern lediglich der nächste Schritt.
-                </p>
-                <p>
-                    Am Ende liegt die Entscheidung selbstverständlich nicht bei mir. Unabhängig davon, wie sie ausfällt, werde ich dem Federal Investigation Bureau weiterhin mit derselben Loyalität und Motivation dienen, die mich die letzten Jahre begleitet hat.
-                </p>                
-                <p style="margin-top: 50px;">Hochachtungsvoll,</p>
-                <p><strong style="color: var(--gold-main);">Tim Chessee</strong><br><span style="color: var(--text-dark); font-size: 13px;">Bewerber für das Amt des FIB Directors</span></p>
-            </div>
-
+            <ul id="urgentList" class="data-list"></ul>
         </div>
     </div>
 </div>
 
 <script>
-    function openSection(sectionId) {
-        const blocks = document.querySelectorAll('.content-section');
-        blocks.forEach(block => block.classList.remove('active'));
+    function addEntry(type) {
+        if (type === 'sus') {
+            const name = document.getElementById('susName').value;
+            const id = document.getElementById('susId').value;
+            const proof = document.getElementById('susProof').value;
 
-        const buttons = document.querySelectorAll('.nav-item');
-        buttons.forEach(btn => btn.classList.remove('active'));
+            if (!name || !id) return alert("Bitte Name und ID ausfüllen!");
 
-        document.getElementById(sectionId).classList.add('active');
-        event.currentTarget.classList.add('active');
+            const list = document.getElementById('susList');
+            const item = document.createElement('li');
+            item.className = 'data-item';
+            item.innerHTML = `
+                <strong>${name} (ID: ${id})</strong>
+                <a href="${proof}" target="_blank">🔗 Beweis ansehen</a>
+                <span class="delete-btn" onclick="this.parentElement.remove()">×</span>
+            `;
+            list.prepend(item);
+            
+            // Felder leeren
+            document.getElementById('susName').value = '';
+            document.getElementById('susId').value = '';
+            document.getElementById('susProof').value = '';
+
+        } else if (type === 'urgent') {
+            const name = document.getElementById('urgentName').value;
+            const reason = document.getElementById('urgentReason').value;
+
+            if (!name) return alert("Bitte Name/ID eingeben!");
+
+            const list = document.getElementById('urgentList');
+            const item = document.createElement('li');
+            item.className = 'data-item urgent-item';
+            item.innerHTML = `
+                <strong>${name}</strong>
+                <small>Grund: ${reason || 'Keine Angabe'}</small>
+                <span class="delete-btn" onclick="this.parentElement.remove()">×</span>
+            `;
+            list.prepend(item);
+
+            document.getElementById('urgentName').value = '';
+            document.getElementById('urgentReason').value = '';
+        }
     }
 </script>
 
