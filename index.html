@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Advanced Tracker</title>
+    <title>FIB - Sus Player Datenbank</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #070a12 0%, #0f1424 100%);
-            --glass-bg: rgba(21, 27, 43, 0.75);
+            --glass-bg: rgba(21, 27, 43, 0.8);
             --glass-input: rgba(31, 39, 54, 0.6);
             --accent: #3b82f6;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --glass-border: rgba(255, 255, 255, 0.06);
             
-            /* Status Farben */
+            /* Status- & Badge-Farben */
             --rot: #ef4444;
             --gelb: #f59e0b;
             --gruen: #10b981;
@@ -26,13 +26,13 @@
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
-            padding: 40px 20px;
+            padding: 30px;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
         }
 
@@ -53,27 +53,50 @@
         .login-box {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
             padding: 40px;
             border-radius: 24px;
             text-align: center;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 360px;
+            width: 320px;
         }
 
-        /* DASHBOARD CONTENT */
+        .login-box input {
+            width: 100%;
+            box-sizing: border-box;
+            background: var(--glass-input);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .login-box button {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         #dashboardContent {
             display: none;
         }
 
         header {
-            margin-bottom: 40px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         header h1 {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             margin: 0;
             background: linear-gradient(to right, #fff, var(--text-muted));
@@ -81,187 +104,171 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 30px;
-        }
-
-        .card {
+        /* KOMPAKTER EINTRAGS-BEREICH (OBEN) */
+        .input-bar {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 30px;
-            border-radius: 20px;
             border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            height: fit-content;
         }
 
-        h2 {
-            margin-top: 0;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 10px;
-        }
-
-        /* Formular Felder */
-        .form-grid {
+        .input-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            align-items: end;
         }
 
-        .full-width {
-            grid-column: span 2;
-        }
-
-        .form-group {
+        .input-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin-bottom: 14px;
+            gap: 5px;
         }
 
-        label {
-            font-size: 0.85rem;
+        .input-group label {
+            font-size: 0.75rem;
             color: var(--text-muted);
-            font-weight: 500;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
-        input, select, textarea {
+        input, select {
             background: var(--glass-input);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.95rem;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
             font-family: inherit;
             transition: all 0.2s;
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus, select:focus {
             border-color: rgba(59, 130, 246, 0.5);
-            background: rgba(31, 39, 54, 0.8);
             outline: none;
         }
 
-        button {
+        .add-btn {
             background: linear-gradient(135deg, var(--accent) 0%, #1d4ed8 100%);
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
-        }
-
-        /* Listen-Einträge */
-        .data-list {
-            list-style: none;
-            padding: 0;
-            margin: 25px 0 0 0;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .data-item {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 20px;
-            border-radius: 14px;
-            margin-bottom: 16px;
-            border: 1px solid var(--glass-border);
-            position: relative;
-        }
-
-        .data-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .item-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
-
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            padding-right: 30px;
-        }
-
-        .player-title {
+            padding: 11px;
+            border-radius: 8px;
             font-weight: 700;
-            font-size: 1.2rem;
-            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .proof-link {
-            color: #60a5fa;
-            text-decoration: none;
+        .add-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        /* LISTE / TABELLEN-STIL */
+        .table-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
             font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 16px;
+            border-bottom: 1px solid var(--glass-border);
+            letter-spacing: 0.5px;
         }
 
-        .proof-link:hover { text-decoration: underline; }
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
 
-        /* Badges */
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* BADGES FÜR DIE LISTE */
         .badge {
             font-size: 0.75rem;
             font-weight: 700;
-            text-transform: uppercase;
-            padding: 4px 10px;
-            border-radius: 20px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-align: center;
             display: inline-block;
         }
-        .bg-rot { background: rgba(239, 68, 68, 0.15); color: #fc8181; }
-        .bg-gelb { background: rgba(245, 158, 11, 0.15); color: #fbd38d; }
-        .bg-gruen { background: rgba(16, 185, 129, 0.15); color: #68d391; }
+        .bg-ja { background: rgba(239, 68, 68, 0.15); color: #fc8181; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .bg-nein { background: rgba(16, 185, 129, 0.15); color: #68d391; border: 1px solid rgba(16, 185, 129, 0.2); }
         
-        .badge-inline {
-            padding: 2px 6px;
-            font-size: 0.8rem;
-            border-radius: 4px;
+        /* Status Spalten-Auswahl */
+        .status-select {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
             font-weight: 600;
+        }
+        .status-rot { color: #fc8181; border-color: rgba(239, 68, 68, 0.4); }
+        .status-gelb { color: #fbd38d; border-color: rgba(245, 158, 11, 0.4); }
+        .status-gruen { color: #68d391; border-color: rgba(16, 185, 129, 0.4); }
+
+        /* Clip & Action Buttons */
+        .clip-btn {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .clip-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .no-clip {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.8rem;
         }
 
         .delete-btn {
-            position: absolute;
-            right: 20px;
-            top: 20px;
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 1.4rem;
             cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0 5px;
         }
 
-        .delete-btn:hover { color: var(--rot); }
-
-        /* Status Inline Wechsler */
-        .status-inline {
-            background: rgba(0, 0, 0, 0.3);
-            color: var(--text-muted);
-            border: 1px solid var(--glass-border);
-            padding: 5px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            margin-top: 10px;
-            cursor: pointer;
+        .delete-btn:hover {
+            color: var(--rot);
         }
     </style>
 </head>
@@ -270,113 +277,112 @@
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
     <div class="login-box">
-        <h2>Geschützter Zugriff</h2>
-        <p>Bitte Admin-Passwort eingeben</p>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <input type="password" id="passwordInput" placeholder="Passwort" onkeydown="if(event.key === 'Enter') checkPassword()">
-            <button onclick="checkPassword()">Anmelden</button>
-        </div>
+        <h2 style="margin-top:0; font-size:1.3rem;">FIB Terminal Login</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Autorisierung erforderlich</p>
+        <input type="password" id="passwordInput" placeholder="Passwort" onkeydown="if(event.key === 'Enter') checkPassword()">
+        <button onclick="checkPassword()">Verbinden</button>
     </div>
 </div>
 
-<!-- MAIN DASHBOARD -->
+<!-- MAIN DASHBOARD LISTE -->
 <div id="dashboardContent" class="container">
     <header>
-        <h1>Admin Management Dashboard</h1>
-        <p>Live-Überwachung & Beweisdatenbank</p>
+        <h1>FIB Sus Player Index & Live-Tracker</h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);" id="counter">Einträge: 0</div>
     </header>
 
-    <div class="grid">
-        <!-- LINKER BEREICH: SPIELER TRACKER -->
-        <div class="card">
-            <h2>Sus Player Ermittlung</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Spieler Name</label>
-                    <input type="text" id="pName" placeholder="z.B. Tim Chessee">
-                </div>
-                <div class="form-group">
-                    <label>Spieler ID</label>
-                    <input type="text" id="pId" placeholder="z.B. 48392">
-                </div>
-                <div class="form-group full-width">
-                    <label>Verdacht / Grund</label>
-                    <input type="text" id="pGrund" placeholder="z.B. No-Drag, Hitbox, Cheating-Verdacht">
-                </div>
-                <div class="form-group full-width">
-                    <label>Proof / Beweis-Link</label>
-                    <input type="text" id="pProof" placeholder="YouTube, Medal, Imgur Link">
-                </div>
-                
-                <div class="form-group">
-                    <label>Social ID</label>
-                    <input type="text" id="pSocId" placeholder="Social Club ID">
-                </div>
-                <div class="form-group">
-                    <label>Social Name</label>
-                    <input type="text" id="pSocName" placeholder="Social Club Name">
-                </div>
-
-                <div class="form-group">
-                    <label>Gefleckt?</label>
-                    <select id="pGefleckt">
-                        <option value="Nein">Nein</option>
-                        <option value="Ja">Ja</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Recheck erforderlich?</label>
-                    <select id="pRecheck">
-                        <option value="Nein">Nein</option>
-                        <option value="Ja">Ja</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>PC-Check verweigert am</label>
-                    <input type="date" id="pPcVerweigert">
-                </div>
-                <div class="form-group">
-                    <label>Wann läuft der Bann ab?</label>
-                    <input type="text" id="pBannAblauf" placeholder="z.B. 12.08.2026 oder Permanent">
-                </div>
-
-                <div class="form-group">
-                    <label>Perma eingetragen?</label>
-                    <select id="pPerma">
-                        <option value="Nein">Nein</option>
-                        <option value="Ja">Ja</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Dringlichkeits-Status</label>
-                    <select id="pStatus">
-                        <option value="rot">Rot - Dringend</option>
-                        <option value="gelb">Gelb - Kann warten</option>
-                        <option value="gruen">Grün - Wurde gecheckt</option>
-                    </select>
-                </div>
+    <!-- OBERE LEISTE: NEUER EINTRAG -->
+    <div class="input-bar">
+        <div class="input-grid">
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" id="pName" placeholder="Spieler Name">
             </div>
-            <button onclick="addPlayer()">Spielerakte anlegen</button>
-
-            <ul id="playerList" class="data-list"></ul>
+            <div class="input-group">
+                <label>ID</label>
+                <input type="text" id="pId" placeholder="Spieler ID">
+            </div>
+            <div class="input-group" style="grid-column: span 2;">
+                <label>Grund / Verdacht</label>
+                <input type="text" id="pGrund" placeholder="z.B. Hitbox-Verdacht">
+            </div>
+            <div class="input-group">
+                <label>Social ID</label>
+                <input type="text" id="pSocId" placeholder="Social ID">
+            </div>
+            <div class="input-group">
+                <label>Social Name</label>
+                <input type="text" id="pSocName" placeholder="Social Name">
+            </div>
+            <div class="input-group">
+                <label>Gefleckt</label>
+                <select id="pGefleckt">
+                    <option value="Nein">Nein</option>
+                    <option value="Ja">Ja</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Recheck</label>
+                <select id="pRecheck">
+                    <option value="Nein">Nein</option>
+                    <option value="Ja">Ja</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>PC-C. Verweigert am</label>
+                <input type="text" id="pPcVerweigert" placeholder="TT.MM.JJJJ">
+            </div>
+            <div class="input-group">
+                <label>Bann Ablauf</label>
+                <input type="text" id="pBannAblauf" placeholder="Datum / Perma">
+            </div>
+            <div class="input-group">
+                <label>Perma</label>
+                <select id="pPerma">
+                    <option value="Nein">Nein</option>
+                    <option value="Ja">Ja</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Proof / Clip Link</label>
+                <input type="text" id="pProof" placeholder="Link einfügen">
+            </div>
+            <div class="input-group">
+                <label>Status</label>
+                <select id="pStatus">
+                    <option value="rot">Rot</option>
+                    <option value="gelb">Gelb</option>
+                    <option value="gruen">Grün</option>
+                </select>
+            </div>
+            <button class="add-btn" onclick="addPlayer()">Eintragen</button>
         </div>
+    </div>
 
-        <!-- RECHTER BEREICH: CLIP & VIDEO SPEICHER -->
-        <div class="card">
-            <h2>Clip-Archiv & Aufnahmen</h2>
-            <div class="form-group">
-                <label>Clip-Titel / Beschreibung</label>
-                <input type="text" id="clipTitle" placeholder="z.B. PC-Check von ID 1234">
-            </div>
-            <div class="form-group">
-                <label>Video-Link</label>
-                <input type="text" id="clipUrl" placeholder="YouTube, Medal Link einfügen">
-            </div>
-            <button onclick="addClip()">Clip sichern</button>
-
-            <ul id="clipList" class="data-list"></ul>
-        </div>
+    <!-- DIE TABELLARISCHE LISTE -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Name</th>
+                    <th>ID</th>
+                    <th>Grund / Verdacht</th>
+                    <th>Social ID</th>
+                    <th>Social Name</th>
+                    <th>Gefleckt</th>
+                    <th>Recheck</th>
+                    <th>PC-C. Verweigert am</th>
+                    <th>Bann Ablauf</th>
+                    <th>Perma</th>
+                    <th>Proof / Clips</th>
+                    <th style="width: 40px;"></th>
+                </tr>
+            </thead>
+            <tbody id="playerTableBody">
+                <!-- Dynamische Listeneinträge landen hier -->
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -395,133 +401,102 @@
         }
     }
 
-    // Spieler hinzufügen
     function addPlayer() {
         const name = document.getElementById('pName').value.trim();
         const id = document.getElementById('pId').value.trim();
-        if (!name || !id) return alert("Bitte mindestens Name und ID eingeben!");
+        
+        if (!name || !id) return alert("Bitte Name und ID eintragen!");
 
         const player = {
             dbId: Date.now(),
             name,
             id,
-            grund: document.getElementById('pGrund').value.trim() || 'Kein Grund hinterlegt',
-            proof: document.getElementById('pProof').value.trim(),
-            socId: document.getElementById('pSocId').value.trim() || 'Nicht angegeben',
-            socName: document.getElementById('pSocName').value.trim() || 'Nicht angegeben',
+            grund: document.getElementById('pGrund').value.trim() || '-',
+            socId: document.getElementById('pSocId').value.trim() || '-',
+            socName: document.getElementById('pSocName').value.trim() || '-',
             gefleckt: document.getElementById('pGefleckt').value,
             recheck: document.getElementById('pRecheck').value,
-            pcVerweigert: document.getElementById('pPcVerweigert').value || 'Kein Eintrag',
-            bannAblauf: document.getElementById('pBannAblauf').value.trim() || 'Kein Eintrag',
+            pcVerweigert: document.getElementById('pPcVerweigert').value.trim() || '-',
+            bannAblauf: document.getElementById('pBannAblauf').value.trim() || '-',
             perma: document.getElementById('pPerma').value,
+            proof: document.getElementById('pProof').value.trim(),
             status: document.getElementById('pStatus').value
         };
 
-        let data = JSON.parse(localStorage.getItem('advPlayers')) || [];
+        let data = JSON.parse(localStorage.getItem('lstData')) || [];
         data.push(player);
-        localStorage.setItem('advPlayers', JSON.stringify(data));
+        localStorage.setItem('lstData', JSON.stringify(data));
 
-        // Formular leeren
+        // Input Felder leeren
         document.getElementById('pName').value = ''; document.getElementById('pId').value = '';
-        document.getElementById('pGrund').value = ''; document.getElementById('pProof').value = '';
-        document.getElementById('pSocId').value = ''; document.getElementById('pSocName').value = '';
-        document.getElementById('pPcVerweigert').value = ''; document.getElementById('pBannAblauf').value = '';
+        document.getElementById('pGrund').value = ''; document.getElementById('pSocId').value = '';
+        document.getElementById('pSocName').value = ''; document.getElementById('pPcVerweigert').value = '';
+        document.getElementById('pBannAblauf').value = ''; document.getElementById('pProof').value = '';
 
         loadData();
     }
 
-    // Clip hinzufügen
-    function addClip() {
-        const title = document.getElementById('clipTitle').value.trim();
-        const url = document.getElementById('clipUrl').value.trim();
-        if (!title || !url) return alert("Bitte Titel und Video-Link eingeben!");
-
-        const clip = { dbId: Date.now(), title, url };
-        let data = JSON.parse(localStorage.getItem('advClips')) || [];
-        data.push(clip);
-        localStorage.setItem('advClips', JSON.stringify(data));
-
-        document.getElementById('clipTitle').value = '';
-        document.getElementById('clipUrl').value = '';
-
-        loadData();
-    }
-
-    function updatePlayerStatus(dbId, newStatus) {
-        let data = JSON.parse(localStorage.getItem('advPlayers')) || [];
+    function updateStatus(dbId, newStatus) {
+        let data = JSON.parse(localStorage.getItem('lstData')) || [];
         const index = data.findIndex(p => p.dbId === dbId);
         if (index !== -1) {
             data[index].status = newStatus;
-            localStorage.setItem('advPlayers', JSON.stringify(data));
+            localStorage.setItem('lstData', JSON.stringify(data));
             loadData();
         }
     }
 
-    function deleteEntry(key, dbId) {
-        let data = JSON.parse(localStorage.getItem(key)) || [];
-        data = data.filter(item => item.dbId !== dbId);
-        localStorage.setItem(key, JSON.stringify(data));
-        loadData();
+    function deletePlayer(dbId) {
+        if(confirm("Eintrag unwiderruflich löschen?")) {
+            let data = JSON.parse(localStorage.getItem('lstData')) || [];
+            data = data.filter(p => p.dbId !== dbId);
+            localStorage.setItem('lstData', JSON.stringify(data));
+            loadData();
+        }
     }
 
     function loadData() {
         if (document.getElementById('dashboardContent').style.display !== 'block') return;
 
-        // Spieler auslesen
-        const pList = document.getElementById('playerList');
-        pList.innerHTML = '';
-        const players = JSON.parse(localStorage.getItem('advPlayers')) || [];
-        players.reverse().forEach(p => {
-            const li = document.createElement('li');
-            li.className = 'data-item';
-            
-            let statusText = p.status === 'rot' ? 'Dringend' : p.status === 'gelb' ? 'Kann warten' : 'Gecheckt';
+        const tbody = document.getElementById('playerTableBody');
+        tbody.innerHTML = '';
+        
+        const data = JSON.parse(localStorage.getItem('lstData')) || [];
+        document.getElementById('counter').innerText = `Einträge: ${data.length}`;
 
-            li.innerHTML = `
-                <div class="item-header">
-                    <div class="player-title">${p.name} <span style="color:var(--text-muted); font-size:0.95rem; font-weight:normal;">(ID: ${p.id})</span></div>
-                    <span class="badge bg-${p.status}">${statusText}</span>
-                </div>
-                <div style="margin: 5px 0;"><strong style="color:var(--accent);">Grund:</strong> ${p.grund}</div>
-                
-                <div class="item-grid">
-                    <div><strong>Social ID:</strong> ${p.socId}</div>
-                    <div><strong>Social Name:</strong> ${p.socName}</div>
-                    <div><strong>Gefleckt:</strong> <span class="badge-inline ${p.gefleckt === 'Ja' ? 'bg-rot' : 'bg-gruen'}">${p.gefleckt}</span></div>
-                    <div><strong>Recheck:</strong> <span class="badge-inline ${p.recheck === 'Ja' ? 'bg-gelb' : 'bg-gruen'}">${p.recheck}</span></div>
-                    <div><strong>PC-Check verweigert:</strong> ${p.pcVerweigert}</div>
-                    <div><strong>Bann läuft ab:</strong> ${p.bannAblauf}</div>
-                    <div><strong>Perma eingetragen:</strong> <span class="badge-inline ${p.perma === 'Ja' ? 'bg-rot' : 'bg-gruen'}">${p.perma}</span></div>
-                </div>
+        // Die neuesten Einträge oben anzeigen
+        data.reverse().forEach(p => {
+            const tr = document.createElement('tr');
 
-                <div style="margin-top: 10px;">
-                    ${p.proof ? `<a class="proof-link" href="${p.proof}" target="_blank">➔ Beweis-Link öffnen</a>` : '<span style="color:var(--text-muted); font-size:0.9rem;">Kein Beweis-Link</span>'}
-                </div>
+            // Klassen für die farbige Status-Auswahlbox ermitteln
+            let statusClass = p.status === 'rot' ? 'status-rot' : p.status === 'gelb' ? 'status-gelb' : 'status-gruen';
 
-                <select class="status-inline" onchange="updatePlayerStatus(${p.dbId}, this.value)">
-                    <option value="rot" ${p.status === 'rot' ? 'selected' : ''}>Status: Rot</option>
-                    <option value="gelb" ${p.status === 'gelb' ? 'selected' : ''}>Status: Gelb</option>
-                    <option value="gruen" ${p.status === 'gruen' ? 'selected' : ''}>Status: Grün</option>
-                </select>
-
-                <button class="delete-btn" onclick="deleteEntry('advPlayers', ${p.dbId})">×</button>
+            tr.innerHTML = `
+                <td>
+                    <select class="status-select ${statusClass}" onchange="updateStatus(${p.dbId}, this.value)">
+                        <option value="rot" class="status-rot" ${p.status === 'rot' ? 'selected' : ''}>🔴 ROT</option>
+                        <option value="gelb" class="status-gelb" ${p.status === 'gelb' ? 'selected' : ''}>🟡 GELB</option>
+                        <option value="gruen" class="status-gruen" ${p.status === 'gruen' ? 'selected' : ''}>🟢 GRÜN</option>
+                    </select>
+                </td>
+                <td style="font-weight: 700; color: #fff;">${p.name}</td>
+                <td><span style="color: var(--text-muted); font-family: monospace;">${p.id}</span></td>
+                <td>${p.grund}</td>
+                <td>${p.socId}</td>
+                <td>${p.socName}</td>
+                <td><span class="badge ${p.gefleckt === 'Ja' ? 'bg-ja' : 'bg-nein'}">${p.gefleckt}</span></td>
+                <td><span class="badge ${p.recheck === 'Ja' ? 'bg-ja' : 'bg-nein'}">${p.recheck}</span></td>
+                <td>${p.pcVerweigert}</td>
+                <td>${p.bannAblauf}</td>
+                <td><span class="badge ${p.perma === 'Ja' ? 'bg-ja' : 'bg-nein'}">${p.perma}</span></td>
+                <td>
+                    ${p.proof ? `<a href="${p.proof}" target="_blank" class="clip-btn">🎬 Clip öffnen</a>` : '<span class="no-clip">Kein Clip</span>'}
+                </td>
+                <td>
+                    <button class="delete-btn" onclick="deletePlayer(${p.dbId})">×</button>
+                </td>
             `;
-            pList.appendChild(li);
-        });
-
-        // Clips auslesen
-        const cList = document.getElementById('clipList');
-        cList.innerHTML = '';
-        const clips = JSON.parse(localStorage.getItem('advClips')) || [];
-        clips.reverse().forEach(c => {
-            const li = document.createElement('li');
-            li.className = 'data-item';
-            li.innerHTML = `
-                <div class="player-title" style="font-size:1.05rem; margin-bottom:5px;">${c.title}</div>
-                <a class="proof-link" href="${c.url}" target="_blank">➔ Video abspielen</a>
-                <button class="delete-btn" onclick="deleteEntry('advClips', ${c.dbId})">×</button>
-            `;
-            cList.appendChild(li);
+            tbody.appendChild(tr);
         });
     }
 </script>
