@@ -1,583 +1,2281 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIB - Central Registry</title>
-    <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #060913 0%, #0b1120 100%);
-            --glass-bg: rgba(15, 23, 42, 0.65);
-            --glass-input: rgba(30, 41, 59, 0.5);
-            --accent: #3b82f6;
-            --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --glass-border: rgba(255, 255, 255, 0.04);
-            
-            /* Clean Matte Status-Farben */
-            --rot: #ef4444;
-            --gelb: #f59e0b;
-            --gruen: #10b981;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text-main);
-            margin: 0;
-            padding: 30px;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        /* LOGIN SCREEN */
-        #loginScreen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-gradient);
-            z-index: 9999;
-        }
-
-        .login-box {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-            width: 300px;
-        }
-
-        .login-box input {
-            width: 100%;
-            box-sizing: border-box;
-            background: var(--glass-input);
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-family: inherit;
-        }
-
-        .login-box button {
-            width: 100%;
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        #dashboardContent {
-            display: none;
-        }
-
-        header {
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        header h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin: 0;
-            letter-spacing: -0.5px;
-        }
-
-        /* COMPACT INPUT BAR */
-        .input-bar {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 10px;
-            align-items: end;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .input-group label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        input, select {
-            background: var(--glass-input);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        input:focus, select:focus {
-            border-color: rgba(59, 130, 246, 0.3);
-            background: rgba(30, 41, 59, 0.7);
-            outline: none;
-        }
-
-        .add-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .add-btn:hover { opacity: 0.9; }
-
-        /* CLEAN TABLE DESIGN */
-        .table-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-
-        th {
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            padding: 16px;
-            border-bottom: 1px solid var(--glass-border);
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-
-        tr:hover td {
-            background: rgba(255, 255, 255, 0.01);
-        }
-
-        /* INLINE EDITABLE INPUTS (FÜR DIE TABELLE) */
-        .inline-edit {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-main);
-            padding: 4px 6px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .inline-edit:hover {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .inline-edit:focus {
-            background: var(--glass-input);
-            border-color: var(--accent);
-            outline: none;
-        }
-
-        /* CLEAN TOGGLE BADGES (KLICKBAR) */
-        .toggle-badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            user-select: none;
-            display: inline-block;
-            text-align: center;
-            min-width: 45px;
-            transition: all 0.15s ease;
-        }
-        .badge-ja { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .badge-nein { background: rgba(16, 185, 129, 0.08); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.15); }
-
-        /* INTERAKTIVER CLEANER STATUS-PUNKT */
-        .status-dot-container {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            gap: 8px;
-            user-select: none;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: background 0.2s;
-            width: fit-content;
-        }
-        .status-dot-container:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .dot-rot { background: var(--rot); box-shadow: 0 0 8px var(--rot); }
-        .dot-gelb { background: var(--gelb); box-shadow: 0 0 8px var(--gelb); }
-        .dot-gruen { background: var(--gruen); box-shadow: 0 0 8px var(--gruen); }
-
-        .status-text {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .text-rot { color: #f87171; }
-        .text-gelb { color: #fbbf24; }
-        .text-gruen { color: #34d399; }
-
-        /* ACTION ELEMENTS */
-        .clip-link {
-            background: rgba(59, 130, 246, 0.1);
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 5px 10px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .clip-link:hover {
-            background: var(--accent);
-            color: white;
-        }
-
-        .delete-btn {
-            background: none;
-            border: none;
-            color: #475569;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: color 0.2s;
-        }
-        .delete-btn:hover { color: var(--rot); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIB · Personalabteilung · GrandRP DE01</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--g:#c9a84c;--gd:rgba(201,168,76,0.45);--gg:rgba(201,168,76,0.10);--bg:#0a0c10;--p1:#10141c;--p2:#161b26;--bd:#1e2a3a;--tx:#e8e4d8;--mu:#7a8490;--gr:#2ecc71;--re:#e74c3c;--bl:#3a8fd4;}
+html,body{height:100%;background:var(--bg);font-family:'Courier New',monospace;font-size:13px;color:var(--tx);}
+.root{display:flex;flex-direction:column;height:100vh;}
+.topbar{background:var(--p1);border-bottom:1px solid var(--gd);padding:7px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-brand{color:var(--g);font-size:11px;letter-spacing:.14em;font-weight:bold;}
+.topbar-right{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--mu);}
+.dg{display:inline-block;width:7px;height:7px;background:var(--gr);border-radius:50%;margin-right:4px;}
+.layout{display:flex;flex:1;overflow:hidden;}
+.sb{width:192px;background:var(--p1);border-right:1px solid var(--bd);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;min-height:0;}
+.sb-logo{text-align:center;padding:14px 10px 12px;border-bottom:1px solid var(--bd);}
+.sb-emblem{width:44px;height:44px;border:2px solid var(--g);border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:bold;color:var(--g);}
+.sb-title{font-size:12px;color:var(--g);font-weight:bold;letter-spacing:.1em;}
+.sb-sub{font-size:10px;color:var(--mu);margin-top:2px;}
+.nv{padding:5px 0;}.nl{font-size:10px;color:var(--mu);letter-spacing:.12em;padding:4px 13px;text-transform:uppercase;}
+.ni{padding:7px 13px;cursor:pointer;font-size:12px;color:var(--mu);display:flex;align-items:center;gap:8px;border-left:2px solid transparent;transition:.15s;user-select:none;}
+.ni:hover,.ni.act{color:var(--g);background:var(--gg);border-left-color:var(--g);}
+.ni i{font-size:14px;opacity:.75;}
+.main{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:13px;}
+.mh{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);padding-bottom:9px;}
+.mh h1{font-size:16px;color:var(--g);letter-spacing:.05em;}
+.badge{background:var(--gg);border:1px solid var(--gd);color:var(--g);font-size:10px;padding:2px 8px;border-radius:3px;letter-spacing:.08em;}
+.view{display:none;flex-direction:column;gap:13px;}.view.act{display:flex;}
+.srow{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+.sc{background:var(--p1);border:1px solid var(--bd);border-radius:5px;padding:11px 13px;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gd);}
+.sc .lbl{font-size:10px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.sc .val{font-size:19px;color:var(--g);font-weight:bold;}
+.sc .sub{font-size:10px;color:var(--mu);margin-top:2px;}
+.pan{background:var(--p1);border:1px solid var(--bd);border-radius:6px;overflow:hidden;}
+.pan.gold{border-color:var(--gd);}
+.pan-h{background:var(--p2);border-bottom:1px solid var(--bd);padding:7px 13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px;}
+.pan-h.gold{background:rgba(201,168,76,0.06);border-bottom-color:var(--gd);}
+.pan-t{color:var(--g);font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
+.pan-b{padding:13px;}
+.tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.tbl th{font-size:10px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--bd);padding:5px 7px;text-align:left;white-space:nowrap;}
+.tbl td{padding:6px 7px;border-bottom:1px solid rgba(30,42,58,.4);color:var(--tx);vertical-align:middle;}
+.tbl tr:hover td{background:var(--gg);}
+.rb{display:inline-block;font-size:10px;padding:1px 6px;border-radius:2px;white-space:nowrap;}
+.rh{background:rgba(201,168,76,.12);color:var(--g);border:1px solid var(--gd);}
+.rm{background:rgba(46,204,113,.1);color:#2ecc71;border:1px solid rgba(46,204,113,.3);}
+.rl{background:rgba(122,132,144,.15);color:var(--mu);border:1px solid var(--bd);}
+.fi{background:var(--p2);border:1px solid var(--bd);color:var(--tx);font-family:'Courier New',monospace;font-size:12px;padding:6px 9px;border-radius:3px;width:100%;transition:.15s;outline:none;}
+.fi:focus{border-color:var(--gd);}
+.fi::placeholder{color:var(--mu);}
+.fi.bl:focus{border-color:rgba(58,143,212,.6);}
+.ir{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
+.ir3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:9px;}
+.fl{font-size:10px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+.fl.b{color:var(--bl);}
+.ob{background:#050709;border:1px solid var(--bd);border-radius:3px;padding:9px 12px;font-size:11px;color:#8fb3d4;line-height:1.8;white-space:pre-wrap;min-height:55px;}
+.pl{font-size:10px;color:var(--gd);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.pl::before{content:'> ';color:var(--g);}
+.btn{font-size:11px;padding:4px 10px;border:1px solid var(--gd);background:transparent;color:var(--g);border-radius:3px;cursor:pointer;font-family:'Courier New',monospace;letter-spacing:.04em;transition:.15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+.btn:hover{background:var(--gg);}
+.btn.ok{color:var(--gr);border-color:rgba(46,204,113,.35);}.btn.ok:hover{background:rgba(46,204,113,.08);}
+.btn.ng{color:var(--re);border-color:rgba(231,76,60,.3);}.btn.ng:hover{background:rgba(231,76,60,.08);}
+.btn.bl{color:var(--bl);border-color:rgba(58,143,212,.35);}.btn.bl:hover{background:rgba(58,143,212,.08);}
+.btn.sm{font-size:10px;padding:3px 7px;}
+.brow{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
+.hint{font-size:10px;color:var(--mu);margin-top:5px;line-height:1.6;}
+.sw{position:relative;}.sw i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--mu);pointer-events:none;}
+.si{padding-left:30px!important;}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.mc{background:var(--p2);border:1px solid var(--bd);border-radius:5px;padding:12px;cursor:pointer;transition:.15s;}
+.mc:hover{border-color:var(--gd);background:var(--gg);}
+.mc .mt{font-size:12px;color:var(--g);margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+.mc .mt i{font-size:14px;}.mc .md{font-size:11px;color:var(--mu);}.mc .ma{margin-top:8px;display:flex;gap:5px;}
+.pgr{display:flex;align-items:center;gap:5px;justify-content:center;padding:9px 0 3px;}
+.pgr button{font-size:10px;padding:2px 7px;border:1px solid var(--bd);background:transparent;color:var(--mu);border-radius:3px;cursor:pointer;font-family:monospace;transition:.12s;}
+.pgr button.cur{border-color:var(--g);color:var(--g);}.pgr button:hover{border-color:var(--gd);color:var(--g);}
+.bottombar{background:var(--p1);border-top:1px solid var(--gd);padding:5px 18px;display:flex;align-items:center;justify-content:space-between;font-size:10px;flex-shrink:0;}
+.bottombar .bl2{color:var(--mu);display:flex;align-items:center;gap:5px;}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--p2);border:1px solid var(--gd);color:var(--g);font-size:12px;padding:7px 14px;border-radius:4px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-bg.show{display:flex;}
+.modal{background:var(--p1);border:1px solid var(--gd);border-radius:7px;padding:20px;width:min(620px,96vw);max-height:90vh;overflow-y:auto;}
+.modal h2{color:var(--g);font-size:14px;letter-spacing:.08em;margin-bottom:14px;border-bottom:1px solid var(--bd);padding-bottom:8px;}
+.absbox{background:rgba(58,143,212,0.05);border:1px solid rgba(58,143,212,0.25);border-radius:5px;padding:10px 13px;margin-bottom:12px;}
+.abtitle{font-size:10px;color:var(--bl);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+/* Klassifizierung */
+.orga-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:11px;}
+.orga-tab{font-size:11px;padding:4px 11px;border:1px solid var(--bd);background:var(--p2);color:var(--mu);border-radius:3px;cursor:pointer;font-family:'Courier New',monospace;transition:.15s;display:inline-flex;align-items:center;gap:5px;}
+.orga-tab:hover{color:var(--g);border-color:var(--gd);}
+.orga-tab.act{color:var(--g);border-color:var(--g);background:var(--gg);}
+.orga-cnt{font-size:9px;padding:0 4px;border-radius:2px;background:rgba(201,168,76,.18);color:var(--g);border:1px solid var(--gd);}
+.kl-empty{color:var(--mu);font-size:11px;padding:18px 0;text-align:center;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}::-webkit-scrollbar-thumb:hover{background:var(--gd);}
+@media(max-width:768px){.sb{width:46px;}.ni span,.nl,.sb-title,.sb-sub{display:none;}.sb-emblem{width:30px;height:30px;font-size:10px;}.sb-logo{padding:7px 4px;}.srow{grid-template-columns:1fr 1fr;}.mg{grid-template-columns:1fr;}.ir{grid-template-columns:1fr;}.ir3{grid-template-columns:1fr 1fr;}.topbar-brand{font-size:9px;letter-spacing:.05em;}}
+.edit-card{background:var(--p2);border:1px solid var(--bd);border-radius:5px;padding:10px 13px;display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ec-row{display:flex;flex-direction:column;gap:3px;}
+.ec-lbl{font-size:10px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;}
+.ec-inp{font-size:12px;padding:5px 8px;}
+.tpl-tab{opacity:.6;transition:.15s;}
+.tpl-tab:hover{opacity:1;}
+.act-tab{opacity:1;background:var(--gg)!important;border-color:var(--g)!important;}
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;}
+#login-screen.hide{display:none;}
+.login-box{width:min(360px,92vw);background:var(--p1);border:1px solid var(--gd);border-radius:8px;padding:26px 24px;}
+.login-emblem{width:54px;height:54px;border:2px solid var(--g);border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;color:var(--g);}
+.login-title{text-align:center;color:var(--g);font-size:13px;letter-spacing:.1em;font-weight:bold;margin-bottom:2px;}
+.login-sub{text-align:center;color:var(--mu);font-size:10px;letter-spacing:.08em;margin-bottom:20px;}
+.login-err{font-size:11px;color:var(--re);min-height:14px;margin-top:8px;text-align:center;}
+.login-foot{font-size:10px;color:var(--mu);text-align:center;margin-top:14px;line-height:1.6;}
+#app-root.hide{display:none;}
+.role-chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:2px;border:1px solid var(--gd);background:var(--gg);color:var(--g);cursor:pointer;}
+.role-chip input{accent-color:var(--g);}
+.userrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap;}
+</style>
 </head>
 <body>
 
 <!-- LOGIN SCREEN -->
-<div id="loginScreen">
-    <div class="login-box">
-        <h2 style="margin-top:0; font-size:1.2rem; font-weight:600;">FIB Database Secure Auth</h2>
-        <input type="password" id="passwordInput" placeholder="Passwort eingeben" onkeydown="if(event.key === 'Enter') checkPassword()">
-        <button onclick="checkPassword()">Authorize</button>
-    </div>
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-emblem">FIB</div>
+    <div class="login-title">PERSONALABTEILUNG</div>
+    <div class="login-sub">GRANDRP DE01 &middot; ZUGANG ERFORDERLICH</div>
+    <div class="fl">Zugangskennung</div>
+    <input class="fi" id="login-email" placeholder="z.B. admin" style="margin-bottom:9px;" autocomplete="username">
+    <div class="fl">Passwort</div>
+    <input class="fi" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    <div class="login-err" id="login-err"></div>
+    <button class="btn ok" id="login-btn" onclick="doLogin()" style="width:100%;justify-content:center;margin-top:14px;"><i class="ti ti-login"></i> ANMELDEN</button>
+    <div class="login-foot">Zugang nur fur autorisiertes FIB-Personal.<br>Kein Account? Wende dich an die Systemadministration.</div>
+  </div>
 </div>
 
-<!-- DASHBOARD MAIN -->
-<div id="dashboardContent" class="container">
-    <header>
-        <h1>Intelligence Registry Index</h1>
-        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;" id="counter">DATENSÄTZE: 0</div>
-    </header>
+<div id="app-root" class="hide">
+<div class="root">
+<div class="topbar">
+  <div class="topbar-brand">FEDERAL INVESTIGATION BUREAU &#10022; GRANDRP DE01 &#10022; PERSONALABTEILUNG</div>
+  <div class="topbar-right">
+    <span style="font-size:10px;color:var(--mu);" id="sheet-status">Sheet: --</span>
+    &nbsp;·&nbsp;
+    <span class="dg" id="cloud-dot" style="background:var(--mu)"></span>
+    <span id="cloud-status" style="color:var(--mu)">OFFLINE</span>
+    &nbsp;&nbsp;
+    <span id="user-chip" style="color:var(--g);"></span>
+    &nbsp;
+    <button class="btn sm ng" onclick="doLogout()" title="Abmelden"><i class="ti ti-logout"></i></button>
+    &nbsp;&nbsp;
+    <span id="clk">00:00:00</span>
+  </div>
+</div>
+<div class="layout">
+<div class="sb">
+  <div class="sb-logo">
+    <div class="sb-emblem">FIB</div>
+    <div class="sb-title">Personalabt.</div>
+    <div class="sb-sub">GrandRP DE01</div>
+  </div>
+  <div class="nv"><div class="nl">Übersicht</div>
+    <div class="ni act" onclick="sv('dash',this)"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></div>
+    <div class="ni" onclick="sv('ma',this)"><i class="ti ti-users"></i><span>Mitarbeiterverz.</span></div>
+    <div class="ni" onclick="sv('kl',this)"><i class="ti ti-shield-lock"></i><span>Klassifizierung</span></div>
+  </div>
+  <div class="nv"><div class="nl">Personal</div>
+    <div class="ni" data-roles="hr" onclick="sv('rang',this)"><i class="ti ti-award"></i><span>Ranganpassung</span></div>
+    <div class="ni" data-roles="hr" onclick="sv('ein',this)"><i class="ti ti-user-plus"></i><span>Einstellung</span></div>
+    <div class="ni" data-roles="hr" onclick="sv('kue',this)"><i class="ti ti-user-minus"></i><span>Kündigung</span></div>
+    <div class="ni" data-roles="hr" onclick="sv('san',this)"><i class="ti ti-gavel"></i><span>Sanktion</span></div>
+    <div class="ni" data-roles="hr" onclick="sv('pa',this)"><i class="ti ti-id-badge"></i><span>Personalakte</span></div>
+    <div class="ni" data-roles="hr" onclick="sv('az',this)"><i class="ti ti-file-certificate"></i><span>AZ-System</span></div>
+  </div>
+  <div class="nv"><div class="nl">Abteilungen</div>
+    <div class="ni" data-roles="fibco" onclick="sv('fibco',this)"><i class="ti ti-folder-open"></i><span>FIBCO Fallakte</span></div>
+    <div class="ni" data-roles="cid" onclick="sv('cid',this)"><i class="ti ti-microscope"></i><span>CID Beweise</span></div>
+  </div>
+  <div class="nv"><div class="nl">System</div>
+    <div class="ni" data-roles="hr" onclick="sv('tpl',this)"><i class="ti ti-template"></i><span>Vorlagen-Editor</span></div>
+    <div class="ni" onclick="sv('cfg',this)"><i class="ti ti-settings"></i><span>Einstellungen</span></div>
+  </div>
+</div>
+<div class="main">
 
-    <!-- OBEN: KOMPAKTE EINGABE -->
-    <div class="input-bar">
-        <div class="input-grid">
-            <div class="input-group">
-                <label>Name</label>
-                <input type="text" id="pName" placeholder="Name">
-            </div>
-            <div class="input-group">
-                <label>ID</label>
-                <input type="text" id="pId" placeholder="ID">
-            </div>
-            <div class="input-group">
-                <label>Familie</label>
-                <input type="text" id="pFamilie" placeholder="Familienname">
-            </div>
-            <div class="input-group" style="grid-column: span 2;">
-                <label>Grund / Verdacht</label>
-                <input type="text" id="pGrund" placeholder="Verdachtsmoment">
-            </div>
-            <div class="input-group">
-                <label>Social ID</label>
-                <input type="text" id="pSocId" placeholder="SC-ID">
-            </div>
-            <div class="input-group">
-                <label>Social Name</label>
-                <input type="text" id="pSocName" placeholder="SC-Name">
-            </div>
-            <div class="input-group">
-                <label>Gefleckt</label>
-                <select id="pGefleckt">
-                    <option value="Nein">Nein</option>
-                    <option value="Ja">Ja</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Recheck</label>
-                <select id="pRecheck">
-                    <option value="Nein">Nein</option>
-                    <option value="Ja">Ja</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>PC-C. Verweigert am</label>
-                <input type="text" id="pPcVerweigert" placeholder="TT.MM.JJJJ">
-            </div>
-            <div class="input-group">
-                <label>Bann Ablauf</label>
-                <input type="text" id="pBannAblauf" placeholder="Datum / Perma">
-            </div>
-            <div class="input-group">
-                <label>Perma</label>
-                <select id="pPerma">
-                    <option value="Nein">Nein</option>
-                    <option value="Ja">Ja</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Proof Link</label>
-                <input type="text" id="pProof" placeholder="URL">
-            </div>
-            <div class="input-group">
-                <label>Status</label>
-                <select id="pStatus">
-                    <option value="rot">Rot</option>
-                    <option value="gelb">Gelb</option>
-                    <option value="gruen">Grün</option>
-                </select>
-            </div>
-            <button class="add-btn" onclick="addPlayer()">Eintragen</button>
+<!-- DASHBOARD -->
+<div class="view act" id="v-dash">
+  <div class="mh"><h1>Personalabteilung</h1><div class="badge">UBERSICHT</div></div>
+  <div style="font-size:11px;color:var(--mu);display:flex;gap:10px;flex-wrap:wrap;">
+    <span style="color:var(--gr)">></span> Verbindung herstellen
+    <span style="color:var(--gr)">></span> Anmeldedaten prufen
+    <span style="color:var(--gr)">></span> Zugriff autorisiert
+  </div>
+  <div class="srow">
+    <div class="sc"><div class="lbl">Gesamtstarke</div><div class="val" id="dash-count">--</div><div class="sub">Agenten</div></div>
+    <div class="sc"><div class="lbl">Abteilungen</div><div class="val">8</div><div class="sub">Aktiv</div></div>
+    <div class="sc"><div class="lbl">Fuhrungsrange</div><div class="val">8</div><div class="sub">Range 28-30</div></div>
+    <div class="sc"><div class="lbl">Status</div><div class="val" style="font-size:13px;color:var(--gr);">ONLINE</div><div class="sub">Verbunden</div></div>
+  </div>
+  <div class="mg">
+    <div class="mc" onclick="sv('rang',null)"><div class="mt"><i class="ti ti-award"></i>Ranganpassung</div><div class="md">Beforderungen &amp; Degradierungen</div><div class="ma"><button class="btn sm">&gt; Offnen</button></div></div>
+    <div class="mc" onclick="sv('ein',null)"><div class="mt"><i class="ti ti-user-plus"></i>Einstellung</div><div class="md">Neue Mitarbeiter aufnehmen</div><div class="ma"><button class="btn sm">&gt; Offnen</button></div></div>
+    <div class="mc" onclick="sv('kue',null)"><div class="mt"><i class="ti ti-user-minus"></i>Kundigung</div><div class="md">Entlassungen mit Begrundung</div><div class="ma"><button class="btn sm">&gt; Offnen</button></div></div>
+    <div class="mc" onclick="sv('az',null)" style="border-color:var(--gd)"><div class="mt"><i class="ti ti-file-certificate"></i>AZ-System</div><div class="md">Arbeitszeugnisse ausstellen</div><div class="ma"><button class="btn sm" style="border-color:var(--g)">&gt; Offnen</button></div></div>
+    <div class="mc" onclick="sv('san',null)"><div class="mt"><i class="ti ti-gavel"></i>Sanktion</div><div class="md">Verwarnungen &amp; Sanktionskatalog</div><div class="ma"><button class="btn sm">&gt; Offnen</button></div></div>
+    <div class="mc" onclick="sv('pa',null)"><div class="mt"><i class="ti ti-id-badge"></i>Personalakte-Generator</div><div class="md">Vollstandige Personalakten</div><div class="ma"><button class="btn sm">&gt; Offnen</button></div></div>
+    <div class="mc" onclick="sv('kl',null)"><div class="mt"><i class="ti ti-shield-lock"></i>Klassifizierung</div><div class="md">Organisationsubergreifende Kontakte</div><div class="ma"><button class="btn sm">&gt; Offnen</button></div></div>
+  </div>
+  <div class="pan">
+    <div class="pan-h"><div class="pan-t">[ Abteilungsubersicht ]</div><button class="btn sm" onclick="sv('ma',null)"><i class="ti ti-external-link"></i> Mitarbeiterverz.</button></div>
+    <div style="overflow-x:auto;"><table class="tbl">
+      <thead><tr><th>Abteilung</th><th>Mitglieder</th><th>Anteil</th></tr></thead>
+      <tbody>
+        <tr><td>Critical Incident Response Group (CIRG)</td><td>43</td><td style="color:var(--g)">21 %</td></tr>
+        <tr><td>Criminal Investigative Division (CID)</td><td>34</td><td style="color:var(--g)">17 %</td></tr>
+        <tr><td>Corruption Office (CO)</td><td>27</td><td style="color:var(--g)">13 %</td></tr>
+        <tr><td>Human Resources (HR)</td><td>16</td><td style="color:var(--g)">8 %</td></tr>
+        <tr><td>Public Relations (PR)</td><td>10</td><td style="color:var(--g)">5 %</td></tr>
+        <tr><td>Training Division (TD)</td><td>6</td><td style="color:var(--g)">3 %</td></tr>
+        <tr><td>Internal Affairs (IA)</td><td>2</td><td style="color:var(--g)">1 %</td></tr>
+        <tr><td>LAW Department</td><td>1</td><td style="color:var(--g)">&lt; 1 %</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- MITARBEITERVERZEICHNIS -->
+<div class="view" id="v-ma">
+  <div class="mh"><h1>Mitarbeiterverzeichnis</h1><div class="badge" id="ma-badge">-- AGENTEN</div></div>
+  <div style="display:flex;gap:9px;flex-wrap:wrap;">
+    <div class="sw" style="flex:1;min-width:170px;"><i class="ti ti-search"></i>
+      <input class="fi si" id="ma-search" placeholder="Name, ID, Rang, Ausbildung ..." oninput="filterMA()">
+    </div>
+    <select class="fi" id="ma-filter" onchange="filterMA()" style="width:auto;min-width:145px;">
+      <option value="">Alle Divisionen</option>
+      <option>Leaderschaft</option><option>High Command Lead</option>
+      <option>High Command</option><option>Curator of Division</option>
+      <option>Division Lead</option><option>Abteilungsrang</option><option>Command</option>
+    </select>
+    <button class="btn bl" onclick="openAddModal()"><i class="ti ti-user-plus"></i> Hinzufugen</button>
+  </div>
+  <div class="pan">
+    <div class="pan-h">
+      <div class="pan-t">[ Mitarbeiterliste ]</div>
+      <span style="font-size:10px;color:var(--mu);" id="ma-count">--</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="tbl">
+        <thead><tr>
+          <th>Pass-ID</th><th>Name</th><th>Rang</th><th>DN</th>
+          <th>Division</th><th>Abteilung</th><th style="color:var(--bl)">Ausbildung</th>
+          <th>Strike</th><th>Eintritt</th><th style="text-align:center">Aktionen</th>
+        </tr></thead>
+        <tbody id="ma-body"></tbody>
+      </table>
+    </div>
+    <div class="pgr" id="ma-pgr"></div>
+  </div>
+</div>
+
+<!-- ABSENDER BOX (shared, hidden inputs) -->
+<input type="hidden" id="abs-rang-name"><input type="hidden" id="abs-rang-rang"><input type="hidden" id="abs-rang-abt">
+<input type="hidden" id="abs-ein-name"><input type="hidden" id="abs-ein-rang"><input type="hidden" id="abs-ein-abt">
+<input type="hidden" id="abs-kue-name"><input type="hidden" id="abs-kue-rang"><input type="hidden" id="abs-kue-abt">
+<input type="hidden" id="abs-az-name"><input type="hidden" id="abs-az-rang"><input type="hidden" id="abs-az-abt">
+<input type="hidden" id="abs-san-name"><input type="hidden" id="abs-san-rang"><input type="hidden" id="abs-san-abt">
+<input type="hidden" id="abs-pa-name"><input type="hidden" id="abs-pa-rang"><input type="hidden" id="abs-pa-abt">
+
+<!-- RANGANPASSUNG -->
+<div class="view" id="v-rang">
+  <div class="mh"><h1>Ranganpassung</h1><div class="badge">MODUL</div></div>
+  <div class="pan">
+    <div class="pan-h"><div class="pan-t">[ Mitarbeiter-Lookup ]</div></div>
+    <div class="pan-b">
+      <div style="margin-bottom:11px;">
+        <div class="fl">Reisepassnummer eingeben</div>
+        <div style="display:flex;gap:8px;">
+          <input class="fi" id="ra-pass-in" placeholder="Pass-ID oder Name ..." style="max-width:260px;" oninput="lookupPass('ra')">
+          <div id="ra-found" style="font-size:11px;color:var(--mu);display:flex;align-items:center;gap:6px;"></div>
         </div>
+      </div>
+      <div id="ra-fields" style="display:none;">
+        <div class="edit-card" id="ra-info">
+          <div class="ec-row"><span class="ec-lbl">Name</span><input class="fi ec-inp" id="ra-name-ed" oninput="sv2('ra-name',this.value);upRa()"></div>
+          <div class="ec-row"><span class="ec-lbl">Dienstnr.</span><input class="fi ec-inp" id="ra-dn-ed" oninput="sv2('ra-dn',this.value);upRa()"></div>
+          <div class="ec-row"><span class="ec-lbl">Abteilung</span><input class="fi ec-inp" id="ra-abt-ed" readonly style="color:var(--mu)"></div>
+          <div class="ec-row"><span class="ec-lbl">Strike</span><input class="fi ec-inp" id="ra-strike-ed" readonly style="color:var(--mu)"></div>
+        </div>
+        <div class="ir" style="margin-top:11px;">
+          <div><div class="fl">Alter Rang</div><select class="fi" id="ra-old" onchange="upRa()"><option value="">-- wahlen --</option></select></div>
+          <div><div class="fl">Neuer Rang</div><select class="fi" id="ra-new" onchange="upRa()"><option value="">-- wahlen --</option></select></div>
+        </div>
+        <div><div class="fl">Begrundung</div><input class="fi" id="ra-grund" placeholder="Begrundung ..." oninput="upRa()" style="margin-bottom:11px;"></div>
+        <div class="pl">Vorschau</div>
+        <div class="ob" id="ra-pre"></div>
+        <div class="brow">
+          <button class="btn" onclick="cp('ra-pre')"><i class="ti ti-copy"></i> Nachricht kopieren</button>
+          <button class="btn ok"><i class="ti ti-send"></i> UBERTRAGEN</button>
+        </div>
+      </div>
+      <input type="hidden" id="ra-dn"><input type="hidden" id="ra-name">
     </div>
-
-    <!-- DIE REINE TABELLEN-LISTE -->
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Status</th>
-                    <th>Name</th>
-                    <th>ID</th>
-                    <th>Familie</th>
-                    <th>Grund / Verdacht</th>
-                    <th>Social ID</th>
-                    <th>Social Name</th>
-                    <th>Gefleckt</th>
-                    <th>Recheck</th>
-                    <th>PC-C. Verweigert am</th>
-                    <th>Bann Ablauf</th>
-                    <th>Perma</th>
-                    <th>Proof / Clip</th>
-                    <th style="width: 30px;"></th>
-                </tr>
-            </thead>
-            <tbody id="playerTableBody"></tbody>
-        </table>
-    </div>
+  </div>
 </div>
+
+<!-- EINSTELLUNG -->
+<div class="view" id="v-ein">
+  <div class="mh"><h1>Einstellung</h1><div class="badge">MODUL</div></div>
+  <div class="pan"><div class="pan-h"><div class="pan-t">[ Neue Einstellung ]</div></div>
+    <div class="pan-b">
+      <div style="margin-bottom:11px;">
+        <div class="fl">Reisepassnummer eingeben</div>
+        <div style="display:flex;gap:8px;">
+          <input class="fi" id="es-pass-in" placeholder="Pass-ID oder Name ..." style="max-width:260px;" oninput="lookupPass('es')">
+          <div id="es-found" style="font-size:11px;color:var(--mu);display:flex;align-items:center;gap:6px;"></div>
+        </div>
+      </div>
+      <div id="es-fields" style="display:none;">
+        <div class="edit-card" id="es-info">
+          <div class="ec-row"><span class="ec-lbl">Name</span><input class="fi ec-inp" id="es-name-ed" oninput="sv2('es-name',this.value);upEs()"></div>
+          <div class="ec-row"><span class="ec-lbl">Dienstnr.</span><input class="fi ec-inp" id="es-dn-ed" oninput="sv2('es-dn',this.value);upEs()"></div>
+        </div>
+        <div class="ir" style="margin-top:11px;">
+          <div><div class="fl">Abteilung</div>
+            <select class="fi" id="es-abt" onchange="upEs()">
+              <option value="">-- wahlen --</option>
+              <option>Human Resources</option><option>Critical Incident Response Group</option>
+              <option>Criminal Investigative Division</option><option>Corruption Office</option>
+              <option>Public Relations</option><option>Training Division</option>
+              <option>LAW Department</option><option>Internal Affairs</option>
+            </select>
+          </div>
+          <div><div class="fl">Einstellungsrang</div><select class="fi" id="es-rang" onchange="upEs()"><option value="">-- wahlen --</option></select></div>
+        </div>
+        <div class="pl">Vorschau</div>
+        <div class="ob" id="es-pre"></div>
+        <div class="brow"><button class="btn" onclick="cp('es-pre')"><i class="ti ti-copy"></i> Kopieren</button><button class="btn ok"><i class="ti ti-send"></i> UBERTRAGEN</button></div>
+      </div>
+      <input type="hidden" id="es-dn"><input type="hidden" id="es-name">
+    </div>
+  </div>
+</div>
+
+<!-- KUNDIGUNG -->
+<div class="view" id="v-kue">
+  <div class="mh"><h1>Kundigung</h1><div class="badge">MODUL</div></div>
+  <div class="pan"><div class="pan-h"><div class="pan-t">[ Kundigung ausstellen ]</div></div>
+    <div class="pan-b">
+      <div style="margin-bottom:11px;">
+        <div class="fl">Reisepassnummer eingeben</div>
+        <div style="display:flex;gap:8px;">
+          <input class="fi" id="ku-pass-in" placeholder="Pass-ID oder Name ..." style="max-width:260px;" oninput="lookupPass('ku')">
+          <div id="ku-found" style="font-size:11px;color:var(--mu);display:flex;align-items:center;gap:6px;"></div>
+        </div>
+      </div>
+      <div id="ku-fields" style="display:none;">
+        <div class="edit-card" id="ku-info">
+          <div class="ec-row"><span class="ec-lbl">Name</span><input class="fi ec-inp" id="ku-name-ed" oninput="sv2('ku-name',this.value);upKu()"></div>
+          <div class="ec-row"><span class="ec-lbl">Dienstnr.</span><input class="fi ec-inp" id="ku-dn-ed" oninput="sv2('ku-dn',this.value);upKu()"></div>
+          <div class="ec-row"><span class="ec-lbl">Rang</span><input class="fi ec-inp" id="ku-rang-ed" oninput="sv2('ku-rang',this.value);upKu()"></div>
+          <div class="ec-row"><span class="ec-lbl">Abteilung</span><input class="fi ec-inp" id="ku-abt-ed" readonly style="color:var(--mu)"></div>
+        </div>
+        <div><div class="fl" style="margin-top:11px;">Grund der Kundigung</div><textarea class="fi" id="ku-grund" rows="3" placeholder="Begrundung ..." oninput="upKu()" style="resize:vertical;margin-bottom:11px;"></textarea></div>
+        <div class="pl">Vorschau</div>
+        <div class="ob" id="ku-pre"></div>
+        <div class="brow"><button class="btn" onclick="cp('ku-pre')"><i class="ti ti-copy"></i> Kopieren</button></div>
+      </div>
+      <input type="hidden" id="ku-dn"><input type="hidden" id="ku-name"><input type="hidden" id="ku-rang">
+    </div>
+  </div>
+</div>
+
+<!-- AZ-SYSTEM -->
+<div class="view" id="v-az">
+  <div class="mh"><h1>AZ-System</h1><div class="badge">ARBEITSZEUGNIS</div></div>
+  <div class="pan gold"><div class="pan-h gold">
+    <div class="pan-t">[ Arbeitszeugnis-Generator . FIB ]</div>
+  </div>
+  <div class="pan-b">
+    <div style="font-size:11px;color:var(--mu);border-left:2px solid var(--gd);padding:6px 11px;margin-bottom:12px;background:rgba(201,168,76,0.04);border-radius:0 3px 3px 0;line-height:1.7;">
+      Das Federal Investigation Bureau (FIB) ubermittelt hiermit das Arbeitszeugnis des folgenden Mitarbeiters.
+    </div>
+    <div style="margin-bottom:11px;">
+      <div class="fl">Reisepassnummer eingeben</div>
+      <div style="display:flex;gap:8px;">
+        <input class="fi" id="az-pass-in" placeholder="Pass-ID oder Name ..." style="max-width:260px;" oninput="lookupPass('az')">
+        <div id="az-found" style="font-size:11px;color:var(--mu);display:flex;align-items:center;gap:6px;"></div>
+      </div>
+    </div>
+    <div id="az-fields" style="display:none;">
+      <div class="edit-card" id="az-info">
+        <div class="ec-row"><span class="ec-lbl">Name</span><input class="fi ec-inp" id="az-name-ed" oninput="sv2('az-name',this.value);upAz()"></div>
+        <div class="ec-row"><span class="ec-lbl">Pass-ID</span><input class="fi ec-inp" id="az-pass-ed" oninput="sv2('az-pass',this.value);upAz()"></div>
+        <div class="ec-row"><span class="ec-lbl">Rang</span><input class="fi ec-inp" id="az-rang-ed" oninput="sv2('az-rang',this.value);upAz()"></div>
+        <div class="ec-row"><span class="ec-lbl">Abteilung</span><input class="fi ec-inp" id="az-abt-ed" readonly style="color:var(--mu)"></div>
+      </div>
+      <div><div class="fl" style="margin-top:11px;">Datum der Kundigung</div><input class="fi" type="date" id="az-datum" oninput="upAz()" style="max-width:220px;margin-bottom:11px;"></div>
+      <div class="pl">Vorschau</div>
+      <div class="ob" id="az-pre" style="min-height:90px;"></div>
+      <div class="brow">
+        <button class="btn" onclick="cp('az-pre')" style="border-color:var(--g);font-weight:bold;"><i class="ti ti-copy"></i> Nachricht kopieren</button>
+        <button class="btn ok"><i class="ti ti-send"></i> UBERTRAGEN</button>
+      </div>
+      <div class="hint">Arbeitszeugnis als Anhang beifugen!</div>
+    </div>
+    <input type="hidden" id="az-name"><input type="hidden" id="az-pass"><input type="hidden" id="az-rang">
+  </div></div>
+</div>
+
+<!-- SANKTION -->
+<div class="view" id="v-san">
+  <div class="mh"><h1>Sanktion</h1><div class="badge">MODUL</div></div>
+  <div class="pan"><div class="pan-h"><div class="pan-t">[ Sanktion ausstellen ]</div></div>
+    <div class="pan-b">
+      <div style="margin-bottom:11px;">
+        <div class="fl">Reisepassnummer eingeben</div>
+        <div style="display:flex;gap:8px;">
+          <input class="fi" id="sa-pass-in" placeholder="Pass-ID oder Name ..." style="max-width:260px;" oninput="lookupPass('sa')">
+          <div id="sa-found" style="font-size:11px;color:var(--mu);display:flex;align-items:center;gap:6px;"></div>
+        </div>
+      </div>
+      <div id="sa-fields" style="display:none;">
+        <div class="edit-card" id="sa-info">
+          <div class="ec-row"><span class="ec-lbl">Name</span><input class="fi ec-inp" id="sa-name-ed" oninput="sv2('sa-name',this.value);upSa()"></div>
+          <div class="ec-row"><span class="ec-lbl">Dienstnr.</span><input class="fi ec-inp" id="sa-dn-ed" oninput="sv2('sa-dn',this.value);upSa()"></div>
+          <div class="ec-row"><span class="ec-lbl">Rang</span><input class="fi ec-inp" id="sa-rang-ed" readonly style="color:var(--mu)"></div>
+          <div class="ec-row"><span class="ec-lbl">Strike</span><input class="fi ec-inp" id="sa-strike-ed" readonly style="color:var(--mu)"></div>
+        </div>
+        <div><div class="fl" style="margin-top:11px;">Sanktionsart</div>
+          <select class="fi" id="sa-art" onchange="upSa()" style="margin-bottom:9px;">
+            <option value="">-- wahlen --</option>
+            <option>Mundliche Verwarnung</option><option>Schriftliche Verwarnung</option>
+            <option>Gehaltskürzung</option><option>Versetzung</option>
+            <option>Suspendierung</option><option>Zwangspensionierung</option>
+          </select>
+        </div>
+        <div><div class="fl">Begrundung</div><textarea class="fi" id="sa-grund" rows="3" placeholder="Begrundung ..." oninput="upSa()" style="resize:vertical;margin-bottom:11px;"></textarea></div>
+        <div class="pl">Vorschau</div>
+        <div class="ob" id="sa-pre"></div>
+        <div class="brow"><button class="btn" onclick="cp('sa-pre')"><i class="ti ti-copy"></i> Kopieren</button></div>
+      </div>
+      <input type="hidden" id="sa-dn"><input type="hidden" id="sa-name">
+    </div>
+  </div>
+</div>
+
+<!-- PERSONALAKTE -->
+<div class="view" id="v-pa">
+  <div class="mh"><h1>Personalakte-Generator</h1><div class="badge">MODUL</div></div>
+  <div class="pan"><div class="pan-h"><div class="pan-t">[ Akte anlegen ]</div></div>
+    <div class="pan-b">
+      <div style="margin-bottom:11px;">
+        <div class="fl">Reisepassnummer eingeben</div>
+        <div style="display:flex;gap:8px;">
+          <input class="fi" id="pa-pass-in" placeholder="Pass-ID oder Name ..." style="max-width:260px;" oninput="lookupPass('pa')">
+          <div id="pa-found" style="font-size:11px;color:var(--mu);display:flex;align-items:center;gap:6px;"></div>
+        </div>
+      </div>
+      <div id="pa-fields" style="display:none;">
+        <div class="edit-card" id="pa-info">
+          <div class="ec-row"><span class="ec-lbl">Name</span><input class="fi ec-inp" id="pa-name-ed" oninput="sv2('pa-name',this.value);upPa()"></div>
+          <div class="ec-row"><span class="ec-lbl">Dienstnr.</span><input class="fi ec-inp" id="pa-dn-ed" oninput="sv2('pa-dn',this.value);upPa()"></div>
+          <div class="ec-row"><span class="ec-lbl">Rang</span><input class="fi ec-inp" id="pa-rang-ed" oninput="sv2('pa-rang',this.value);upPa()"></div>
+          <div class="ec-row"><span class="ec-lbl">Abteilung</span><input class="fi ec-inp" id="pa-abt-ed" oninput="sv2('pa-abt',this.value);upPa()"></div>
+          <div class="ec-row"><span class="ec-lbl">Strike</span><input class="fi ec-inp" id="pa-strike-ed" readonly style="color:var(--mu)"></div>
+        </div>
+        <div><div class="fl" style="margin-top:11px;">Eintrittsdatum</div><input class="fi" type="date" id="pa-datum" oninput="upPa()" style="max-width:220px;margin-bottom:11px;"></div>
+        <div class="pl">Vorschau</div>
+        <div class="ob" id="pa-pre" style="min-height:80px;"></div>
+        <div class="brow"><button class="btn" onclick="cp('pa-pre')"><i class="ti ti-copy"></i> Kopieren</button></div>
+      </div>
+      <input type="hidden" id="pa-dn"><input type="hidden" id="pa-name"><input type="hidden" id="pa-rang"><input type="hidden" id="pa-abt">
+    </div>
+  </div>
+</div>
+
+<!-- KLASSIFIZIERUNG -->
+<div class="view" id="v-kl">
+  <div class="mh"><h1>Klassifizierung</h1><div class="badge">ORGA-KONTAKTE</div></div>
+
+  <!-- Formular -->
+  <div class="pan">
+    <div class="pan-h"><div class="pan-t">[ Neuen Eintrag anlegen ]</div></div>
+    <div class="pan-b">
+      <div class="ir">
+        <div>
+          <div class="fl">Organisation *</div>
+          <select class="fi" id="kl-orga">
+            <option value="">-- wahlen --</option>
+            <option>FIB</option>
+            <option>LSPD</option>
+            <option>SAHP</option>
+            <option>LI</option>
+            <option>EMS</option>
+            <option>NG</option>
+            <option>GOV</option>
+          </select>
+        </div>
+        <div>
+          <div class="fl">Name *</div>
+          <input class="fi" id="kl-name" placeholder="Vor- u. Nachname">
+        </div>
+      </div>
+      <div class="ir3">
+        <div>
+          <div class="fl">Pass-ID</div>
+          <input class="fi" id="kl-id" placeholder="z.B. 12345">
+        </div>
+        <div>
+          <div class="fl">Rang</div>
+          <input class="fi" id="kl-rang" placeholder="z.B. Officer I">
+        </div>
+        <div>
+          <div class="fl">Telefonnummer</div>
+          <input class="fi" id="kl-tel" placeholder="z.B. 555-1234">
+        </div>
+      </div>
+      <div class="brow" style="margin-top:4px;">
+        <button class="btn ok" onclick="klAdd()"><i class="ti ti-plus"></i> Eintrag hinzufugen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabelle mit Orga-Tabs -->
+  <div class="pan">
+    <div class="pan-h">
+      <div class="pan-t" id="kl-list-title">[ Alle Eintrage ]</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="sw" style="min-width:160px;"><i class="ti ti-search"></i>
+          <input class="fi si" id="kl-search" placeholder="Suche ..." oninput="klRender()" style="font-size:11px;padding:4px 8px 4px 28px;">
+        </div>
+        <button class="btn sm" id="kl-copy-btn" onclick="klCopyList(KL_ORGA)" title="Liste fur Discord kopieren (Nummern geschwärzt)"><i class="ti ti-clipboard-list"></i> Liste kopieren</button>
+        <span style="font-size:10px;color:var(--mu);" id="kl-count"></span>
+      </div>
+    </div>
+    <div class="pan-b" style="padding-bottom:6px;">
+      <div class="orga-tabs" id="kl-orga-tabs">
+        <div class="orga-tab act" data-orga="Alle" onclick="klSwitch(this)">Alle</div>
+        <div class="orga-tab" data-orga="FIB" onclick="klSwitch(this)">FIB</div>
+        <div class="orga-tab" data-orga="LSPD" onclick="klSwitch(this)">LSPD</div>
+        <div class="orga-tab" data-orga="SAHP" onclick="klSwitch(this)">SAHP</div>
+        <div class="orga-tab" data-orga="LI" onclick="klSwitch(this)">LI</div>
+        <div class="orga-tab" data-orga="EMS" onclick="klSwitch(this)">EMS</div>
+        <div class="orga-tab" data-orga="NG" onclick="klSwitch(this)">NG</div>
+        <div class="orga-tab" data-orga="GOV" onclick="klSwitch(this)">GOV</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="tbl" id="kl-tbl">
+          <thead><tr>
+            <th>Orga</th><th>Name</th><th>Pass-ID</th><th>Rang</th><th>Telefon</th><th style="text-align:center">Aktion</th>
+          </tr></thead>
+          <tbody id="kl-body"></tbody>
+        </table>
+      </div>
+      <div id="kl-empty" class="kl-empty" style="display:none;">Keine Eintrage vorhanden.</div>
+    </div>
+  </div>
+</div>
+
+<!-- KLASSIFIZIERUNG EDIT MODAL -->
+<div class="modal-bg" id="kl-modal">
+  <div class="modal">
+    <h2>Eintrag bearbeiten</h2>
+    <input type="hidden" id="kl-edit-idx">
+    <div class="ir">
+      <div>
+        <div class="fl">Organisation *</div>
+        <select class="fi" id="kl-edit-orga">
+          <option value="">-- wahlen --</option>
+          <option>FIB</option><option>LSPD</option><option>SAHP</option>
+          <option>LI</option><option>EMS</option><option>NG</option><option>GOV</option>
+        </select>
+      </div>
+      <div><div class="fl">Name *</div><input class="fi" id="kl-edit-name" placeholder="Vor- u. Nachname"></div>
+    </div>
+    <div class="ir3">
+      <div><div class="fl">Pass-ID</div><input class="fi" id="kl-edit-id" placeholder="z.B. 12345"></div>
+      <div><div class="fl">Rang</div><input class="fi" id="kl-edit-rang" placeholder="z.B. Officer I"></div>
+      <div><div class="fl">Telefonnummer</div><input class="fi" id="kl-edit-tel" placeholder="z.B. 555-1234"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px;">
+      <button class="btn ng sm" onclick="klCloseModal()">Abbrechen</button>
+      <button class="btn ok" onclick="klSaveModal()"><i class="ti ti-device-floppy"></i> Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIBCO FALLAKTE -->
+<div class="view" id="v-fibco">
+  <div class="mh"><h1>FIBCO Fallakte</h1><div class="badge">ABTEILUNG</div></div>
+
+  <div class="pan">
+    <div class="pan-h"><div class="pan-t">[ Neue Fallakte anlegen ]</div></div>
+    <div class="pan-b">
+
+      <!-- Kopfzeile -->
+      <div class="ir3">
+        <div><div class="fl">Name *</div><input class="fi" id="fc-name" placeholder="Vor- u. Nachname" oninput="fcPreview()"></div>
+        <div><div class="fl">CO-ID *</div><input class="fi" id="fc-coid" placeholder="z.B. CO-ID-1" oninput="fcPreview()"></div>
+        <div><div class="fl">Datum der Straftat</div><input class="fi" type="date" id="fc-tatdat" oninput="fcPreview()"></div>
+      </div>
+      <div class="ir3">
+        <div><div class="fl">Codename</div><input class="fi" id="fc-codename" placeholder="Codename" oninput="fcPreview()"></div>
+        <div><div class="fl">Telefonnummer</div><input class="fi" id="fc-tel" placeholder="Telefonnummer" oninput="fcPreview()"></div>
+        <div><div class="fl">Behörde</div><input class="fi" id="fc-behoerde" placeholder="z.B. LSPD" oninput="fcPreview()"></div>
+      </div>
+      <div class="ir3">
+        <div><div class="fl">Familie / Gang</div><input class="fi" id="fc-familie" placeholder="z.B. The Families" oninput="fcPreview()"></div>
+        <div><div class="fl">Reisepass</div><input class="fi" id="fc-reisepass" placeholder="Pass-ID" oninput="fcPreview()"></div>
+        <div><div class="fl">Dienstausweis</div><input class="fi" id="fc-dienstausweis" placeholder="Ausweis-Nr." oninput="fcPreview()"></div>
+      </div>
+      <div class="ir3">
+        <div><div class="fl">Personalakte (Link)</div><input class="fi" id="fc-personalakte" placeholder="https://..." oninput="fcPreview()"></div>
+        <div><div class="fl">PDA Hauptseite (Link)</div><input class="fi" id="fc-pda-main" placeholder="https://..." oninput="fcPreview()"></div>
+        <div><div class="fl">PDA Fahrzeugliste (Link)</div><input class="fi" id="fc-pda-fz" placeholder="https://..." oninput="fcPreview()"></div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--bd);margin:10px 0;">
+
+      <!-- Sektionen -->
+      <div style="margin-bottom:9px;"><div class="fl">Vorfall — Am TT.MM.YYYY um HH:MM Uhr […]</div>
+        <textarea class="fi" id="fc-vorfall" rows="3" placeholder="Vorfallbeschreibung ..." style="resize:vertical;" oninput="fcPreview()"></textarea>
+      </div>
+      <div style="margin-bottom:9px;"><div class="fl">Befragung Tatverdächtiger</div>
+        <textarea class="fi" id="fc-befragung" rows="3" placeholder="- ABC&#10;- ..." style="resize:vertical;" oninput="fcPreview()"></textarea>
+      </div>
+      <div style="margin-bottom:9px;"><div class="fl">Zeugen-/aussagen</div>
+        <textarea class="fi" id="fc-zeugen" rows="3" placeholder="- ABC&#10;- ..." style="resize:vertical;" oninput="fcPreview()"></textarea>
+      </div>
+      <div style="margin-bottom:9px;"><div class="fl">Beweissammlung</div>
+        <textarea class="fi" id="fc-beweise" rows="3" placeholder="- ABC&#10;- ..." style="resize:vertical;" oninput="fcPreview()"></textarea>
+      </div>
+      <div style="margin-bottom:9px;"><div class="fl">Tatvorwurf</div>
+        <textarea class="fi" id="fc-tatvorwurf" rows="3" placeholder="- ABC&#10;- ..." style="resize:vertical;" oninput="fcPreview()"></textarea>
+      </div>
+      <div style="margin-bottom:9px;"><div class="fl">Schlussbetrachtung</div>
+        <textarea class="fi" id="fc-schluss" rows="3" placeholder="TEXT ..." style="resize:vertical;" oninput="fcPreview()"></textarea>
+      </div>
+      <div style="margin-bottom:9px;">
+        <div class="fl">Status</div>
+        <select class="fi" id="fc-status" onchange="fcPreview()" style="max-width:220px;">
+          <option>Offen</option><option>In Bearbeitung</option>
+          <option>Abgeschlossen</option><option>Archiviert</option>
+        </select>
+      </div>
+
+      <!-- Vorschau -->
+      <div class="pl" style="margin-top:12px;">Vorschau — Vorlage</div>
+      <div class="ob" id="fc-pre" style="min-height:120px;font-size:11px;line-height:1.9;"></div>
+      <div class="brow">
+        <button class="btn" onclick="cp('fc-pre')"><i class="ti ti-copy"></i> Vorlage kopieren</button>
+        <button class="btn ok" onclick="fcAdd()"><i class="ti ti-plus"></i> Akte speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fallakten Liste -->
+  <div class="pan">
+    <div class="pan-h">
+      <div class="pan-t" id="fc-list-title">[ Alle Fallakten ]</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select class="fi" id="fc-filter" onchange="fcRender()" style="font-size:11px;padding:3px 7px;width:auto;">
+          <option value="">Alle Status</option>
+          <option>Offen</option><option>In Bearbeitung</option>
+          <option>Abgeschlossen</option><option>Archiviert</option>
+        </select>
+        <div class="sw" style="min-width:150px;"><i class="ti ti-search"></i>
+          <input class="fi si" id="fc-search" placeholder="Suche ..." oninput="fcRender()" style="font-size:11px;padding:4px 8px 4px 28px;">
+        </div>
+        <span style="font-size:10px;color:var(--mu)" id="fc-count"></span>
+      </div>
+    </div>
+    <div class="pan-b" style="padding-bottom:6px;">
+      <div style="overflow-x:auto;">
+        <table class="tbl">
+          <thead><tr>
+            <th>CO-ID</th><th>Name</th><th>Tatdatum</th><th>Familie</th><th>Status</th><th>Erstellt</th><th style="text-align:center">Aktion</th>
+          </tr></thead>
+          <tbody id="fc-body"></tbody>
+        </table>
+      </div>
+      <div id="fc-empty" class="kl-empty" style="display:none;">Keine Fallakten vorhanden.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CID BEWEISE -->
+<div class="view" id="v-cid">
+  <div class="mh"><h1>CID Beweise</h1><div class="badge">ABTEILUNG</div></div>
+
+  <div class="pan">
+    <div class="pan-h"><div class="pan-t">[ Neuen Eintrag erfassen ]</div></div>
+    <div class="pan-b">
+      <div class="ir3">
+        <div>
+          <div class="fl">Orga *</div>
+          <select class="fi" id="cid-orga">
+            <option value="">-- wählen --</option>
+            <option>FIB</option><option>LSPD</option><option>SAHP</option>
+            <option>LI</option><option>EMS</option><option>NG</option><option>GOV</option>
+          </select>
+        </div>
+        <div><div class="fl">Beamter *</div><input class="fi" id="cid-beamter" placeholder="Name des Beamten"></div>
+        <div><div class="fl">Reisepass (Beschuldigter)</div><input class="fi" id="cid-pass" placeholder="Pass-ID"></div>
+      </div>
+      <div class="ir3">
+        <div><div class="fl">Kennzeichen</div><input class="fi" id="cid-kfz" placeholder="z.B. LS-123-AB"></div>
+        <div><div class="fl">Tatdatum</div><input class="fi" type="date" id="cid-tatdat"></div>
+        <div><div class="fl">Tatzeit</div><input class="fi" type="time" id="cid-tatzeit"></div>
+      </div>
+      <div class="ir">
+        <div>
+          <div class="fl">Gang / Gruppe</div>
+          <select class="fi" id="cid-gang">
+            <option value="">-- keine / unbekannt --</option>
+            <option>Marabunta Grande</option>
+            <option>The Ballas Gang</option>
+            <option>The Bloods Gang</option>
+            <option>Los Santos Vagos</option>
+            <option>The Families</option>
+          </select>
+        </div>
+        <div>
+          <div class="fl">Clip / Beweis-Link</div>
+          <input class="fi" id="cid-clip" placeholder="z.B. https://medal.tv/... oder Dateiname">
+        </div>
+      </div>
+      <div>
+        <div class="fl">Tatvorwürfe *</div>
+        <textarea class="fi" id="cid-tat" rows="3" placeholder="Welche Tatvorwürfe? Paragraphen, Beschreibung ..." style="resize:vertical;margin-bottom:9px;"></textarea>
+      </div>
+      <div class="brow">
+        <button class="btn ok" onclick="cidAdd()"><i class="ti ti-plus"></i> Eintrag speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste -->
+  <div class="pan">
+    <div class="pan-h">
+      <div class="pan-t">[ Einträge ]</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <select class="fi" id="cid-filter-orga" onchange="cidRender()" style="font-size:11px;padding:3px 7px;width:auto;">
+          <option value="">Alle Orgas</option>
+          <option>FIB</option><option>LSPD</option><option>SAHP</option>
+          <option>LI</option><option>EMS</option><option>NG</option><option>GOV</option>
+        </select>
+        <div class="sw" style="min-width:150px;"><i class="ti ti-search"></i>
+          <input class="fi si" id="cid-search" placeholder="Suche ..." oninput="cidRender()" style="font-size:11px;padding:4px 8px 4px 28px;">
+        </div>
+        <span style="font-size:10px;color:var(--mu)" id="cid-count"></span>
+      </div>
+    </div>
+    <div class="pan-b" style="padding-bottom:6px;">
+      <div style="overflow-x:auto;">
+        <table class="tbl">
+          <thead><tr>
+            <th>Zeitstempel</th><th>Orga</th><th>Beamter</th><th>Reisepass</th>
+            <th>Kennzeichen</th><th>Gang</th><th>Tatdatum</th><th>Tatzeit</th>
+            <th>Tatvorwürfe</th><th>Clip</th><th style="text-align:center">Aktion</th>
+          </tr></thead>
+          <tbody id="cid-body"></tbody>
+        </table>
+      </div>
+      <div id="cid-empty" class="kl-empty" style="display:none;">Keine Einträge vorhanden.</div>
+    </div>
+  </div>
+</div>
+
+<!-- VORLAGEN-EDITOR -->
+<div class="view" id="v-tpl">
+  <div class="mh"><h1>Vorlagen-Editor</h1><div class="badge">ALLE MODULE</div></div>
+  <div style="font-size:11px;color:var(--mu);background:var(--p2);border:1px solid var(--bd);border-radius:4px;padding:10px 13px;line-height:1.8;">
+    Passe den kompletten Nachrichtentext jedes Moduls frei an. Verwende Platzhalter die automatisch ersetzt werden:<br>
+    <span style="color:var(--g)">{dn}</span> Dienstnummer &nbsp;·&nbsp;
+    <span style="color:var(--g)">{name}</span> Name &nbsp;·&nbsp;
+    <span style="color:var(--g)">{rang}</span> Rang &nbsp;·&nbsp;
+    <span style="color:var(--g)">{datum}</span> Heutiges Datum &nbsp;·&nbsp;
+    <span style="color:var(--g)">{grund}</span> Begründung &nbsp;·&nbsp;
+    <span style="color:var(--g)">{abteilung}</span> Abteilung &nbsp;·&nbsp;
+    <span style="color:var(--g)">{alter_rang}</span> Alter Rang &nbsp;·&nbsp;
+    <span style="color:var(--g)">{neuer_rang}</span> Neuer Rang &nbsp;·&nbsp;
+    <span style="color:var(--g)">{pass}</span> Reisepassnr. &nbsp;·&nbsp;
+    <span style="color:var(--g)">{absender}</span> Absender-Zeile &nbsp;·&nbsp;
+    <span style="color:var(--g)">{sanktion}</span> Sanktionsart &nbsp;·&nbsp;
+    <span style="color:var(--g)">{eintritt}</span> Eintrittsdatum
+  </div>
+
+  <div style="display:flex;gap:4px;flex-wrap:wrap;" id="tpl-tabs">
+    <button class="btn sm tpl-tab act-tab" onclick="showTplTab('rang',this)"><i class="ti ti-award"></i> Ranganpassung</button>
+    <button class="btn sm tpl-tab" onclick="showTplTab('ein',this)"><i class="ti ti-user-plus"></i> Einstellung</button>
+    <button class="btn sm tpl-tab" onclick="showTplTab('kue',this)"><i class="ti ti-user-minus"></i> Kündigung</button>
+    <button class="btn sm tpl-tab" onclick="showTplTab('az',this)"><i class="ti ti-file-certificate"></i> AZ-System</button>
+    <button class="btn sm tpl-tab" onclick="showTplTab('san',this)"><i class="ti ti-gavel"></i> Sanktion</button>
+    <button class="btn sm tpl-tab" onclick="showTplTab('pa',this)"><i class="ti ti-id-badge"></i> Personalakte</button>
+  </div>
+
+  <div class="pan">
+    <div class="pan-h" id="tpl-pan-title">
+      <div class="pan-t">[ Ranganpassung — Vorlage bearbeiten ]</div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn sm ng" onclick="resetTpl(curTplKey)"><i class="ti ti-refresh"></i> Standard</button>
+        <button class="btn sm ok" onclick="saveTpl()"><i class="ti ti-device-floppy"></i> Speichern</button>
+      </div>
+    </div>
+    <div class="pan-b">
+      <div class="fl" style="margin-bottom:5px;">Vorlagentext — frei bearbeitbar</div>
+      <textarea class="fi" id="tpl-editor" rows="14" style="resize:vertical;font-size:12px;line-height:1.8;font-family:'Courier New',monospace;" oninput="updateTplPreview()"></textarea>
+      <div class="pl" style="margin-top:12px;">Live-Vorschau (mit Beispieldaten)</div>
+      <div class="ob" id="tpl-preview" style="min-height:80px;"></div>
+      <div class="hint">Änderungen werden beim Klick auf "Speichern" gesichert und sofort in das Modul übernommen. "Standard" setzt diese Vorlage auf den Originaltext zurück.</div>
+    </div>
+  </div>
+</div>
+
+<!-- EINSTELLUNGEN -->
+<div class="view" id="v-cfg">
+  <div class="mh"><h1>Einstellungen</h1><div class="badge">SYSTEM</div></div>
+  <div class="pan"><div class="pan-h"><div class="pan-t">[ Personalisierung ]</div></div>
+    <div class="pan-b" style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <div class="fl" style="margin-bottom:6px;">Hauptfarbe -- Steuert Akzente, Icons, Rahmen &amp; Buttons</div>
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+          <input type="color" value="#c9a84c" id="colpick" oninput="setCol(this.value)" style="width:40px;height:30px;border:1px solid var(--bd);background:transparent;border-radius:3px;cursor:pointer;padding:2px;">
+          <span id="colhex" style="font-size:11px;color:var(--mu);">#c9a84c</span>
+          <button class="btn sm" onclick="setCol('#c9a84c');document.getElementById('colpick').value='#c9a84c'">Zurucksetzen</button>
+        </div>
+      </div>
+      <div>
+        <div class="fl" style="margin-bottom:5px;">Absender-Profil (fur alle Module)</div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:8px;">Einmal eintragen -- wird in allen Modulen vorausgefllt und in Nachrichten eingefugt.</div>
+        <div class="ir3">
+          <div><div class="fl">Dein Name / Ping</div><input class="fi" id="cfg-name" placeholder="@DeinName" oninput="syncFromCfg()"></div>
+          <div><div class="fl">Dein Rang</div><input class="fi" id="cfg-rang" placeholder="z.B. 23. SAIC" oninput="syncFromCfg()"></div>
+          <div><div class="fl">Deine Abteilung</div><input class="fi" id="cfg-abt" placeholder="z.B. HR" oninput="syncFromCfg()"></div>
+        </div>
+        <button class="btn bl sm" onclick="syncFromCfg();showToast('Profil gespeichert')"><i class="ti ti-device-floppy"></i> In alle Module ubernehmen</button>
+      </div>
+      <div>
+        <div class="fl" style="margin-bottom:5px;">Cloud-Sync (Firebase) — Gemeinsame Daten fur alle</div>
+        <div style="font-size:11px;color:var(--mu);line-height:1.85;background:var(--p2);border:1px solid var(--bd);border-radius:4px;padding:11px 13px;margin-bottom:9px;">
+          Firebase ist fest eingebaut — <b style="color:var(--tx)">kein Setup nötig</b>.<br>
+          Jeder der die Seite öffnet sieht automatisch dieselben Daten.<br>
+          Status: <span id="cloud-status-cfg" style="color:var(--mu)">--</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn sm bl" onclick="cloudLoad().then(()=>{filtered=[...MA];buildMA();klRender();})"><i class="ti ti-refresh"></i> Daten neu laden</button>
+        </div>
+      </div>
+      <div>
+        <div class="fl" style="margin-bottom:5px;">Mitarbeiterdaten</div>
+        <div style="font-size:11px;color:var(--mu);line-height:1.85;background:var(--p2);border:1px solid var(--bd);border-radius:4px;padding:11px 13px;">
+          Alle Anderungen am Mitarbeiterverzeichnis werden lokal im Browser gespeichert (localStorage).<br>
+          Agenten gesamt: <span id="cfg-count" style="color:var(--g)">--</span> &nbsp;|&nbsp; Rangstufen: <span style="color:var(--g)">30</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn ng sm" onclick="resetData()"><i class="ti ti-refresh"></i> Auf Standarddaten zurucksetzen</button>
+          <a href="https://docs.google.com/spreadsheets/d/1uzAA-_O2JtDBs3bpRG9Mqbva67dqh45LPDjPEf8-njQ/edit" target="_blank" class="btn sm"><i class="ti ti-external-link"></i> Google Sheets offnen</a>
+        </div>
+      </div>
+      <div id="admin-panel" style="display:none;">
+        <div class="fl" style="margin-bottom:5px;color:var(--g);">Benutzerverwaltung (nur Admin)</div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:10px;line-height:1.7;">
+          Rollen steuern welche Module ein Account sieht:
+          <b style="color:var(--tx)">HR</b> = Personal-Module, <b style="color:var(--tx)">FIBCO</b> = FIBCO Fallakte,
+          <b style="color:var(--tx)">CID</b> = CID Beweise, <b style="color:var(--tx)">Admin</b> = alles inkl. Benutzerverwaltung.<br>
+          Es gibt kein Backend — neue Accounts mussen als Code-Zeile in die Datei eingefugt werden (Anleitung unten beim Generieren).
+        </div>
+        <div class="edit-card" style="grid-template-columns:1fr 1fr;margin-bottom:9px;">
+          <div class="ec-row"><span class="ec-lbl">Zugangskennung</span><input class="fi ec-inp" id="adm-email" placeholder="z.B. jschmidt"></div>
+          <div class="ec-row"><span class="ec-lbl">Passwort</span><input class="fi ec-inp" id="adm-pass" placeholder="min. 6 Zeichen"></div>
+          <div class="ec-row"><span class="ec-lbl">Anzeigename</span><input class="fi ec-inp" id="adm-name" placeholder="Vor- u. Nachname"></div>
+          <div class="ec-row"><span class="ec-lbl">Rollen</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:4px;">
+              <label class="role-chip"><input type="checkbox" value="hr" class="adm-role"> HR</label>
+              <label class="role-chip"><input type="checkbox" value="fibco" class="adm-role"> FIBCO</label>
+              <label class="role-chip"><input type="checkbox" value="cid" class="adm-role"> CID</label>
+              <label class="role-chip"><input type="checkbox" value="admin" class="adm-role"> Admin</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn ok sm" onclick="adminCreateUser()"><i class="ti ti-code"></i> Code generieren</button>
+        <div class="hint" id="adm-create-msg"></div>
+
+        <div class="pl" style="margin-top:16px;">Bestehende Accounts (im Code hinterlegt)</div>
+        <div id="adm-userlist" style="margin-top:6px;"></div>
+        <div class="hint">Zum Entfernen eines Accounts dessen Zeile im <code>USERS</code>-Array im Quelltext loschen und die Datei neu hochladen.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+<div class="bottombar">
+  <div class="bl2"><span class="dg"></span> Verbunden // <span id="bclk">00:00:00</span></div>
+  <div style="color:var(--g);font-weight:bold;">GrandRP DE01 . FIB Personalabteilung</div>
+  <div style="color:var(--mu);">Sicheres System . Cloud-Betrieb</div>
+</div>
+</div>
+
+<div class="toast" id="toast">Kopiert</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="ma-modal">
+  <div class="modal">
+    <h2 id="modal-title">Mitarbeiter hinzufugen</h2>
+    <input type="hidden" id="modal-eid">
+    <div class="ir">
+      <div><div class="fl">Reisepass-ID *</div><input class="fi" id="m-id" placeholder="z.B. 12345"></div>
+      <div><div class="fl">Name *</div><input class="fi" id="m-name" placeholder="Vorname Nachname"></div>
+    </div>
+    <div class="ir">
+      <div><div class="fl">Rang *</div><select class="fi" id="m-rank"><option value="">-- wahlen --</option></select></div>
+      <div><div class="fl">Dienstnummer (DN)</div><input class="fi" id="m-dn" placeholder="z.B. 42"></div>
+    </div>
+    <div class="ir">
+      <div><div class="fl">Division</div>
+        <select class="fi" id="m-div">
+          <option value="">-- wahlen --</option>
+          <option>Leaderschaft</option><option>High Command Lead</option>
+          <option>High Command</option><option>Curator of Division</option>
+          <option>Division Lead</option><option>Abteilungsrang</option><option>Command</option>
+        </select>
+      </div>
+      <div><div class="fl">Abteilung</div><input class="fi" id="m-abt" placeholder="z.B. CIRG, HR"></div>
+    </div>
+    <div class="ir">
+      <div><div class="fl" style="color:var(--bl)">Ausbildung</div><input class="fi" id="m-ausb" placeholder="z.B. FBI Academy, CIRG-Kurs"></div>
+      <div><div class="fl">Strike</div>
+        <select class="fi" id="m-strike">
+          <option value="0/3">0/3</option><option value="1/3">1/3</option>
+          <option value="2/3">2/3</option><option value="3/3">3/3</option>
+        </select>
+      </div>
+    </div>
+    <div class="ir">
+      <div><div class="fl">Eintrittsdatum</div><input class="fi" type="date" id="m-date"></div>
+      <div><div class="fl">Status</div>
+        <select class="fi" id="m-status">
+          <option value="Aktiv">Aktiv</option><option value="Suspendiert">Suspendiert</option>
+          <option value="Inaktiv">Inaktiv</option><option value="Ausgeschieden">Ausgeschieden</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:13px;">
+      <div class="fl">Notizen (intern)</div>
+      <textarea class="fi" id="m-notes" rows="2" placeholder="Interne Notizen ..." style="resize:vertical;"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+      <button class="btn ng sm" onclick="closeModal()">Abbrechen</button>
+      <button class="btn ok" onclick="saveModal()"><i class="ti ti-device-floppy"></i> Speichern</button>
+    </div>
+  </div>
+</div>
+</div><!-- /app-root -->
 
 <script>
-    const ADMIN_PASSWORD = "admin123";
+const RANKS=["30. Director of FIB","29. Deputy Director of FIB","28. Assistant Director of FIB","27. Divisional Director","26. Inspector of the FIB","25. Supervisory Head Agent","24. Supervisory Agent","23. Special Agent in Charge","22. Division Chief","21. Deputy Division Chief","20. Senior Special Agent","19. Tactical Operator","18. Department Specialist","17. Commander","16. Lieutenant Commander","15. Special Senior Agent","14. Master Special Agent","13. Senior Special Agent","12. Operational Agent","11. Field Agent","10. Senior Agent","9. Agent II","8. Agent I","7. Junior Agent","6. Probationary Agent","5. Analyst","4. Associate Analyst","3. Recruit II","2. Recruit I","1. Trainee"];
+const DEF=[
+{id:"17450",name:"Eko Plaste",rank:"30. Director of FIB",dn:"1",div:"Leaderschaft",abt:"Chief Executive Curator",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"264694",name:"Tim Chessee",rank:"29. Deputy Director of FIB",dn:"2",div:"Leaderschaft",abt:"Deputy Executive Curator",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"240601",name:"Nils Brandenburger",rank:"28. Assistant Director of FIB",dn:"777",div:"Leaderschaft",abt:"Assistant Executive Curator",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"156935",name:"Assan Diop",rank:"28. Assistant Director of FIB",dn:"999",div:"Leaderschaft",abt:"Assistant Executive Curator",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"76002",name:"Dan Reacher",rank:"28. Assistant Director of FIB",dn:"5",div:"Leaderschaft",abt:"Assistant Executive Curator",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"85558",name:"Dimii Nevergone",rank:"28. Assistant Director of FIB",dn:"3",div:"Leaderschaft",abt:"Assistant Executive Curator",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"26412",name:"Luca Santos",rank:"28. Assistant Director of FIB",dn:"361",div:"Leaderschaft",abt:"Assistant Executive Curator",ausb:"",strike:"0/3",date:"29.05.2026",status:"Aktiv",notes:""},
+{id:"6180",name:"Paul Nao",rank:"28. Assistant Director of FIB",dn:"17",div:"Leaderschaft",abt:"Assistant Executive Curator",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"102262",name:"Hakuri Schrom",rank:"28. Assistant Director of FIB",dn:"262",div:"Leaderschaft",abt:"Assistant Executive Curator",ausb:"",strike:"0/3",date:"02.06.2026",status:"Aktiv",notes:""},
+{id:"135691",name:"Joachim vonWanze",rank:"27. Divisional Director",dn:"10",div:"Curator of Division",abt:"Curator | HR / FIBCO",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"157291",name:"Hugo Federov",rank:"27. Divisional Director",dn:"7",div:"Curator of Division",abt:"Curator | FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"128034",name:"Bali Nevergone",rank:"27. Divisional Director",dn:"27",div:"Curator of Division",abt:"Curator | CIRG",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"156327",name:"Falkdoc Federov",rank:"27. Divisional Director",dn:"8",div:"Curator of Division",abt:"Curator | PR / FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"295473",name:"Felix Mccalley",rank:"26. Inspector of the FIB",dn:"6",div:"High Command Lead",abt:"Head of High Command / FIBCO",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"217060",name:"Raffi Yane",rank:"25. Supervisory Head Agent",dn:"4",div:"High Command",abt:"HR Leitung / FIBCO",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"26899",name:"Amando Carillo",rank:"25. Supervisory Head Agent",dn:"31",div:"High Command",abt:"CID Stellv. Leitung",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"219213",name:"Jannick Yurr",rank:"25. Supervisory Head Agent",dn:"187",div:"High Command",abt:"CID Stellv. Leitung / FIBCO",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"34258",name:"Fynn Andreas",rank:"25. Supervisory Head Agent",dn:"11",div:"High Command",abt:"FIBCO Leitung",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"106544",name:"Marcel Gruuber",rank:"25. Supervisory Head Agent",dn:"15",div:"High Command",abt:"--",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"256009",name:"Kayne Smoker",rank:"24. Supervisory Agent",dn:"25",div:"High Command",abt:"TD Stellv. Leitung / CIRG",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"142220",name:"Simon Kellermann",rank:"24. Supervisory Agent",dn:"143",div:"High Command",abt:"FIBCO",ausb:"",strike:"0/3",date:"29.05.2026",status:"Aktiv",notes:""},
+{id:"176902",name:"Filip vonWanze",rank:"23. Special Agent in Charge",dn:"32",div:"High Command",abt:"TD",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"218257",name:"Ranjid Bay",rank:"23. Special Agent in Charge",dn:"33",div:"High Command",abt:"CIRG / CID",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"135217",name:"Sebastian Kuroyama",rank:"23. Special Agent in Charge",dn:"52",div:"High Command",abt:"CID",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"264668",name:"Kai Herzog",rank:"23. Special Agent in Charge",dn:"21",div:"High Command",abt:"FIBCO / HR",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"258321",name:"Mickey Maybach",rank:"23. Special Agent in Charge",dn:"53",div:"High Command",abt:"FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"50091",name:"Syn Veno",rank:"23. Special Agent in Charge",dn:"59",div:"High Command",abt:"CID",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"244186",name:"Anton Moluda",rank:"23. Special Agent in Charge",dn:"9",div:"High Command",abt:"FIBCO Stellv. Leitung",ausb:"",strike:"0/3",date:"05.06.2026",status:"Aktiv",notes:""},
+{id:"109467",name:"Felix Cunningham",rank:"23. Special Agent in Charge",dn:"12",div:"High Command",abt:"CID Leitung / HR",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"192812",name:"Nico Saito",rank:"23. Special Agent in Charge",dn:"23",div:"High Command",abt:"TD Stellv. Leitung",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"105534",name:"Akin Kaplan",rank:"23. Special Agent in Charge",dn:"71",div:"High Command",abt:"FIBCO / CID",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"257441",name:"Hugo Pinsel",rank:"23. Special Agent in Charge",dn:"16",div:"High Command",abt:"FIBCO Stellv. Leitung / HR",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"290275",name:"Tomek Dick",rank:"23. Special Agent in Charge",dn:"58",div:"High Command",abt:"PR",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"288863",name:"Bernhard Wolf",rank:"23. Special Agent in Charge",dn:"132",div:"High Command",abt:"FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"239288",name:"Noah Raiin",rank:"23. Special Agent in Charge",dn:"444",div:"High Command",abt:"FIBCO / HR",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"12263",name:"Fabi Astro",rank:"23. Special Agent in Charge",dn:"107",div:"High Command",abt:"HR Senior / FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"136176",name:"Quentin Wesh",rank:"23. Special Agent in Charge",dn:"111",div:"High Command",abt:"CIRG Stellv. Leitung / TD",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"79712",name:"Angus Newton",rank:"23. Special Agent in Charge",dn:"62",div:"High Command",abt:"FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"214462",name:"Marcel Fero",rank:"23. Special Agent in Charge",dn:"34",div:"High Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"18612",name:"Nico Schlumpf",rank:"22. Division Chief",dn:"28",div:"Division Lead",abt:"IA Leitung / FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"140883",name:"Johannes Brecher",rank:"22. Division Chief",dn:"14",div:"Division Lead",abt:"CIRG Leitung / CID",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"126465",name:"Nia vonWanze",rank:"22. Division Chief",dn:"22",div:"Division Lead",abt:"TD Leitung",ausb:"",strike:"0/3",date:"27.05.2026",status:"Aktiv",notes:""},
+{id:"190803",name:"Berkoli Midnight",rank:"22. Division Chief",dn:"19",div:"Division Lead",abt:"PR Leitung",ausb:"",strike:"0/3",date:"27.05.2026",status:"Aktiv",notes:""},
+{id:"200311",name:"Jonas Rak",rank:"21. Deputy Division Chief",dn:"13",div:"Division Lead",abt:"HR Stellv. Leitung",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"5545",name:"Fredo Frost",rank:"21. Deputy Division Chief",dn:"69",div:"Division Lead",abt:"CID Stellv. Leitung",ausb:"",strike:"0/3",date:"25.05.2026",status:"Aktiv",notes:""},
+{id:"220186",name:"Bellobatz Dacruze",rank:"21. Deputy Division Chief",dn:"77",div:"Division Lead",abt:"CIRG Stellv. Leitung",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"155716",name:"Paul Trappler",rank:"19. Tactical Operator",dn:"122",div:"Abteilungsrang",abt:"CIRG",ausb:"",strike:"0/3",date:"06.06.2026",status:"Aktiv",notes:""},
+{id:"218503",name:"Frosty Dick",rank:"19. Tactical Operator",dn:"85",div:"Abteilungsrang",abt:"CIRG",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"244882",name:"Tobi Lakiri",rank:"18. Department Specialist",dn:"48",div:"Abteilungsrang",abt:"PR",ausb:"",strike:"0/3",date:"01.06.2026",status:"Aktiv",notes:""},
+{id:"9895",name:"Kalle Osbornee",rank:"18. Department Specialist",dn:"57",div:"Abteilungsrang",abt:"TD",ausb:"",strike:"0/3",date:"27.05.2026",status:"Aktiv",notes:""},
+{id:"189768",name:"Kenan Kasalla",rank:"17. Commander",dn:"37",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"07.06.2026",status:"Aktiv",notes:""},
+{id:"137965",name:"Nate Nays",rank:"17. Commander",dn:"121",div:"Command",abt:"HR / CID",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"14338",name:"Carlos Sandman",rank:"17. Commander",dn:"163",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"07.06.2026",status:"Aktiv",notes:""},
+{id:"404",name:"Kev Error",rank:"17. Commander",dn:"404",div:"Command",abt:"CIRG",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"225755",name:"Thommy Perez",rank:"17. Commander",dn:"50",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"04.06.2026",status:"Aktiv",notes:""},
+{id:"4149",name:"Atze Altin",rank:"17. Commander",dn:"49",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"192303",name:"Jonass Breitling",rank:"17. Commander",dn:"51",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"02.06.2026",status:"Aktiv",notes:""},
+{id:"225011",name:"Odin Wolf",rank:"17. Commander",dn:"112",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"232642",name:"Peter Holz",rank:"17. Commander",dn:"61",div:"Command",abt:"FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"252692",name:"Jason Janee",rank:"17. Commander",dn:"155",div:"Command",abt:"CIRG",ausb:"",strike:"0/3",date:"27.05.2026",status:"Aktiv",notes:""},
+{id:"52617",name:"Michi Mahoni",rank:"17. Commander",dn:"95",div:"Command",abt:"CIRG",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"203202",name:"Fernando Dick",rank:"17. Commander",dn:"66",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"286372",name:"Cengo Neverloved",rank:"17. Commander",dn:"70",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"115582",name:"Lia Kaplan",rank:"17. Commander",dn:"35",div:"Command",abt:"CID",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"251159",name:"Tim Balls",rank:"17. Commander",dn:"125",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"212921",name:"Alicee Asic",rank:"17. Commander",dn:"73",div:"Command",abt:"CIRG",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"62",name:"Kevin Done",rank:"17. Commander",dn:"63",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"27.05.2026",status:"Aktiv",notes:""},
+{id:"292078",name:"Ibo Aquila",rank:"17. Commander",dn:"74",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"66603",name:"Harald Sachse",rank:"17. Commander",dn:"603",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"29.05.2026",status:"Aktiv",notes:""},
+{id:"208195",name:"Vaun Deberg",rank:"17. Commander",dn:"82",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"30.05.2026",status:"Aktiv",notes:""},
+{id:"301271",name:"Aure Knusper",rank:"17. Commander",dn:"80",div:"Command",abt:"CIRG",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"159846",name:"Titus Maximus",rank:"17. Commander",dn:"152",div:"Command",abt:"FIBCO",ausb:"",strike:"0/3",date:"27.05.2026",status:"Aktiv",notes:""},
+{id:"174040",name:"Luca Hochreiter",rank:"17. Commander",dn:"175",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"30.05.2026",status:"Aktiv",notes:""},
+{id:"257297",name:"Yuri Loveless",rank:"17. Commander",dn:"79",div:"Command",abt:"CID",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"26568",name:"Harleen Bama",rank:"17. Commander",dn:"65",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"229248",name:"Eren Almaz",rank:"17. Commander",dn:"20",div:"Command",abt:"FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"289353",name:"Raul Nuis",rank:"17. Commander",dn:"75",div:"Command",abt:"--",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+{id:"253176",name:"Gimo Jimmbo",rank:"17. Commander",dn:"707",div:"Command",abt:"FIBCO",ausb:"",strike:"0/3",date:"26.05.2026",status:"Aktiv",notes:""},
+];
 
-    function checkPassword() {
-        const input = document.getElementById('passwordInput').value;
-        if (input === ADMIN_PASSWORD) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardContent').style.display = 'block';
-            loadData();
-        } else {
-            alert("Passwort inkorrekt.");
-            document.getElementById('passwordInput').value = '';
-        }
+// ===================== MITARBEITER =====================
+// Cloud-Storage via Firebase Firestore
+// Konfiguration fest eingebaut — jeder der die Seite öffnet sieht dieselben Daten
+
+const FB_CFG = {
+  apiKey: "AIzaSyCjEshCZt8zXldiTfGiiCOz_mtRE30UGOY",
+  authDomain: "fib-lst-d75cd.firebaseapp.com",
+  projectId: "fib-lst-d75cd",
+  storageBucket: "fib-lst-d75cd.firebasestorage.app",
+  messagingSenderId: "293546236665",
+  appId: "1:293546236665:web:cb2599998ef01ef6a2a028"
+};
+
+// Firebase über CDN laden
+let db = null;
+let fbReady = false;
+let _unsubscribe = null; // Live-Listener stoppen falls nötig
+let _isPushing = false;  // Verhindert eigene Änderungen als "extern" zu behandeln
+
+async function initFirebase() {
+  try {
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, doc, setDoc, getDoc, onSnapshot } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const app = initializeApp(FB_CFG);
+    db = getFirestore(app);
+    window._fbDoc  = () => doc(db, 'fib', 'data');
+    window._fbDocFn = (col, id) => doc(db, col, id);
+    window._fbSet  = setDoc;
+    window._fbGet  = getDoc;
+    window._fbListen = onSnapshot;
+    fbReady = true;
+    return true;
+  } catch(e) {
+    console.error('Firebase init error:', e);
+    return false;
+  }
+}
+
+// ===================== LOGIN (rein clientseitig, ohne Firebase/Backend) =====================
+// Zugangsdaten stehen direkt im Code (Passwort als SHA-256-Hash, kein Klartext).
+// Achtung: Wer den Quelltext der Seite oeffnet, sieht die Hashes. Das reicht als
+// Zugangshuerde (Link nicht oeffentlich nutzbar), ist aber KEINE belastbare Sicherheit
+// fuer wirklich sensible Daten.
+//
+// Neuen Nutzer anlegen (kein Backend -> kein automatisches Speichern):
+//   1) Als Admin einloggen -> Einstellungen -> Benutzerverwaltung -> Daten eingeben -> "Code generieren"
+//   2) Den erzeugten Eintrag unten in das USERS-Array einfuegen
+//   3) Datei speichern und neu hochladen / deployen
+//
+// Allerersten Admin-Account anlegen (Bootstrap):
+//   1) Browser-Konsole oeffnen (F12 -> Console)
+//   2) Eingeben: fibHash('DeinPasswort').then(h=>console.log(h))
+//   3) Den ausgegebenen Hash unten bei einem Eintrag als passHash eintragen
+
+const USERS = [
+  // Beispiel-Admin -- Zugangskennung "admin", Passwort "fib2026" -- BITTE AENDERN!
+  { username:'admin', name:'Administrator', roles:['admin'],
+    passHash:'15221d5e748afa63d8ad7b6110dba4b9fbf27f995b25964abb0f5ae1d889d478' },
+];
+
+let currentUser = null;   // Username (string) des eingeloggten Nutzers
+let currentRoles = [];    // z.B. ['hr','fibco']
+let currentName = '';
+
+async function fibHash(str){
+  const enc=new TextEncoder().encode(str);
+  const buf=await crypto.subtle.digest('SHA-256',enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+window.fibHash = fibHash; // damit man es bei Bedarf in der Browser-Konsole nutzen kann
+
+// --- LOGIN / LOGOUT ---
+async function doLogin(){
+  const user=gv('login-email').trim().toLowerCase();
+  const pass=gv('login-pass');
+  const errEl=document.getElementById('login-err');
+  const btn=document.getElementById('login-btn');
+  errEl.textContent='';
+  if(!user||!pass){errEl.textContent='Bitte Zugangskennung und Passwort eingeben.';return;}
+  btn.disabled=true;btn.textContent='Anmelden ...';
+  const hash=await fibHash(pass);
+  const found=USERS.find(u=>u.username.toLowerCase()===user && u.passHash===hash);
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-login"></i> ANMELDEN';
+  if(!found){errEl.textContent='Zugangskennung oder Passwort falsch.';return;}
+  currentUser=found.username;currentRoles=found.roles;currentName=found.name;
+  try{localStorage.setItem('fib_session',JSON.stringify({u:found.username}));}catch(e){}
+  showApp();
+}
+function doLogout(){
+  currentUser=null;currentRoles=[];currentName='';
+  try{localStorage.removeItem('fib_session');}catch(e){}
+  document.getElementById('app-root').classList.add('hide');
+  document.getElementById('login-screen').classList.remove('hide');
+  sv2('login-pass','');
+}
+function tryRestoreSession(){
+  try{
+    const raw=localStorage.getItem('fib_session');
+    if(!raw)return false;
+    const s=JSON.parse(raw);
+    const found=USERS.find(u=>u.username===s.u);
+    if(!found)return false;
+    currentUser=found.username;currentRoles=found.roles;currentName=found.name;
+    showApp();
+    return true;
+  }catch(e){return false;}
+}
+function showApp(){
+  document.getElementById('login-screen').classList.add('hide');
+  document.getElementById('app-root').classList.remove('hide');
+  applyRoleVisibility();
+  startAppData();
+  sv('dash',null);
+}
+
+function hasRole(r){
+  if(!currentRoles)return false;
+  return currentRoles.includes('admin')||currentRoles.includes(r);
+}
+
+// Sidebar + Module nach Rolle ein-/ausblenden
+function applyRoleVisibility(){
+  document.querySelectorAll('.ni[data-roles]').forEach(el=>{
+    const need=el.getAttribute('data-roles');
+    el.style.display = hasRole(need) ? '' : 'none';
+  });
+  const adm=document.getElementById('admin-panel');
+  if(adm) adm.style.display = hasRole('admin') ? 'block' : 'none';
+  if(hasRole('admin')) renderUserList();
+  const chip=document.getElementById('user-chip');
+  if(chip) chip.textContent=(currentName||currentUser||'')+' · '+(currentRoles.join(', ')||'--');
+}
+
+// --- ADMIN: Benutzerverwaltung (generiert Code-Snippet, da kein Backend zum Speichern existiert) ---
+async function adminCreateUser(){
+  if(!hasRole('admin')){showToast('Keine Berechtigung');return;}
+  const username=gv('adm-email').trim();
+  const pass=gv('adm-pass');
+  const name=gv('adm-name').trim();
+  const roles=Array.from(document.querySelectorAll('.adm-role:checked')).map(c=>c.value);
+  const msgEl=document.getElementById('adm-create-msg');
+  if(!username||!pass){msgEl.textContent='Zugangskennung und Passwort sind Pflicht.';msgEl.style.color='var(--re)';return;}
+  if(pass.length<6){msgEl.textContent='Passwort sollte min. 6 Zeichen haben.';msgEl.style.color='var(--re)';return;}
+  if(!roles.length){msgEl.textContent='Mindestens eine Rolle wahlen.';msgEl.style.color='var(--re)';return;}
+  if(USERS.find(u=>u.username.toLowerCase()===username.toLowerCase())){msgEl.textContent='Zugangskennung bereits vergeben.';msgEl.style.color='var(--re)';return;}
+  const hash=await fibHash(pass);
+  const snippet=`  { username:'${username}', name:'${name.replace(/'/g,"\\'")}', roles:${JSON.stringify(roles)}, passHash:'${hash}' },`;
+  msgEl.innerHTML='Code generiert — diese Zeile in das <b style="color:var(--tx)">USERS</b>-Array im Quelltext einfugen, Datei speichern &amp; neu hochladen:'+
+    `<textarea class="fi" rows="3" style="margin-top:6px;font-size:10px;" readonly onclick="this.select()">${snippet}</textarea>`;
+  msgEl.style.color='var(--g)';
+  showToast('Code generiert — siehe unten');
+}
+
+function renderUserList(){
+  const box=document.getElementById('adm-userlist');
+  if(!box)return;
+  if(!USERS.length){box.innerHTML='<div class="kl-empty">Keine Accounts im Code hinterlegt.</div>';return;}
+  box.innerHTML=USERS.map(u=>`<div class="userrow">
+    <div><b style="color:var(--tx)">${u.name||u.username}</b> <span style="color:var(--mu);font-size:11px">@${u.username}</span><br>
+    <span style="font-size:10px;color:var(--g)">${u.roles.join(', ')||'--'}</span></div>
+  </div>`).join('');
+}
+
+// Einmaliges Laden + danach Live-Listener starten
+async function cloudLoad() {
+  setCloudStatus('loading');
+  try {
+    if (!fbReady) await initFirebase();
+    if (!fbReady) throw new Error('Firebase nicht bereit');
+
+    // Stoppe alten Listener falls vorhanden
+    if (_unsubscribe) { _unsubscribe(); _unsubscribe = null; }
+
+    // Live-Listener starten — feuert sofort einmal (initialer Load)
+    // und danach bei jeder Änderung durch andere Nutzer
+    _unsubscribe = window._fbListen(window._fbDoc(), (snap) => {
+      if (_isPushing) return;
+      if (snap.exists()) {
+        const d = snap.data();
+        if (Array.isArray(d.kl))  KL_DATA  = d.kl;
+        if (Array.isArray(d.fc))  FC_DATA  = d.fc;
+        if (Array.isArray(d.cid)) CID_DATA = d.cid;
+      }
+      klRender();
+      fcRender();
+      cidRender();
+      setCloudStatus('ok');
+    }, (err) => {
+      console.error('onSnapshot error:', err);
+      setCloudStatus('err');
+    });
+
+    return true;
+  } catch(e) {
+    console.error('cloudLoad error:', e);
+    try { const s = localStorage.getItem('fib_ma'); if (s) MA = JSON.parse(s); } catch(e2) {}
+    try { const s = localStorage.getItem('fib_kl'); if (s) KL_DATA = JSON.parse(s); } catch(e2) {}
+    setCloudStatus('err');
+    return false;
+  }
+}
+
+async function cloudPush() {
+  try {
+    if (!fbReady) await initFirebase();
+    if (!fbReady) throw new Error('Firebase nicht bereit');
+    _isPushing = true;
+    setCloudStatus('saving');
+    await window._fbSet(window._fbDoc(), { kl: KL_DATA, fc: FC_DATA, cid: CID_DATA });
+    setCloudStatus('ok');
+    setTimeout(() => { _isPushing = false; }, 500);
+  } catch(e) {
+    console.error('cloudPush error:', e);
+    _isPushing = false;
+    try { localStorage.setItem('fib_ma', JSON.stringify(MA)); } catch(e2) {}
+    try { localStorage.setItem('fib_kl', JSON.stringify(KL_DATA)); } catch(e2) {}
+    setCloudStatus('err');
+  }
+}
+
+function setCloudStatus(s) {
+  const map = {
+    ok:      ['var(--gr)', 'ONLINE — Verbunden'],
+    err:     ['var(--re)', 'FEHLER — Verbindung prüfen'],
+    loading: ['#f0a500',   'Lade ...'],
+    saving:  ['#f0a500',   'Speichert ...'],
+    off:     ['var(--mu)', 'OFFLINE']
+  };
+  const [col, txt] = map[s] || ['var(--mu)', s];
+  const el  = document.getElementById('cloud-status');
+  const dot = document.getElementById('cloud-dot');
+  const el2 = document.getElementById('cloud-status-cfg');
+  if (el)  { el.style.color  = col; el.textContent  = txt; }
+  if (dot) { dot.style.background = col; }
+  if (el2) { el2.style.color = col; el2.textContent = txt; }
+}
+
+// Kein saveCloudCfg / loadCloudCfgFields mehr nötig — Firebase ist fest eingebaut
+function saveCloudCfg() { showToast('Firebase ist bereits eingebaut — kein Setup nötig!'); }
+function loadCloudCfgFields() {}
+
+// ===================== GOOGLE SHEETS LIVE SYNC =====================
+const SHEET_ID = '1uzAA-_O2JtDBs3bpRG9Mqbva67dqh45LPDjPEf8-njQ';
+const SHEET_GID = '1591796957';
+let sheetSyncInterval = null;
+
+function parseCSVLine(line) {
+  const cols = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === ',' && !inQ) { cols.push(cur.trim().replace(/^"|"$/g,'')); cur = ''; }
+    else { cur += c; }
+  }
+  cols.push(cur.trim().replace(/^"|"$/g,''));
+  return cols;
+}
+
+async function syncFromSheet() {
+  const ss = document.getElementById('sheet-status');
+  try {
+    if(ss){ ss.textContent='Sheet: Lade ...'; ss.style.color='#f0a500'; }
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Sheet nicht erreichbar');
+    const csv = await res.text();
+    const rows = csv.split('\n');
+
+    // Spalten laut Sheet (0-basiert, Buchstabe → Index):
+    // A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8,J=9,K=10,L=11,M=12,N=13,O=14,P=15,Q=16,R=17,S=18
+    // B=ID(1), C=Name(2), D=Ranks(3), E=DN(4), H=Division's(7), K=Strike(10), L=Invite Date(11), M=Last Rank(12), P=Abt1(15), Q=Abt2(16)
+
+    // Header steht in Zeile 9 (Index 8), Daten ab Zeile 10 (Index 9)
+    // Wir suchen die Header-Zeile dynamisch (enthält "ID" und "Name")
+    let dataStart = 9; // Standard: Zeile 10 (0-basiert = 9)
+    for (let i = 0; i < Math.min(rows.length, 15); i++) {
+      const r = parseCSVLine(rows[i]);
+      if (r.some(c => c.trim().toUpperCase() === 'ID') && r.some(c => c.trim().toUpperCase() === 'NAME')) {
+        dataStart = i + 1; // Daten fangen eine Zeile nach dem Header an
+        break;
+      }
     }
 
-    function addPlayer() {
-        const name = document.getElementById('pName').value.trim();
-        const id = document.getElementById('pId').value.trim();
-        if (!name || !id) return alert("Bitte Name und ID ausfüllen!");
+    const newMA = [];
+    for (let i = dataStart; i < rows.length; i++) {
+      if (!rows[i] || !rows[i].trim()) continue;
+      const r = parseCSVLine(rows[i]);
 
-        const player = {
-            dbId: Date.now(),
-            name,
-            id,
-            familie: document.getElementById('pFamilie').value.trim() || '-',
-            grund: document.getElementById('pGrund').value.trim() || '-',
-            socId: document.getElementById('pSocId').value.trim() || '-',
-            socName: document.getElementById('pSocName').value.trim() || '-',
-            gefleckt: document.getElementById('pGefleckt').value,
-            recheck: document.getElementById('pRecheck').value,
-            pcVerweigert: document.getElementById('pPcVerweigert').value.trim() || '-',
-            bannAblauf: document.getElementById('pBannAblauf').value.trim() || '-',
-            perma: document.getElementById('pPerma').value,
-            proof: document.getElementById('pProof').value.trim(),
-            status: document.getElementById('pStatus').value
-        };
+      const id   = (r[1]||'').trim();
+      const name = (r[2]||'').trim();
+      if (!id && !name) continue; // Leere Zeile überspringen
 
-        let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
-        data.push(player);
-        localStorage.setItem('fibCleanData', JSON.stringify(data));
+      const abt1 = (r[15]||'').trim();
+      const abt2 = (r[16]||'').trim();
+      const abt  = [abt1, abt2].filter(Boolean).join(' | ');
 
-        // Reset inputs
-        document.getElementById('pName').value = ''; document.getElementById('pId').value = '';
-        document.getElementById('pFamilie').value = ''; document.getElementById('pGrund').value = '';
-        document.getElementById('pSocId').value = ''; document.getElementById('pSocName').value = '';
-        document.getElementById('pPcVerweigert').value = ''; document.getElementById('pBannAblauf').value = '';
-        document.getElementById('pProof').value = '';
-
-        loadData();
+      newMA.push({
+        id,
+        name,
+        rank:   (r[3] ||'').trim(),
+        dn:     (r[4] ||'').trim(),
+        div:    (r[7] ||'').trim(),
+        strike: (r[10]||'0/3').trim(),
+        date:   (r[11]||'').trim(),
+        ausb:   (r[12]||'').trim(), // Last Rank als Ausbildung
+        abt,
+        status: 'Aktiv',
+        notes:  ''
+      });
     }
 
-    // UPDATER FÜR TEXTFELDER
-    function updateField(dbId, field, value) {
-        let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
-        const index = data.findIndex(p => p.dbId === dbId);
-        if (index !== -1) {
-            data[index][field] = value.trim() || '-';
-            localStorage.setItem('fibCleanData', JSON.stringify(data));
-        }
+    if (newMA.length > 0) {
+      MA = newMA;
+      filtered = [...MA];
+      buildMA();
+      const dc = document.getElementById('dash-count'); if(dc) dc.textContent = MA.length;
+      const cc = document.getElementById('cfg-count');  if(cc) cc.textContent = MA.length;
+      const b  = document.getElementById('ma-badge');   if(b)  b.textContent  = MA.length + ' AGENTEN';
+      if(ss){
+        const now = new Date();
+        const t = [now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+        ss.textContent = 'Sheet: ✓ ' + t;
+        ss.style.color = 'var(--gr)';
+      }
     }
+  } catch(e) {
+    console.warn('Sheet sync error:', e);
+    if(ss){ ss.textContent='Sheet: ✗ Fehler'; ss.style.color='var(--re)'; }
+  }
+}
 
-    // UPDATER FÜR TOGGLES (JA/NEIN)
-    function toggleBadge(dbId, field) {
-        let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
-        const index = data.findIndex(p => p.dbId === dbId);
-        if (index !== -1) {
-            data[index][field] = data[index][field] === 'Ja' ? 'Nein' : 'Ja';
-            localStorage.setItem('fibCleanData', JSON.stringify(data));
-            loadData();
-        }
+function startSheetSync() {
+  syncFromSheet();
+  if (sheetSyncInterval) clearInterval(sheetSyncInterval);
+  sheetSyncInterval = setInterval(syncFromSheet, 30000);
+}
+
+function saveMA() { /* MA kommt nur vom Google Sheet */ }
+function resetData(){
+  if(!confirm('Mitarbeiterliste vom Sheet neu laden?'))return;
+  syncFromSheet();
+  showToast('Sheet wird neu geladen...');
+}
+
+function gv(id){const e=document.getElementById(id);return e?e.value:'';}
+function sv2(id,v){const e=document.getElementById(id);if(e)e.value=v;}
+function setOb(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function fmtD(raw){if(!raw)return'--';if(raw.includes('.'))return raw;const d=new Date(raw);return[String(d.getDate()).padStart(2,'0'),String(d.getMonth()+1).padStart(2,'0'),d.getFullYear()].join('.');}
+function gd(){return fmtD(new Date().toISOString().slice(0,10));}
+function rankCls(r){const n=parseInt(r);if(n>=26)return'rh';if(n>=20)return'rm';return'rl';}
+
+// --- ABSENDER ---
+function loadAbs(){try{const d=localStorage.getItem('fib_abs');if(d)return JSON.parse(d);}catch(e){}return{name:'',rang:'',abt:''};}
+function syncFromCfg(){
+  const name=gv('cfg-name'),rang=gv('cfg-rang'),abt=gv('cfg-abt');
+  try{localStorage.setItem('fib_abs',JSON.stringify({name,rang,abt}));}catch(e){}
+  [upRa,upEs,upKu,upAz,upSa,upPa].forEach(f=>f());
+}
+function loadAbsIntoFields(){const a=loadAbs();sv2('cfg-name',a.name||'');sv2('cfg-rang',a.rang||'');sv2('cfg-abt',a.abt||'');}
+function absLine(){
+  const name=gv('cfg-name'),rang=gv('cfg-rang'),abt=gv('cfg-abt');
+  if(!name&&!abt&&!rang)return'';
+  let line='\n\n';
+  if(name)line+=name+'\n';
+  if(abt)line+=abt+'\n';
+  if(rang)line+=rang;
+  return line.trimEnd();
+}
+
+// --- TABLE ---
+function buildMA(){
+  const s=(maPage-1)*PER,sl=filtered.slice(s,s+PER);
+  document.getElementById('ma-body').innerHTML=sl.map(m=>`<tr>
+    <td style="color:var(--mu);font-size:11px">${m.id}</td>
+    <td style="font-weight:bold">${m.name}</td>
+    <td><span class="rb ${rankCls(m.rank)}">${m.rank}</span></td>
+    <td style="color:var(--g)">${m.dn||'--'}</td>
+    <td style="color:var(--mu);font-size:11px">${m.div||'--'}</td>
+    <td style="color:var(--mu);font-size:10px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${m.abt||''}">${m.abt||'--'}</td>
+    <td style="color:#3a8fd4;font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${m.ausb||''}">${m.ausb||'--'}</td>
+    <td style="color:${m.strike==='0/3'?'var(--gr)':'var(--re)'}">${m.strike||'0/3'}</td>
+    <td style="color:var(--mu);font-size:11px;white-space:nowrap">${m.date||'--'}</td>
+    <td style="text-align:center;white-space:nowrap">
+      <button class="btn sm bl" onclick="openEdit('${m.id}')" title="Bearbeiten"><i class="ti ti-edit"></i></button>
+      <button class="btn sm ng" onclick="delMA('${m.id}')" title="Loschen"><i class="ti ti-trash"></i></button>
+    </td></tr>`).join('');
+  const cnt=document.getElementById('ma-count');
+  if(cnt)cnt.textContent=`${Math.min(s+1,filtered.length)}-${Math.min(s+PER,filtered.length)} von ${filtered.length}`;
+  const b=document.getElementById('ma-badge');if(b)b.textContent=MA.length+' AGENTEN';
+  const dc=document.getElementById('dash-count');if(dc)dc.textContent=MA.length;
+  const cc=document.getElementById('cfg-count');if(cc)cc.textContent=MA.length;
+  buildPgr();
+}
+function buildPgr(){
+  const total=Math.ceil(filtered.length/PER),pgr=document.getElementById('ma-pgr');if(!pgr)return;
+  if(total<=1){pgr.innerHTML='';return;}
+  let h='<button onclick="maGo(maPage-1)">&#x2039;</button>';
+  for(let i=1;i<=total;i++)h+=`<button class="${i===maPage?'cur':''}" onclick="maGo(${i})">${i}</button>`;
+  pgr.innerHTML=h+'<button onclick="maGo(maPage+1)">&#x203a;</button>';
+}
+function maGo(p){const t=Math.ceil(filtered.length/PER);maPage=Math.max(1,Math.min(p,t));buildMA();}
+function filterMA(){
+  const q=gv('ma-search').toLowerCase(),f=gv('ma-filter');
+  filtered=MA.filter(m=>{
+    const ok=!q||(m.name.toLowerCase().includes(q)||m.id.includes(q)||m.rank.toLowerCase().includes(q)||(m.abt||'').toLowerCase().includes(q)||(m.dn||'').includes(q)||(m.ausb||'').toLowerCase().includes(q)||(m.notes||'').toLowerCase().includes(q));
+    return ok&&(!f||m.div===f);
+  });
+  maPage=1;buildMA();
+}
+function delMA(id){if(!confirm('Mitarbeiter wirklich loschen?'))return;MA=MA.filter(m=>m.id!==id);saveMA();filtered=filtered.filter(m=>m.id!==id);buildMA();refreshSelects();}
+
+// --- MODAL ---
+function fillRankSel(){const s=document.getElementById('m-rank');if(!s||s.options.length>1)return;RANKS.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;s.appendChild(o);});}
+function openAddModal(){
+  fillRankSel();
+  document.getElementById('modal-title').textContent='Mitarbeiter hinzufugen';
+  document.getElementById('modal-eid').value='';
+  ['m-id','m-name','m-dn','m-abt','m-ausb','m-notes'].forEach(id=>sv2(id,''));
+  sv2('m-rank','');sv2('m-div','');sv2('m-strike','0/3');sv2('m-status','Aktiv');
+  document.getElementById('m-date').value='';
+  document.getElementById('ma-modal').classList.add('show');
+}
+function openEdit(id){
+  fillRankSel();
+  const m=MA.find(x=>x.id===id);if(!m)return;
+  document.getElementById('modal-title').textContent='Mitarbeiter bearbeiten';
+  document.getElementById('modal-eid').value=id;
+  sv2('m-id',m.id);sv2('m-name',m.name);sv2('m-rank',m.rank);sv2('m-dn',m.dn||'');
+  sv2('m-div',m.div||'');sv2('m-abt',m.abt||'');sv2('m-ausb',m.ausb||'');
+  sv2('m-strike',m.strike||'0/3');sv2('m-status',m.status||'Aktiv');sv2('m-notes',m.notes||'');
+  const dv=m.date&&m.date.includes('.')?m.date.split('.').reverse().join('-'):(m.date||'');
+  document.getElementById('m-date').value=dv;
+  document.getElementById('ma-modal').classList.add('show');
+}
+function closeModal(){document.getElementById('ma-modal').classList.remove('show');}
+function saveModal(){
+  const eid=gv('modal-eid'),nid=gv('m-id').trim();
+  if(!nid||!gv('m-name').trim()||!gv('m-rank')){alert('Bitte Pass-ID, Name und Rang ausfullen.');return;}
+  if(!eid&&MA.find(m=>m.id===nid)){alert('Pass-ID bereits vorhanden!');return;}
+  const dv=document.getElementById('m-date').value;
+  const entry={id:nid,name:gv('m-name').trim(),rank:gv('m-rank'),dn:gv('m-dn').trim(),div:gv('m-div'),abt:gv('m-abt').trim(),ausb:gv('m-ausb').trim(),strike:gv('m-strike'),status:gv('m-status'),notes:gv('m-notes').trim(),date:dv?fmtD(dv):''};
+  if(eid){const i=MA.findIndex(m=>m.id===eid);if(i>=0)MA[i]=entry;}else MA.push(entry);
+  saveMA();filtered=[...MA];filterMA();refreshSelects();closeModal();showToast('Gespeichert');
+}
+document.getElementById('ma-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// --- PASS LOOKUP ---
+function lookupPass(pfx){
+  const inp=document.getElementById(pfx+'-pass-in');if(!inp)return;
+  const val=inp.value.trim();
+  const foundEl=document.getElementById(pfx+'-found');
+  const fieldsEl=document.getElementById(pfx+'-fields');
+  if(!val){
+    if(foundEl)foundEl.innerHTML='<span style="color:var(--mu);font-size:11px">Pass-ID oder Name eingeben</span>';
+    if(fieldsEl)fieldsEl.style.display='none';
+    return;
+  }
+  let m=MA.find(x=>x.id===val);
+  if(!m){
+    const q=val.toLowerCase();
+    const hits=MA.filter(x=>x.name.toLowerCase().includes(q));
+    if(hits.length===1){m=hits[0];}
+    else if(hits.length>1){
+      if(foundEl)foundEl.innerHTML=`<span style="color:var(--g);font-size:11px"><i class="ti ti-search" style="font-size:11px"></i> ${hits.length} Treffer — Pass-ID prazisieren</span>`;
+      if(fieldsEl)fieldsEl.style.display='none';
+      return;
     }
+  }
+  if(!m){
+    if(foundEl)foundEl.innerHTML='<span style="color:var(--re);font-size:11px"><i class="ti ti-x" style="font-size:11px"></i> Kein Treffer</span>';
+    if(fieldsEl)fieldsEl.style.display='none';
+    return;
+  }
+  if(foundEl)foundEl.innerHTML=`<span style="color:var(--gr);font-size:11px"><i class="ti ti-check" style="font-size:11px"></i> <b>${m.name}</b> · ${m.rank}</span>`;
+  if(fieldsEl)fieldsEl.style.display='block';
+  if(pfx==='ra'){
+    sv2('ra-name',m.name);sv2('ra-dn',m.dn||'');
+    sv2('ra-name-ed',m.name);sv2('ra-dn-ed',m.dn||'');
+    sv2('ra-abt-ed',m.abt||'');sv2('ra-strike-ed',m.strike||'0/3');
+    sv2('ra-old',m.rank);
+    const ri=RANKS.indexOf(m.rank);
+    sv2('ra-new',ri>0?RANKS[ri-1]:'');
+    upRa();
+  }
+  if(pfx==='es'){sv2('es-dn',m.dn||'');sv2('es-name',m.name);sv2('es-name-ed',m.name);sv2('es-dn-ed',m.dn||'');upEs();}
+  if(pfx==='ku'){
+    sv2('ku-dn',m.dn||'');sv2('ku-name',m.name);sv2('ku-rang',m.rank);
+    sv2('ku-name-ed',m.name);sv2('ku-dn-ed',m.dn||'');
+    sv2('ku-rang-ed',m.rank);sv2('ku-abt-ed',m.abt||'');upKu();
+  }
+  if(pfx==='az'){
+    sv2('az-name',m.name);sv2('az-pass',m.id);sv2('az-rang',m.rank);
+    sv2('az-name-ed',m.name);sv2('az-pass-ed',m.id);
+    sv2('az-rang-ed',m.rank);sv2('az-abt-ed',m.abt||'');upAz();
+  }
+  if(pfx==='sa'){
+    sv2('sa-dn',m.dn||'');sv2('sa-name',m.name);
+    sv2('sa-name-ed',m.name);sv2('sa-dn-ed',m.dn||'');
+    sv2('sa-rang-ed',m.rank);sv2('sa-strike-ed',m.strike||'0/3');upSa();
+  }
+  if(pfx==='pa'){
+    sv2('pa-dn',m.dn||'');sv2('pa-name',m.name);sv2('pa-rang',m.rank);sv2('pa-abt',m.abt==='--'?'':m.abt||'');
+    sv2('pa-name-ed',m.name);sv2('pa-dn-ed',m.dn||'');
+    sv2('pa-rang-ed',m.rank);sv2('pa-abt-ed',m.abt==='--'?'':m.abt||'');
+    sv2('pa-strike-ed',m.strike||'0/3');
+    const dv=m.date&&m.date.includes('.')?m.date.split('.').reverse().join('-'):(m.date||'');
+    const dtEl=document.getElementById('pa-datum');if(dtEl)dtEl.value=dv;
+    upPa();
+  }
+}
 
-    // UPDATER FÜR STATUS (ROT -> GELB -> GRÜN)
-    function rotateStatus(dbId) {
-        let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
-        const index = data.findIndex(p => p.dbId === dbId);
-        if (index !== -1) {
-            const current = data[index].status;
-            let next = 'rot';
-            if (current === 'rot') next = 'gelb';
-            else if (current === 'gelb') next = 'gruen';
-            
-            data[index].status = next;
-            localStorage.setItem('fibCleanData', JSON.stringify(data));
-            loadData();
-        }
+function refreshSelects(){}
+function fillSelects(){
+  ['ra-old','ra-new','es-rang'].forEach(id=>{const s=document.getElementById(id);if(!s)return;RANKS.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;s.appendChild(o);});});
+}
+
+// ===================== KLASSIFIZIERUNG =====================
+const KL_ORGA_COLORS={FIB:'#c9a84c',LSPD:'#3a8fd4',SAHP:'#4db36a',LI:'#b34dce',EMS:'#e74c3c',NG:'#4dcecb',GOV:'#e0972f'};
+let KL_DATA=[];
+let KL_ORGA='Alle';
+
+function klLoad(){try{const d=localStorage.getItem('fib_kl');if(d)KL_DATA=JSON.parse(d);}catch(e){}}
+function klSave(){cloudPush();}
+
+function klAdd(){
+  const orga=gv('kl-orga'),name=gv('kl-name').trim(),id=gv('kl-id').trim(),rang=gv('kl-rang').trim(),tel=gv('kl-tel').trim();
+  if(!orga||!name){showToast('Orga und Name sind Pflichtfelder!');return;}
+
+  // Duplikat-Prüfung: gleicher Name UND gleiche Orga
+  const dup = KL_DATA.find(e =>
+    e.name.toLowerCase() === name.toLowerCase() && e.orga === orga
+  );
+  if(dup){
+    showToast('⚠️ '+name+' ist in '+orga+' bereits eingetragen!');
+    // Felder rot markieren
+    const nf=document.getElementById('kl-name');
+    const of2=document.getElementById('kl-orga');
+    [nf,of2].forEach(el=>{if(el){el.style.borderColor='var(--re)';setTimeout(()=>el.style.borderColor='',2000);}});
+    return;
+  }
+
+  // Orga-Tab auf die neue Orga setzen
+  const savedOrga = orga;
+  KL_DATA.push({orga,name,id,rang,tel});
+  klSave();
+  // Formular leeren aber Orga behalten
+  sv2('kl-name','');sv2('kl-id','');sv2('kl-rang','');sv2('kl-tel','');
+  // Tab auf die eingetragene Orga wechseln
+  const tab = document.querySelector(`#kl-orga-tabs .orga-tab[data-orga="${savedOrga}"]`);
+  if(tab) klSwitch(tab);
+  else klRender();
+  showToast('Eintrag hinzugefugt');
+}
+
+function klDel(i){
+  if(!confirm('Eintrag wirklich loschen?'))return;
+  KL_DATA.splice(i,1);
+  klSave();
+  klRender();
+  showToast('Geloscht');
+}
+
+function klSwitch(el){
+  document.querySelectorAll('#kl-orga-tabs .orga-tab').forEach(t=>t.classList.remove('act'));
+  el.classList.add('act');
+  KL_ORGA=el.dataset.orga;
+  klRender();
+}
+
+function klRender(){
+  const q=(gv('kl-search')||'').toLowerCase();
+  let list=KL_ORGA==='Alle'?KL_DATA:KL_DATA.filter(e=>e.orga===KL_ORGA);
+  if(q)list=list.filter(e=>(e.name||'').toLowerCase().includes(q)||(e.id||'').includes(q)||(e.rang||'').toLowerCase().includes(q)||(e.tel||'').includes(q));
+
+  const body=document.getElementById('kl-body');
+  const empty=document.getElementById('kl-empty');
+  const count=document.getElementById('kl-count');
+  const title=document.getElementById('kl-list-title');
+
+  title.textContent=KL_ORGA==='Alle'?'[ Alle Eintrage ]':'[ '+KL_ORGA+' ]';
+  count.textContent=list.length+' Eintrage';
+
+  if(!list.length){
+    body.innerHTML='';
+    empty.style.display='block';
+  } else {
+    empty.style.display='none';
+    body.innerHTML=list.map((e)=>{
+      const ri=KL_DATA.indexOf(e);
+      const col=KL_ORGA_COLORS[e.orga]||'var(--mu)';
+      const nameSafe=e.name.replace(/'/g,"\\'");
+      return`<tr draggable="true" data-ri="${ri}" class="kl-drag-row" style="cursor:grab;">
+        <td>
+          <span style="color:var(--mu);font-size:14px;vertical-align:middle;margin-right:5px;cursor:grab" title="Ziehen zum Sortieren">⠿</span>
+          <span style="display:inline-block;font-size:10px;padding:1px 8px;border-radius:2px;border:1px solid ${col}55;background:${col}20;color:${col};font-weight:bold;letter-spacing:.05em">${e.orga}</span>
+        </td>
+        <td style="font-weight:bold">${e.name}</td>
+        <td style="color:var(--mu);font-size:11px">${e.id||'--'}</td>
+        <td style="font-size:11px">${e.rang||'--'}</td>
+        <td style="color:var(--bl);font-size:11px">${e.tel||'--'}</td>
+        <td style="text-align:center;white-space:nowrap">
+          <div style="display:flex;gap:3px;justify-content:center;">
+            <button class="btn sm bl" onclick="klCopyName('${nameSafe}')" title="Name kopieren"><i class="ti ti-user"></i></button>
+            <button class="btn sm" onclick="klOpenEdit(${ri})" title="Bearbeiten" style="color:var(--g);border-color:var(--gd)"><i class="ti ti-edit"></i></button>
+            <button class="btn sm ng" onclick="klDel(${ri})" title="Loschen"><i class="ti ti-trash"></i></button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    // Drag & Drop initialisieren
+    klInitDrag();
+  }
+
+  // Tab-Zahler aktualisieren
+  ['Alle','FIB','LSPD','SAHP','LI','EMS','NG','GOV'].forEach(o=>{
+    const tab=document.querySelector(`#kl-orga-tabs .orga-tab[data-orga="${o}"]`);
+    if(!tab)return;
+    const cnt=o==='Alle'?KL_DATA.length:KL_DATA.filter(e=>e.orga===o).length;
+    let badge=tab.querySelector('.orga-cnt');
+    if(cnt>0){
+      if(!badge){badge=document.createElement('span');badge.className='orga-cnt';tab.appendChild(badge);}
+      badge.textContent=cnt;
+    } else {
+      if(badge)badge.remove();
     }
+  });
+}
 
-    function deletePlayer(dbId) {
-        if(confirm("Eintrag entfernen?")) {
-            let data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
-            data = data.filter(p => p.dbId !== dbId);
-            localStorage.setItem('fibCleanData', JSON.stringify(data));
-            loadData();
-        }
-    }
+function klInitDrag(){
+  const rows=document.querySelectorAll('.kl-drag-row');
+  let dragSrc=null;
 
-    function loadData() {
-        if (document.getElementById('dashboardContent').style.display !== 'block') return;
+  rows.forEach(row=>{
+    row.addEventListener('dragstart',function(e){
+      dragSrc=this;
+      this.style.opacity='0.4';
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain', this.dataset.ri);
+    });
+    row.addEventListener('dragend',function(){
+      this.style.opacity='1';
+      document.querySelectorAll('.kl-drag-row').forEach(r=>{
+        r.style.borderTop='';
+        r.style.borderBottom='';
+      });
+    });
+    row.addEventListener('dragover',function(e){
+      e.preventDefault();
+      e.dataTransfer.dropEffect='move';
+      document.querySelectorAll('.kl-drag-row').forEach(r=>{r.style.borderTop='';r.style.borderBottom='';});
+      // Zeige Linie oben oder unten je nach Mausposition
+      const rect=this.getBoundingClientRect();
+      const mid=rect.top+rect.height/2;
+      if(e.clientY<mid) this.style.borderTop='2px solid var(--g)';
+      else this.style.borderBottom='2px solid var(--g)';
+    });
+    row.addEventListener('dragleave',function(){
+      this.style.borderTop='';
+      this.style.borderBottom='';
+    });
+    row.addEventListener('drop',function(e){
+      e.preventDefault();
+      if(dragSrc===this)return;
+      const fromRi=parseInt(e.dataTransfer.getData('text/plain'));
+      const toRi=parseInt(this.dataset.ri);
+      if(isNaN(fromRi)||isNaN(toRi)||fromRi===toRi)return;
 
-        const tbody = document.getElementById('playerTableBody');
-        tbody.innerHTML = '';
-        
-        const data = JSON.parse(localStorage.getItem('fibCleanData')) || [];
-        document.getElementById('counter').innerText = `DATENSÄTZE: ${data.length}`;
+      // Bestimme ob vor oder nach dem Ziel eingefügt werden soll
+      const rect=this.getBoundingClientRect();
+      const insertAfter=e.clientY>=(rect.top+rect.height/2);
 
-        data.reverse().forEach(p => {
-            const tr = document.createElement('tr');
+      // Element aus Array entfernen
+      const item=KL_DATA.splice(fromRi,1)[0];
 
-            // Bezeichnungen für Status-Punkt ermitteln
-            let statusLabel = p.status === 'rot' ? 'Rot' : p.status === 'gelb' ? 'Gelb' : 'Grün';
+      // Neue Position berechnen (nach dem Entfernen verschiebt sich der Index)
+      let insertAt=KL_DATA.indexOf(KL_DATA.find((_,i)=>i===(fromRi<toRi?toRi-1:toRi)));
+      // Einfacher: direkt über den aktuellen toRi-Wert nach Entfernen
+      let newIdx=toRi>fromRi?toRi-1:toRi;
+      if(insertAfter) newIdx++;
+      newIdx=Math.max(0,Math.min(newIdx,KL_DATA.length));
 
-            tr.innerHTML = `
-                <!-- Clean Status Indicator (Klickbar zum Wechseln) -->
-                <td>
-                    <div class="status-dot-container" onclick="rotateStatus(${p.dbId})">
-                        <span class="status-dot dot-${p.status}"></span>
-                        <span class="status-text text-${p.status}">${statusLabel}</span>
-                    </div>
-                </td>
-                
-                <!-- Direkt editierbare Textfelder -->
-                <td><input type="text" class="inline-edit" style="font-weight:700;" value="${p.name}" onchange="updateField(${p.dbId}, 'name', this.value)"></td>
-                <td><input type="text" class="inline-edit" style="font-family:monospace; color:var(--text-muted);" value="${p.id}" onchange="updateField(${p.dbId}, 'id', this.value)"></td>
-                <td><input type="text" class="inline-edit" value="${p.familie}" onchange="updateField(${p.dbId}, 'familie', this.value)"></td>
-                <td><input type="text" class="inline-edit" value="${p.grund}" onchange="updateField(${p.dbId}, 'grund', this.value)"></td>
-                <td><input type="text" class="inline-edit" value="${p.socId}" onchange="updateField(${p.dbId}, 'socId', this.value)"></td>
-                <td><input type="text" class="inline-edit" value="${p.socName}" onchange="updateField(${p.dbId}, 'socName', this.value)"></td>
-                
-                <!-- Klickbare interaktive Ja/Nein Badges -->
-                <td><span class="toggle-badge ${p.gefleckt === 'Ja' ? 'badge-ja' : 'badge-nein'}" onclick="toggleBadge(${p.dbId}, 'gefleckt')">${p.gefleckt}</span></td>
-                <td><span class="toggle-badge ${p.recheck === 'Ja' ? 'badge-ja' : 'badge-nein'}" onclick="toggleBadge(${p.dbId}, 'recheck')">${p.recheck}</span></td>
-                
-                <!-- Weitere editierbare Textfelder -->
-                <td><input type="text" class="inline-edit" value="${p.pcVerweigert}" onchange="updateField(${p.dbId}, 'pcVerweigert', this.value)"></td>
-                <td><input type="text" class="inline-edit" value="${p.bannAblauf}" onchange="updateField(${p.dbId}, 'bannAblauf', this.value)"></td>
-                
-                <!-- Klickbare Perma Badge -->
-                <td><span class="toggle-badge ${p.perma === 'Ja' ? 'badge-ja' : 'badge-nein'}" onclick="toggleBadge(${p.dbId}, 'perma')">${p.perma}</span></td>
-                
-                <!-- Proof Link / Input Kombi -->
-                <td>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <input type="text" class="inline-edit" style="font-size:0.75rem; color:var(--text-muted); max-width:80px;" value="${p.proof}" placeholder="Link bearb." onchange="updateField(${p.dbId}, 'proof', this.value)">
-                        ${p.proof && p.proof !== '-' ? `<a href="${p.proof}" target="_blank" class="clip-link">Clip</a>` : ''}
-                    </div>
-                </td>
-                
-                <td>
-                    <button class="delete-btn" onclick="deletePlayer(${p.dbId})">×</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
+      KL_DATA.splice(newIdx,0,item);
+      klSave();
+      klRender();
+    });
+  });
+}
+
+function klCopyName(name){
+  navigator.clipboard.writeText(name).then(()=>showToast('Name kopiert: '+name)).catch(()=>{});
+}
+
+function klOpenEdit(ri){
+  const e=KL_DATA[ri];if(!e)return;
+  document.getElementById('kl-edit-idx').value=ri;
+  document.getElementById('kl-edit-orga').value=e.orga||'';
+  document.getElementById('kl-edit-name').value=e.name||'';
+  document.getElementById('kl-edit-id').value=e.id||'';
+  document.getElementById('kl-edit-rang').value=e.rang||'';
+  document.getElementById('kl-edit-tel').value=e.tel||'';
+  document.getElementById('kl-modal').classList.add('show');
+}
+
+function klCloseModal(){document.getElementById('kl-modal').classList.remove('show');}
+
+function klSaveModal(){
+  const ri=parseInt(document.getElementById('kl-edit-idx').value);
+  const orga=document.getElementById('kl-edit-orga').value;
+  const name=document.getElementById('kl-edit-name').value.trim();
+  if(!orga||!name){showToast('Orga und Name sind Pflichtfelder!');return;}
+  KL_DATA[ri]={
+    orga,name,
+    id:document.getElementById('kl-edit-id').value.trim(),
+    rang:document.getElementById('kl-edit-rang').value.trim(),
+    tel:document.getElementById('kl-edit-tel').value.trim()
+  };
+  klSave();klRender();klCloseModal();showToast('Eintrag gespeichert');
+}
+
+document.getElementById('kl-modal').addEventListener('click',function(e){if(e.target===this)klCloseModal();});
+
+function klCopyList(orga){
+  const list=orga==='Alle'?KL_DATA:KL_DATA.filter(e=>e.orga===orga);
+  if(!list.length){showToast('Keine Eintrage vorhanden');return;}
+  const groups={};
+  list.forEach(e=>{if(!groups[e.orga])groups[e.orga]=[];groups[e.orga].push(e);});
+  const mask=(str)=>{if(!str||str==='--')return'--';return'||'+str+'||';};
+  const emoji_map={FIB:'🟡',LSPD:'🔵',SAHP:'🟢',LI:'🟣',EMS:'🔴',NG:'🩵',GOV:'🟠'};
+  let out='';
+  Object.keys(groups).forEach(org=>{
+    const emoji=emoji_map[org]||'⚪';
+    out+=`${emoji} **${org}**\n`;
+    groups[org].forEach(e=>{
+      out+=`${e.name} | ${e.rang||'--'} | ID: ${mask(e.id)} | Tel: ${mask(e.tel)}\n`;
+    });
+    out+='\n';
+  });
+  navigator.clipboard.writeText(out.trim()).then(()=>showToast('Liste fur Discord kopiert!')).catch(()=>{});
+}
+
+// ===================== FIBCO FALLAKTEN =====================
+let FC_DATA = [];
+
+function fcSave(){ cloudPush(); }
+
+function fcPreview(){
+  const name      = gv('fc-name')||'Name';
+  const coid      = gv('fc-coid')||'CO-ID-1';
+  const tatdat    = gv('fc-tatdat') ? gv('fc-tatdat').split('-').reverse().join('.') : 'TT.MM.YYYY';
+  const codename  = gv('fc-codename')||'[Codename]';
+  const tel       = gv('fc-tel')||'';
+  const behoerde  = gv('fc-behoerde')||'';
+  const familie   = gv('fc-familie')||'';
+  const reisepass = gv('fc-reisepass')||'';
+  const dienst    = gv('fc-dienstausweis')||'';
+  const pa        = gv('fc-personalakte')||'';
+  const pdaMain   = gv('fc-pda-main')||'';
+  const pdaFz     = gv('fc-pda-fz')||'';
+  const vorfall   = gv('fc-vorfall')||'[…]';
+  const befragung = gv('fc-befragung')||'- ABC';
+  const zeugen    = gv('fc-zeugen')||'- ABC';
+  const beweise   = gv('fc-beweise')||'- ABC';
+  const tatvorwurf= gv('fc-tatvorwurf')||'- ABC';
+  const schluss   = gv('fc-schluss')||'TEXT';
+
+  const txt =
+`${name} | ${coid} | ${tatdat}
+Codename: ${codename}
+Telefonnummer: ${tel}
+Behörde: ${behoerde}
+Familie: ${familie}
+Reisepass: ${reisepass}
+Dienstausweis: ${dienst}
+Personalakte: ${pa}
+PDA Hauptseite: ${pdaMain}
+PDA Fahrzeugliste: ${pdaFz}
+
+[Vorfall]
+${vorfall}
+
+[Befragung Tatverdächtiger]
+${befragung}
+
+[Zeugen-/aussagen]
+${zeugen}
+
+[Beweissammlung]
+${beweise}
+
+[Tatvorwurf]
+${tatvorwurf}
+
+[Schlussbetrachtung]
+${schluss}`;
+
+  setOb('fc-pre', txt);
+}
+
+function fcAdd(){
+  const name=gv('fc-name').trim(), coid=gv('fc-coid').trim();
+  if(!name||!coid){showToast('Name und CO-ID sind Pflichtfelder!');return;}
+  if(FC_DATA.find(e=>e.coid.toLowerCase()===coid.toLowerCase())){
+    showToast('⚠️ CO-ID '+coid+' bereits vorhanden!');
+    const el=document.getElementById('fc-coid');
+    if(el){el.style.borderColor='var(--re)';setTimeout(()=>el.style.borderColor='',2000);}
+    return;
+  }
+  const tatdat=gv('fc-tatdat')?gv('fc-tatdat').split('-').reverse().join('.'):'';
+  FC_DATA.push({
+    name, coid, tatdat,
+    codename:     gv('fc-codename').trim(),
+    tel:          gv('fc-tel').trim(),
+    behoerde:     gv('fc-behoerde').trim(),
+    familie:      gv('fc-familie').trim(),
+    reisepass:    gv('fc-reisepass').trim(),
+    dienstausweis:gv('fc-dienstausweis').trim(),
+    personalakte: gv('fc-personalakte').trim(),
+    pdaMain:      gv('fc-pda-main').trim(),
+    pdaFz:        gv('fc-pda-fz').trim(),
+    vorfall:      gv('fc-vorfall').trim(),
+    befragung:    gv('fc-befragung').trim(),
+    zeugen:       gv('fc-zeugen').trim(),
+    beweise:      gv('fc-beweise').trim(),
+    tatvorwurf:   gv('fc-tatvorwurf').trim(),
+    schluss:      gv('fc-schluss').trim(),
+    status:       gv('fc-status'),
+    date:         gd()
+  });
+  fcSave();
+  ['fc-name','fc-coid','fc-codename','fc-tel','fc-behoerde','fc-familie','fc-reisepass',
+   'fc-dienstausweis','fc-personalakte','fc-pda-main','fc-pda-fz',
+   'fc-vorfall','fc-befragung','fc-zeugen','fc-beweise','fc-tatvorwurf','fc-schluss'].forEach(id=>sv2(id,''));
+  const td=document.getElementById('fc-tatdat');if(td)td.value='';
+  sv2('fc-status','Offen');
+  setOb('fc-pre','');
+  fcRender();
+  showToast('Fallakte gespeichert');
+}
+
+function fcDel(i){
+  if(!confirm('Fallakte wirklich löschen?'))return;
+  FC_DATA.splice(i,1);fcSave();fcRender();showToast('Gelöscht');
+}
+
+function fcExpand(i){
+  const row=document.getElementById('fc-exp-'+i);
+  if(!row)return;
+  row.style.display=row.style.display==='none'?'table-row':'none';
+}
+
+function fcCopyEntry(i){
+  const e=FC_DATA[i];if(!e)return;
+  const txt=
+`${e.name} | ${e.coid} | ${e.tatdat||'--'}
+Codename: ${e.codename||''}
+Telefonnummer: ${e.tel||''}
+Behörde: ${e.behoerde||''}
+Familie: ${e.familie||''}
+Reisepass: ${e.reisepass||''}
+Dienstausweis: ${e.dienstausweis||''}
+Personalakte: ${e.personalakte||''}
+PDA Hauptseite: ${e.pdaMain||''}
+PDA Fahrzeugliste: ${e.pdaFz||''}
+
+[Vorfall]
+${e.vorfall||''}
+
+[Befragung Tatverdächtiger]
+${e.befragung||''}
+
+[Zeugen-/aussagen]
+${e.zeugen||''}
+
+[Beweissammlung]
+${e.beweise||''}
+
+[Tatvorwurf]
+${e.tatvorwurf||''}
+
+[Schlussbetrachtung]
+${e.schluss||''}`;
+  navigator.clipboard.writeText(txt).then(()=>showToast('Fallakte kopiert!')).catch(()=>{});
+}
+
+function fcRender(){
+  const q=(gv('fc-search')||'').toLowerCase();
+  const f=gv('fc-filter');
+  let list=FC_DATA.filter(e=>{
+    const okQ=!q||(e.name||'').toLowerCase().includes(q)||(e.coid||'').toLowerCase().includes(q)||(e.familie||'').toLowerCase().includes(q)||(e.reisepass||'').includes(q);
+    const okF=!f||e.status===f;
+    return okQ&&okF;
+  });
+  const body=document.getElementById('fc-body');
+  const empty=document.getElementById('fc-empty');
+  const count=document.getElementById('fc-count');
+  if(count)count.textContent=list.length+' Akten';
+  const statusCol={Offen:'#f0a500','In Bearbeitung':'var(--bl)',Abgeschlossen:'var(--gr)',Archiviert:'var(--mu)'};
+  if(!list.length){if(body)body.innerHTML='';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  if(body)body.innerHTML=list.map(e=>{
+    const i=FC_DATA.indexOf(e);
+    const col=statusCol[e.status]||'var(--mu)';
+    return`<tr>
+      <td style="color:var(--g);font-size:11px;white-space:nowrap">${e.coid}</td>
+      <td style="font-weight:bold">${e.name}</td>
+      <td style="font-size:11px;color:var(--mu);white-space:nowrap">${e.tatdat||'--'}</td>
+      <td style="font-size:11px;color:var(--mu)">${e.familie||'--'}</td>
+      <td><span style="display:inline-block;font-size:10px;padding:1px 7px;border-radius:2px;border:1px solid ${col}55;background:${col}18;color:${col}">${e.status}</span></td>
+      <td style="font-size:11px;color:var(--mu);white-space:nowrap">${e.date||'--'}</td>
+      <td style="text-align:center;white-space:nowrap">
+        <div style="display:flex;gap:3px;justify-content:center;">
+          <button class="btn sm" onclick="fcExpand(${i})" title="Details anzeigen" style="color:var(--g);border-color:var(--gd)"><i class="ti ti-eye"></i></button>
+          <button class="btn sm bl" onclick="fcCopyEntry(${i})" title="Vorlage kopieren"><i class="ti ti-copy"></i></button>
+          <button class="btn sm ng" onclick="fcDel(${i})" title="Löschen"><i class="ti ti-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+    <tr id="fc-exp-${i}" style="display:none">
+      <td colspan="7" style="background:var(--p2);padding:12px 14px;font-size:11px;color:var(--mu);border-bottom:1px solid var(--bd);line-height:1.9;">
+        <div style="white-space:pre-wrap;font-family:'Courier New',monospace;">${
+          (`${e.name} | ${e.coid} | ${e.tatdat||'--'}
+Codename: ${e.codename||''}
+Telefonnummer: ${e.tel||''}
+Behörde: ${e.behoerde||''}
+Familie: ${e.familie||''}
+Reisepass: ${e.reisepass||''}
+Dienstausweis: ${e.dienstausweis||''}
+Personalakte: ${e.personalakte||''}
+PDA Hauptseite: ${e.pdaMain||''}
+PDA Fahrzeugliste: ${e.pdaFz||''}
+
+[Vorfall]
+${e.vorfall||''}
+
+[Befragung Tatverdächtiger]
+${e.befragung||''}
+
+[Zeugen-/aussagen]
+${e.zeugen||''}
+
+[Beweissammlung]
+${e.beweise||''}
+
+[Tatvorwurf]
+${e.tatvorwurf||''}
+
+[Schlussbetrachtung]
+${e.schluss||''}`).replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        }</div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ===================== CID BEWEISE =====================
+let CID_DATA = [];
+
+function cidSave(){ cloudPush(); }
+
+function cidAdd(){
+  const orga=gv('cid-orga'), beamter=gv('cid-beamter').trim(), tat=gv('cid-tat').trim();
+  if(!orga||!beamter||!tat){showToast('Orga, Beamter und Tatvorwürfe sind Pflichtfelder!');return;}
+
+  // Zeitstempel automatisch
+  const now=new Date();
+  const ts=[
+    String(now.getDate()).padStart(2,'0'),
+    String(now.getMonth()+1).padStart(2,'0'),
+    now.getFullYear()
+  ].join('.')+' '+[
+    String(now.getHours()).padStart(2,'0'),
+    String(now.getMinutes()).padStart(2,'0')
+  ].join(':');
+
+  CID_DATA.push({
+    ts,
+    orga,
+    beamter,
+    pass:    gv('cid-pass').trim(),
+    kfz:     gv('cid-kfz').trim(),
+    gang:    gv('cid-gang'),
+    tatdat:  gv('cid-tatdat'),
+    tatzeit: gv('cid-tatzeit'),
+    tat,
+    clip:    gv('cid-clip').trim()
+  });
+
+  cidSave();
+  ['cid-pass','cid-kfz','cid-tat','cid-clip','cid-beamter'].forEach(id=>sv2(id,''));
+  sv2('cid-orga','');sv2('cid-gang','');
+  const td=document.getElementById('cid-tatdat'); if(td) td.value='';
+  const tt=document.getElementById('cid-tatzeit'); if(tt) tt.value='';
+  cidRender();
+  showToast('Eintrag gespeichert');
+}
+
+function cidDel(i){
+  if(!confirm('Eintrag wirklich löschen?'))return;
+  CID_DATA.splice(i,1);cidSave();cidRender();showToast('Gelöscht');
+}
+
+function cidRender(){
+  const q=(gv('cid-search')||'').toLowerCase();
+  const fo=gv('cid-filter-orga');
+  let list=CID_DATA.filter(e=>{
+    const okQ=!q||
+      (e.beamter||'').toLowerCase().includes(q)||
+      (e.orga||'').toLowerCase().includes(q)||
+      (e.pass||'').includes(q)||
+      (e.kfz||'').toLowerCase().includes(q)||
+      (e.tat||'').toLowerCase().includes(q);
+    const okO=!fo||e.orga===fo;
+    return okQ&&okO;
+  });
+
+  const body=document.getElementById('cid-body');
+  const empty=document.getElementById('cid-empty');
+  const count=document.getElementById('cid-count');
+  if(count) count.textContent=list.length+' Einträge';
+
+  const KL_ORGA_COL={FIB:'#c9a84c',LSPD:'#3a8fd4',SAHP:'#4db36a',LI:'#b34dce',EMS:'#e74c3c',NG:'#4dcecb',GOV:'#e0972f'};
+
+  if(!list.length){
+    if(body) body.innerHTML='';
+    if(empty) empty.style.display='block';
+    return;
+  }
+  if(empty) empty.style.display='none';
+  if(body) body.innerHTML=list.map(e=>{
+    const i=CID_DATA.indexOf(e);
+    const col=KL_ORGA_COL[e.orga]||'var(--mu)';
+    const tatShort=e.tat&&e.tat.length>40?e.tat.slice(0,40)+'...':e.tat||'--';
+    const clipHtml=e.clip
+      ? (e.clip.startsWith('http')
+          ? `<a href="${e.clip}" target="_blank" style="color:var(--bl);font-size:11px;text-decoration:none;"><i class="ti ti-external-link"></i> Link</a>`
+          : `<span style="font-size:11px;color:var(--mu)">${e.clip}</span>`)
+      : '<span style="color:var(--mu);font-size:11px">--</span>';
+    const tatDatFmt=e.tatdat?e.tatdat.split('-').reverse().join('.'):'--';
+    return`<tr>
+      <td style="font-size:10px;color:var(--mu);white-space:nowrap">${e.ts||'--'}</td>
+      <td><span style="display:inline-block;font-size:10px;padding:1px 7px;border-radius:2px;border:1px solid ${col}55;background:${col}20;color:${col};font-weight:bold">${e.orga}</span></td>
+      <td style="font-size:11px;font-weight:bold;white-space:nowrap">${e.beamter}</td>
+      <td style="font-size:11px;color:var(--mu)">${e.pass||'--'}</td>
+      <td style="font-size:11px;color:var(--mu)">${e.kfz||'--'}</td>
+      <td style="font-size:11px;color:var(--mu);white-space:nowrap">${e.gang||'--'}</td>
+      <td style="font-size:11px;color:var(--mu);white-space:nowrap">${tatDatFmt}</td>
+      <td style="font-size:11px;color:var(--mu);white-space:nowrap">${e.tatzeit||'--'}</td>
+      <td style="font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.tat||''}">${tatShort}</td>
+      <td>${clipHtml}</td>
+      <td style="text-align:center;white-space:nowrap">
+        <div style="display:flex;gap:3px;justify-content:center;">
+          <button class="btn sm" onclick="cidExpand(${i})" title="Details" style="color:var(--g);border-color:var(--gd)"><i class="ti ti-eye"></i></button>
+          <button class="btn sm ng" onclick="cidDel(${i})" title="Löschen"><i class="ti ti-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+    <tr id="cid-exp-${i}" style="display:none">
+      <td colspan="11" style="background:var(--p2);padding:10px 14px;font-size:11px;color:var(--mu);border-bottom:1px solid var(--bd)">
+        <b style="color:var(--tx)">Vollständige Tatvorwürfe:</b><br>${(e.tat||'').replace(/\n/g,'<br>')}
+        ${e.gang?`<br><br><b style="color:var(--tx)">Gang:</b> ${e.gang}`:''}
+        ${e.clip?`<br><br><b style="color:var(--tx)">Clip:</b> <a href="${e.clip}" target="_blank" style="color:var(--bl)">${e.clip}</a>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function cidExpand(i){
+  const row=document.getElementById('cid-exp-'+i);
+  if(!row)return;
+  row.style.display=row.style.display==='none'?'table-row':'none';
+}
+
+// ===================== UTILS =====================
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function cp(id){const e=document.getElementById(id);if(!e)return;navigator.clipboard.writeText(e.textContent).then(()=>showToast('In Zwischenablage kopiert')).catch(()=>{});}
+function sv(name,el){
+  const target=document.querySelector(`.ni[onclick*="'${name}'"]`);
+  if(target && target.hasAttribute('data-roles') && !hasRole(target.getAttribute('data-roles'))){
+    showToast('Kein Zugriff auf dieses Modul');
+    return;
+  }
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('act'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
+  const vEl=document.getElementById('v-'+name);if(vEl)vEl.classList.add('act');
+  if(el&&el.classList&&el.classList.contains('ni'))el.classList.add('act');
+  else document.querySelectorAll('.ni').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+name+"'"))n.classList.add('act');});
+  if(name==='ma')filterMA();
+  if(name==='kl')klRender();
+}
+function setCol(h){
+  document.documentElement.style.setProperty('--g',h);
+  const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
+  document.documentElement.style.setProperty('--gd',`rgba(${r},${g},${b},0.45)`);
+  document.documentElement.style.setProperty('--gg',`rgba(${r},${g},${b},0.10)`);
+  const el=document.getElementById('colhex');if(el)el.textContent=h;
+  try{localStorage.setItem('fib_color',h);}catch(e){}
+}
+function tick(){
+  const t=new Date(),s=[t.getHours(),t.getMinutes(),t.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+  ['clk','bclk'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=s;});
+}
+
+// ===================== VORLAGEN-EDITOR =====================
+const TPL_DEFAULTS={
+  rang:`-# Ranganpassung . FIB Personalabteilung\n\n**Mitarbeiter:** {dn} | {name}\n**Von:** {alter_rang}\n**Nach:** {neuer_rang}\n**Datum:** {datum}\n**Begruendung:** {grund}{absender}`,
+  ein: `-# Einstellung . FIB Personalabteilung\n\n**Dienstnummer:** {dn}\n**Name:** {name}\n**Rang:** {rang}\n**Abteilung:** @{abteilung}\n**Einstellungsdatum:** {datum}\n\nWillkommen im Federal Investigation Bureau!{absender}`,
+  kue: `-# Kuendigung . FIB Personalabteilung\n\n**Mitarbeiter:** {dn} | {name}\n**Rang:** {rang}\n**Datum:** {datum}\n**Grund:** {grund}\n\nDer Mitarbeiter wird mit sofortiger Wirkung aus dem Dienst entlassen.{absender}`,
+  az:  `Das Federal Investigation Bureau (FIB),\nuebermittelt hiermit das Arbeitszeugnis von:\n\n**Vor- u. Nachname:** {name}\n**Reisepassnr.:** {pass}\n**Rang:** {rang}\n**Datum der Kuendigung:** {datum}\n\n(Arbeitszeugnis wird als Anhang beigefuegt){absender}`,
+  san: `-# Sanktion . FIB Personalabteilung\n\n**Mitarbeiter:** {dn} | {name}\n**Sanktionsart:** {sanktion}\n**Datum:** {datum}\n**Begruendung:** {grund}{absender}`,
+  pa:  `-# Personalakte . FIB\n\n**Dienstnummer:** {dn}\n**Name:** {name}\n**Rang:** {rang}\n**Abteilung:** {abteilung}\n**Eintrittsdatum:** {eintritt}\n**Strike:** 0/3\n**Status:** Aktiv{absender}`,
+};
+const TPL_LABELS={rang:'Ranganpassung',ein:'Einstellung',kue:'Kündigung',az:'AZ-System',san:'Sanktion',pa:'Personalakte'};
+const TPL_SAMPLE={dn:'42',name:'Max Mustermann',rang:'17. Commander',alter_rang:'16. Lieutenant Commander',neuer_rang:'17. Commander',datum:gd(),grund:'Herausragende Leistungen im Dienst',abteilung:'Human Resources',pass:'99999',sanktion:'Schriftliche Verwarnung',eintritt:gd(),absender:''};
+
+function loadTpls(){try{const d=localStorage.getItem('fib_tpl');if(d)return JSON.parse(d);}catch(e){}return{};}
+function saveTpls(t){try{localStorage.setItem('fib_tpl',JSON.stringify(t));}catch(e){}}
+
+let TPLS=loadTpls();
+let curTplKey='rang';
+
+function getTpl(key){return TPLS[key]!==undefined?TPLS[key]:TPL_DEFAULTS[key];}
+
+function showTplTab(key,btn){
+  curTplKey=key;
+  document.querySelectorAll('.tpl-tab').forEach(b=>b.classList.remove('act-tab'));
+  if(btn)btn.classList.add('act-tab');
+  const lbl=TPL_LABELS[key]||key;
+  const title=document.getElementById('tpl-pan-title');
+  if(title)title.querySelector('.pan-t').textContent='[ '+lbl+' — Vorlage bearbeiten ]';
+  const ed=document.getElementById('tpl-editor');
+  if(ed){ed.value=getTpl(key);updateTplPreview();}
+}
+
+function applyTplVars(tpl,vars){return tpl.replace(/\{(\w+)\}/g,(_,k)=>vars[k]!==undefined?vars[k]:'{'+k+'}');}
+
+function updateTplPreview(){
+  const ed=document.getElementById('tpl-editor');
+  const pre=document.getElementById('tpl-preview');
+  if(!ed||!pre)return;
+  const sample={
+    name:gv('ra-name')||gv('ku-name')||gv('az-name')||gv('sa-name')||gv('pa-name')||TPL_SAMPLE.name,
+    dn:gv('ra-dn')||gv('ku-dn')||gv('sa-dn')||gv('pa-dn')||TPL_SAMPLE.dn,
+    rang:gv('ra-old')||gv('ku-rang')||gv('az-rang')||gv('pa-rang')||TPL_SAMPLE.rang,
+    alter_rang:gv('ra-old')||TPL_SAMPLE.alter_rang,
+    neuer_rang:gv('ra-new')||TPL_SAMPLE.neuer_rang,
+    datum:gd(),
+    grund:gv('ra-grund')||gv('ku-grund')||gv('sa-grund')||TPL_SAMPLE.grund,
+    abteilung:gv('es-abt')||gv('pa-abt')||TPL_SAMPLE.abteilung,
+    pass:gv('az-pass')||TPL_SAMPLE.pass,
+    sanktion:gv('sa-art')||TPL_SAMPLE.sanktion,
+    eintritt:fmtD(gv('pa-datum'))||gd(),
+    absender:absLine(),
+  };
+  pre.textContent=applyTplVars(ed.value,sample);
+}
+
+function saveTpl(){
+  const ed=document.getElementById('tpl-editor');if(!ed)return;
+  TPLS[curTplKey]=ed.value;saveTpls(TPLS);
+  showToast('Vorlage "'+TPL_LABELS[curTplKey]+'" gespeichert');
+  [upRa,upEs,upKu,upAz,upSa,upPa].forEach(f=>f());
+}
+
+function resetTpl(key){
+  if(!confirm('Vorlage "'+TPL_LABELS[key]+'" auf Standard zurücksetzen?'))return;
+  delete TPLS[key];saveTpls(TPLS);
+  const ed=document.getElementById('tpl-editor');
+  if(ed){ed.value=TPL_DEFAULTS[key];updateTplPreview();}
+  showToast('Standard wiederhergestellt');
+  [upRa,upEs,upKu,upAz,upSa,upPa].forEach(f=>f());
+}
+
+function renderTpl(key,vars){return applyTplVars(getTpl(key),vars);}
+
+function upRa(){
+  const vars={dn:gv('ra-dn')||'XX',name:gv('ra-name')||'Name',alter_rang:gv('ra-old')||'Alter Rang',neuer_rang:gv('ra-new')||'Neuer Rang',datum:gd(),grund:gv('ra-grund')||'--',rang:gv('ra-old')||'--',abteilung:'--',pass:'--',sanktion:'--',eintritt:gd(),absender:absLine()};
+  setOb('ra-pre',renderTpl('rang',vars).trimEnd());
+}
+function upEs(){
+  const vars={dn:gv('es-dn')||'XX',name:gv('es-name')||'Name',rang:gv('es-rang')||'Rang',abteilung:gv('es-abt')||'Abteilung',datum:gd(),grund:'--',alter_rang:'--',neuer_rang:'--',pass:'--',sanktion:'--',eintritt:gd(),absender:absLine()};
+  setOb('es-pre',renderTpl('ein',vars).trimEnd());
+}
+function upKu(){
+  const vars={dn:gv('ku-dn')||'XX',name:gv('ku-name')||'Name',rang:gv('ku-rang')||'--',datum:gd(),grund:gv('ku-grund')||'--',abteilung:'--',alter_rang:'--',neuer_rang:'--',pass:'--',sanktion:'--',eintritt:gd(),absender:absLine()};
+  setOb('ku-pre',renderTpl('kue',vars).trimEnd());
+}
+function upAz(){
+  const vars={name:gv('az-name')||'Vor- u. Nachname',pass:gv('az-pass')||'--',rang:gv('az-rang')||'--',datum:fmtD(gv('az-datum'))||'--',dn:'--',abteilung:'--',grund:'--',alter_rang:'--',neuer_rang:'--',sanktion:'--',eintritt:gd(),absender:absLine()};
+  setOb('az-pre',renderTpl('az',vars).trimEnd());
+}
+function upSa(){
+  const vars={dn:gv('sa-dn')||'XX',name:gv('sa-name')||'Name',sanktion:gv('sa-art')||'--',datum:gd(),grund:gv('sa-grund')||'--',rang:'--',abteilung:'--',alter_rang:'--',neuer_rang:'--',pass:'--',eintritt:gd(),absender:absLine()};
+  setOb('sa-pre',renderTpl('san',vars).trimEnd());
+}
+function upPa(){
+  const vars={dn:gv('pa-dn')||'XX',name:gv('pa-name')||'Name',rang:gv('pa-rang')||'--',abteilung:gv('pa-abt')||'--',eintritt:fmtD(gv('pa-datum'))||gd(),datum:gd(),grund:'--',alter_rang:'--',neuer_rang:'--',pass:'--',sanktion:'--',absender:absLine()};
+  setOb('pa-pre',renderTpl('pa',vars).trimEnd());
+}
+
+
+// ===================== INIT =====================
+let MA=DEF.map(m=>({...m}));
+let filtered=[...MA];
+let maPage=1;
+const PER=15;
+
+try{const c=localStorage.getItem('fib_color');if(c){setCol(c);document.getElementById('colpick').value=c;}}catch(e){}
+tick();setInterval(tick,1000);
+fillSelects();
+buildMA();
+loadAbsIntoFields();
+klRender();
+[upAz,upRa,upEs,upKu,upSa,upPa].forEach(f=>f());
+showTplTab('rang',document.querySelector('.tpl-tab'));
+
+// Login-Enter-Taste
+['login-email','login-pass'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+});
+
+let _dataStarted=false;
+function startAppData(){
+  if(_dataStarted)return;
+  _dataStarted=true;
+  // Startet Firebase Live-Listener — lädt KL/FC/CID-Daten initial und bei jeder Änderung automatisch
+  cloudLoad();
+  // Startet Google Sheet Live-Sync für Mitarbeiterliste (alle 30 Sek.)
+  startSheetSync();
+}
+
+// Versuche gespeicherte Login-Session wiederherzustellen (Login selbst braucht kein Firebase).
+// Firebase/Firestore wird weiterhin nur fur den Cloud-Datenabgleich (KL/FC/CID) genutzt
+// und erst gestartet, sobald jemand erfolgreich eingeloggt ist (siehe startAppData()).
+tryRestoreSession();
 </script>
-
 </body>
 </html>
