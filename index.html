@@ -6,51 +6,17 @@
 <title>FIB Arbeitszeugnis-Generator</title>
 <style>
   :root{
-    --ink:#111114;
-    --paper:#ffffff;
-    --edge:#d9dbe0;
-    --panel:#1c1f26;
-    --panel2:#252932;
-    --panel-line:#343945;
-    --field:#2e333e;
-    --field-line:#414855;
-    --text:#e7e9ee;
-    --muted:#9aa1ad;
-    --accent:#c9a94f;
-    --accent-soft:#3a3320;
-    --gray-name:#8a8d94;
+    --ink:#111114;--paper:#ffffff;--panel:#1c1f26;--panel2:#252932;--panel-line:#343945;
+    --field:#2e333e;--field-line:#414855;--text:#e7e9ee;--muted:#9aa1ad;
+    --accent:#c9a94f;--ok:#4caf7d;--err:#d76a6a;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
-  body{
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-    background:#14161b;
-    color:var(--text);
-    display:flex;
-    min-height:100vh;
-  }
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#14161b;color:var(--text);display:flex;min-height:100vh;}
 
-  /* ---------- Editor panel ---------- */
-  .editor{
-    width:440px;
-    flex:0 0 440px;
-    background:var(--panel);
-    border-right:1px solid var(--panel-line);
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-    position:sticky;
-    top:0;
-  }
-  .editor-head{
-    padding:22px 24px 16px;
-    border-bottom:1px solid var(--panel-line);
-  }
-  .brandline{
-    display:flex;align-items:center;gap:10px;
-    letter-spacing:.14em;font-size:12px;color:var(--accent);font-weight:600;
-    text-transform:uppercase;
-  }
+  .editor{width:440px;flex:0 0 440px;background:var(--panel);border-right:1px solid var(--panel-line);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;}
+  .editor-head{padding:22px 24px 16px;border-bottom:1px solid var(--panel-line);}
+  .brandline{display:flex;align-items:center;gap:10px;letter-spacing:.14em;font-size:12px;color:var(--accent);font-weight:600;text-transform:uppercase;}
   .brandline .dot{width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent);}
   .editor-head h1{margin:8px 0 2px;font-size:20px;font-weight:600;letter-spacing:-.01em;}
   .editor-head p{margin:0;font-size:12.5px;color:var(--muted);}
@@ -60,11 +26,7 @@
   .editor-body::-webkit-scrollbar-thumb{background:var(--field-line);border-radius:8px;}
 
   fieldset{border:none;margin:18px 0 0;padding:0;}
-  legend{
-    font-size:11px;letter-spacing:.13em;text-transform:uppercase;
-    color:var(--accent);font-weight:600;padding:0;margin-bottom:12px;
-    display:flex;align-items:center;gap:8px;width:100%;
-  }
+  legend{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;padding:0;margin-bottom:12px;display:flex;align-items:center;gap:8px;width:100%;}
   legend::after{content:"";flex:1;height:1px;background:var(--panel-line);}
 
   label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px;}
@@ -72,77 +34,47 @@
   .row > .fld{flex:1;}
   .fld{margin-bottom:12px;}
 
-  input[type=text],input[type=date],textarea{
-    width:100%;background:var(--field);border:1px solid var(--field-line);
-    color:var(--text);border-radius:8px;padding:9px 11px;font-size:13.5px;
-    font-family:inherit;transition:border-color .15s,box-shadow .15s;
-  }
-  input:focus,textarea:focus{
-    outline:none;border-color:var(--accent);
-    box-shadow:0 0 0 3px rgba(201,169,79,.15);
-  }
+  input[type=text],input[type=date],textarea,select{width:100%;background:var(--field);border:1px solid var(--field-line);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13.5px;font-family:inherit;transition:border-color .15s,box-shadow .15s;}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,169,79,.15);}
   textarea{resize:vertical;min-height:58px;line-height:1.45;}
+  select{cursor:pointer;}
+
+  .sync{background:var(--panel2);border:1px solid var(--panel-line);border-radius:10px;padding:14px;margin-top:4px;}
+  .sync label{font-size:11px;letter-spacing:.05em;}
+  .sync .row{gap:8px;}
+  .btn-load{background:var(--accent);color:#1a1500;border:1px solid var(--accent);border-radius:8px;padding:9px 12px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;transition:.15s;}
+  .btn-load:hover{filter:brightness(1.08);}
+  .status{font-size:11.5px;margin-top:9px;min-height:15px;color:var(--muted);}
+  .status.ok{color:var(--ok);}
+  .status.err{color:var(--err);}
 
   .checks{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px;}
-  .chk{
-    display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--text);
-    background:var(--field);border:1px solid var(--field-line);border-radius:8px;
-    padding:8px 10px;cursor:pointer;user-select:none;transition:.15s;
-  }
+  .chk{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--text);background:var(--field);border:1px solid var(--field-line);border-radius:8px;padding:8px 10px;cursor:pointer;user-select:none;transition:.15s;}
   .chk:hover{border-color:var(--field-line);background:var(--panel2);}
   .chk input{position:absolute;opacity:0;pointer-events:none;}
-  .box{
-    width:16px;height:16px;border-radius:4px;border:1.5px solid var(--field-line);
-    display:grid;place-items:center;flex:0 0 16px;transition:.15s;
-  }
+  .box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--field-line);display:grid;place-items:center;flex:0 0 16px;transition:.15s;}
   .box svg{width:11px;height:11px;opacity:0;transform:scale(.5);transition:.15s;}
   .chk input:checked ~ .box{background:var(--accent);border-color:var(--accent);}
   .chk input:checked ~ .box svg{opacity:1;transform:scale(1);}
   .chk input:checked ~ .lbl{color:#fff;}
 
-  .actions{
-    position:absolute;bottom:0;left:0;right:0;
-    padding:16px 24px;background:linear-gradient(180deg,transparent,var(--panel) 30%);
-    display:flex;gap:10px;
-  }
-  button{
-    font-family:inherit;font-size:13.5px;font-weight:600;border-radius:9px;
-    padding:11px 14px;cursor:pointer;border:1px solid transparent;transition:.15s;
-  }
+  .actions{position:absolute;bottom:0;left:0;right:0;padding:16px 24px;background:linear-gradient(180deg,transparent,var(--panel) 30%);display:flex;gap:10px;}
+  button{font-family:inherit;font-size:13.5px;font-weight:600;border-radius:9px;padding:11px 14px;cursor:pointer;border:1px solid transparent;transition:.15s;}
   .btn-print{flex:1;background:var(--accent);color:#1a1500;border-color:var(--accent);}
   .btn-print:hover{filter:brightness(1.08);}
   .btn-reset{background:transparent;color:var(--muted);border-color:var(--field-line);}
   .btn-reset:hover{color:#fff;border-color:var(--muted);}
 
-  /* ---------- Preview stage ---------- */
-  .stage{
-    flex:1;overflow-y:auto;height:100vh;
-    padding:40px;display:flex;justify-content:center;align-items:flex-start;
-    background:
-      radial-gradient(1200px 600px at 70% -10%,rgba(201,169,79,.06),transparent 60%),
-      #1a1d24;
-  }
+  .stage{flex:1;overflow-y:auto;height:100vh;padding:40px;display:flex;justify-content:center;align-items:flex-start;background:radial-gradient(1200px 600px at 70% -10%,rgba(201,169,79,.06),transparent 60%),#1a1d24;}
 
-  /* ---------- The document (A4) ---------- */
-  .sheet{
-    width:210mm;min-height:297mm;background:var(--paper);color:var(--ink);
-    padding:26mm 24mm 20mm;box-shadow:0 24px 60px rgba(0,0,0,.55);
-    font-family:'Georgia','Times New Roman',serif;position:relative;
-  }
+  .sheet{width:210mm;min-height:297mm;background:var(--paper);color:var(--ink);padding:26mm 24mm 20mm;box-shadow:0 24px 60px rgba(0,0,0,.55);font-family:'Georgia','Times New Roman',serif;position:relative;}
   .doc-head{display:flex;justify-content:space-between;align-items:flex-start;}
   .doc-title{font-size:29px;line-height:1.15;font-weight:400;}
   .doc-title .light{color:#9a9a9a;}
-  .crest{
-    width:96px;height:96px;flex:0 0 96px;border:2.5px solid #16181c;border-radius:50%;
-    display:grid;place-items:center;text-align:center;position:relative;
-    font-family:'Georgia',serif;
-  }
+  .crest{width:96px;height:96px;flex:0 0 96px;border:2.5px solid #16181c;border-radius:50%;display:grid;place-items:center;text-align:center;position:relative;font-family:'Georgia',serif;}
   .crest::before{content:"";position:absolute;inset:6px;border:1px solid #16181c;border-radius:50%;}
   .crest .fib{font-size:26px;font-weight:700;letter-spacing:1px;line-height:1;}
-  .crest .ring{
-    position:absolute;font-size:6.2px;letter-spacing:1.5px;color:#16181c;
-    width:100%;text-align:center;font-weight:600;
-  }
+  .crest .ring{position:absolute;font-size:6.2px;letter-spacing:1.5px;color:#16181c;width:100%;text-align:center;font-weight:600;}
   .crest .ring.top{top:9px;}
   .crest .ring.bot{bottom:9px;}
 
@@ -155,10 +87,7 @@
 
   .exams{margin:18px 0 6px;display:grid;grid-template-columns:1fr 1fr;gap:8px 30px;}
   .exam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13.6px;}
-  .exam .tick{
-    width:15px;height:15px;border:1.4px solid #16181c;border-radius:2px;
-    display:grid;place-items:center;flex:0 0 15px;font-size:11px;line-height:1;
-  }
+  .exam .tick{width:15px;height:15px;border:1.4px solid #16181c;border-radius:2px;display:grid;place-items:center;flex:0 0 15px;font-size:11px;line-height:1;}
   .exam.off{display:none;}
 
   .notes{margin-top:34px;text-align:center;}
@@ -170,10 +99,7 @@
 
   .signs{margin-top:46px;display:flex;justify-content:space-between;align-items:flex-end;text-align:center;}
   .sign{flex:1;}
-  .sign .name{
-    font-family:'Segoe Script','Brush Script MT',cursive;font-size:23px;
-    border-bottom:1px solid #16181c;display:inline-block;padding:0 18px 3px;margin-bottom:6px;min-width:150px;
-  }
+  .sign .name{font-family:'Segoe Script','Brush Script MT',cursive;font-size:23px;border-bottom:1px solid #16181c;display:inline-block;padding:0 18px 3px;margin-bottom:6px;min-width:150px;}
   .sign .role{font-size:12px;font-family:'Georgia',serif;}
   .seal{flex:0 0 96px;}
   .seal .crest{width:78px;height:78px;margin:0 auto;}
@@ -186,7 +112,6 @@
     .actions{position:static;background:none;padding:16px 0 0;}
     .editor-body{padding-bottom:24px;}
   }
-
   @media print{
     body{display:block;background:#fff;}
     .editor{display:none;}
@@ -198,21 +123,33 @@
 </head>
 <body>
 
-  <!-- ============ EDITOR ============ -->
   <aside class="editor">
     <div class="editor-head">
       <div class="brandline"><span class="dot"></span>Federal Investigation Bureau</div>
       <h1>Arbeitszeugnis-Generator</h1>
-      <p>Felder ausfüllen — die Vorschau aktualisiert sich live.</p>
+      <p>Sheet laden, Person wählen, PDF speichern.</p>
     </div>
 
     <div class="editor-body">
       <fieldset>
-        <legend>Person</legend>
-        <div class="fld">
-          <label>Voller Name</label>
-          <input type="text" id="f_name" value="Filip Vonwanze">
+        <legend>Google Sheet</legend>
+        <div class="sync">
+          <label>Veröffentlichte CSV-URL (Datei → Freigeben → Im Web veröffentlichen → CSV)</label>
+          <div class="row">
+            <input type="text" id="f_url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+            <button class="btn-load" onclick="loadSheet()">Laden</button>
+          </div>
+          <div class="status" id="status">Noch nicht geladen.</div>
         </div>
+        <div class="fld" style="margin-top:12px;">
+          <label>Person auswählen</label>
+          <select id="f_person" onchange="pickPerson()"><option value="">— erst Sheet laden —</option></select>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Person</legend>
+        <div class="fld"><label>Voller Name</label><input type="text" id="f_name" value="Filip Vonwanze"></div>
         <div class="row">
           <div class="fld"><label>Reisepass-Nr.</label><input type="text" id="f_pass" value="176902"></div>
           <div class="fld"><label>Dienst-Nr.</label><input type="text" id="f_dienst" value="32"></div>
@@ -222,8 +159,8 @@
       <fieldset>
         <legend>Dienstzeit &amp; Rang</legend>
         <div class="row">
-          <div class="fld"><label>Von</label><input type="date" id="f_from" value="2026-06-30"></div>
-          <div class="fld"><label>Bis</label><input type="date" id="f_to" value="2026-08-17"></div>
+          <div class="fld"><label>Von</label><input type="text" id="f_from" value="30.06.2026" placeholder="TT.MM.JJJJ"></div>
+          <div class="fld"><label>Bis</label><input type="text" id="f_to" value="17.08.2026" placeholder="TT.MM.JJJJ"></div>
         </div>
         <div class="fld"><label>Rang / Position</label><input type="text" id="f_rank" value="27. Divisional Director"></div>
         <div class="fld"><label>Hauptbereich</label><input type="text" id="f_area" value="TD Curator"></div>
@@ -239,15 +176,13 @@
         <div class="fld"><label>Anmerkungen</label><textarea id="f_notes">Kündigung auf Eigenwunsch</textarea></div>
         <div class="row">
           <div class="fld"><label>Ort</label><input type="text" id="f_place" value="Los Santos"></div>
-          <div class="fld"><label>Datum</label><input type="date" id="f_date" value="2026-07-18"></div>
+          <div class="fld"><label>Datum</label><input type="text" id="f_date" value="18.07.2026" placeholder="TT.MM.JJJJ"></div>
         </div>
       </fieldset>
 
       <fieldset>
         <legend>Unterzeichner</legend>
-        <div class="row">
-          <div class="fld"><label>Name (links)</label><input type="text" id="f_s1n" value="Dan Reacher"></div>
-        </div>
+        <div class="fld"><label>Name (links)</label><input type="text" id="f_s1n" value="Dan Reacher"></div>
         <div class="fld"><label>Funktion (links)</label><input type="text" id="f_s1r" value="Assistant Director of FIB"></div>
         <div class="fld"><label>Name (rechts)</label><input type="text" id="f_s2n" value="Eko Plaste"></div>
         <div class="fld"><label>Funktion (rechts)</label><input type="text" id="f_s2r" value="Director of FIB"></div>
@@ -255,149 +190,156 @@
     </div>
 
     <div class="actions">
-      <button class="btn-reset" onclick="resetForm()">Zurücksetzen</button>
+      <button class="btn-reset" onclick="resetForm()">Leeren</button>
       <button class="btn-print" onclick="window.print()">Als PDF speichern</button>
     </div>
   </aside>
 
-  <!-- ============ PREVIEW ============ -->
   <main class="stage">
     <article class="sheet" id="sheet">
       <div class="doc-head">
         <div class="doc-title">Arbeitszeugnis<br>des Federal <span class="light">Investigation Bureau</span></div>
-        <div class="crest">
-          <span class="ring top">★ DEPARTMENT OF JUSTICE ★</span>
-          <span class="fib">FIB</span>
-          <span class="ring bot">FEDERAL INVESTIGATION</span>
-        </div>
+        <div class="crest"><span class="ring top">★ DEPARTMENT OF JUSTICE ★</span><span class="fib">FIB</span><span class="ring bot">FEDERAL INVESTIGATION</span></div>
       </div>
-
-      <div class="person">
-        Herr <span id="p_name1">Filip Vonwanze</span><br>
-        Reisepass Nr. <span id="p_pass">176902</span><br>
-        Dienst Nr. <span id="p_dienst">32</span>
-      </div>
-
+      <div class="person">Herr <span id="p_name1">Filip Vonwanze</span><br>Reisepass Nr. <span id="p_pass">176902</span><br>Dienst Nr. <span id="p_dienst">32</span></div>
       <div class="body">
-        <p>Herr <span class="nm" id="p_name2">Filip Vonwanze</span> war vom
-          <span class="dt" id="p_from">30.06.2026</span> bis zum
-          <span class="dt" id="p_to">17.08.2026</span> im Federal Investigation Bureau als
-          <span class="rank" id="p_rank">27. Divisional Director</span> tätig.</p>
-
-        <p>Während dieser Zeit war er für verschiedene Aufgaben aber hauptsächlich im Bereich des
-          <span class="nm" id="p_area">TD Curator</span> des Federal Investigation Bureau verantwortlich.</p>
-
-        <p>Hier ist eine übersichtliche Auflistung der Prüfungen, die
-          <span class="nm" id="p_name3">Filip Vonwanze</span> im Rahmen seiner FIB-Karriere absolviert hat:</p>
-
+        <p>Herr <span class="nm" id="p_name2">Filip Vonwanze</span> war vom <span class="dt" id="p_from">30.06.2026</span> bis zum <span class="dt" id="p_to">17.08.2026</span> im Federal Investigation Bureau als <span class="rank" id="p_rank">27. Divisional Director</span> tätig.</p>
+        <p>Während dieser Zeit war er für verschiedene Aufgaben aber hauptsächlich im Bereich des <span class="nm" id="p_area">TD Curator</span> des Federal Investigation Bureau verantwortlich.</p>
+        <p>Hier ist eine übersichtliche Auflistung der Prüfungen, die <span class="nm" id="p_name3">Filip Vonwanze</span> im Rahmen seiner FIB-Karriere absolviert hat:</p>
         <div class="exams" id="p_exams"></div>
-
-        <p>Diese Prüfungen spiegeln die umfassenden Ausbildungen und Qualifikationen wider, die Herr
-          <span class="nm" id="p_name4">Filip Vonwanze</span> im Federal Investigation Bureau durchlaufen hat.</p>
-
-        <p>Das Verhalten von Herr <span class="nm" id="p_name5">Filip Vonwanze</span> gegenüber Vorgesetzten,
-          Kollegen und Bürgern war stets korrekt und respektvoll. Er trug zu einem positiven Arbeitsklima
-          innerhalb der Dienststelle bei.</p>
-
-        <p>Das Federal Investigation Bureau (FIB) bedankt sich für die erfolgreiche Zusammenarbeit
-          und wünscht Ihnen alles Gute für Ihre zukünftigen Vorhaben.</p>
+        <p>Diese Prüfungen spiegeln die umfassenden Ausbildungen und Qualifikationen wider, die Herr <span class="nm" id="p_name4">Filip Vonwanze</span> im Federal Investigation Bureau durchlaufen hat.</p>
+        <p>Das Verhalten von Herr <span class="nm" id="p_name5">Filip Vonwanze</span> gegenüber Vorgesetzten, Kollegen und Bürgern war stets korrekt und respektvoll. Er trug zu einem positiven Arbeitsklima innerhalb der Dienststelle bei.</p>
+        <p>Das Federal Investigation Bureau (FIB) bedankt sich für die erfolgreiche Zusammenarbeit und wünscht Ihnen alles Gute für Ihre zukünftigen Vorhaben.</p>
       </div>
-
-      <div class="notes" id="p_notesblock">
-        <h3>Anmerkungen:</h3>
-        <p id="p_notes">Kündigung auf Eigenwunsch</p>
-      </div>
-
+      <div class="notes" id="p_notesblock"><h3>Anmerkungen:</h3><p id="p_notes">Kündigung auf Eigenwunsch</p></div>
       <div class="place">Ort, Datum: <b id="p_place">Los Santos, 18.07.2026</b></div>
-
       <div class="signs">
-        <div class="sign">
-          <div class="name" id="p_s1n">Dan Reacher</div>
-          <div class="role" id="p_s1r">Assistant Director of FIB</div>
-        </div>
-        <div class="seal">
-          <div class="crest"><span class="ring top">★ FIB ★</span><span class="fib">FIB</span><span class="ring bot">JUSTICE</span></div>
-        </div>
-        <div class="sign">
-          <div class="name" id="p_s2n">Eko Plaste</div>
-          <div class="role" id="p_s2r">Director of FIB</div>
-        </div>
+        <div class="sign"><div class="name" id="p_s1n">Dan Reacher</div><div class="role" id="p_s1r">Assistant Director of FIB</div></div>
+        <div class="seal"><div class="crest"><span class="ring top">★ FIB ★</span><span class="fib">FIB</span><span class="ring bot">JUSTICE</span></div></div>
+        <div class="sign"><div class="name" id="p_s2n">Eko Plaste</div><div class="role" id="p_s2r">Director of FIB</div></div>
       </div>
     </article>
   </main>
 
 <script>
-  const EXAMS = [
-    "Grundausbildung","Jura Prüfung","Event Prüfung","VHF/EL - Prüfung",
-    "Tactical Shooting Training","Flugausbildung","Leitstellen Prüfung",
-    "Korruptions Prüfung","Undercover"
-  ];
-  const DEFAULT_ON = new Set(EXAMS); // in der Vorlage alle angehakt
+  const EXAMS = ["Grundausbildung","Jura Prüfung","Event Prüfung","VHF/EL - Prüfung","Tactical Shooting Training","Flugausbildung","Leitstellen Prüfung","Korruptions Prüfung","Undercover"];
 
-  // Checkbox-Editor aufbauen
+  // ---- Checkbox-Editor ----
   const checksEl = document.getElementById('checks');
   EXAMS.forEach((name,i)=>{
-    const l=document.createElement('label');
-    l.className='chk';
-    l.innerHTML=`<input type="checkbox" data-exam="${i}" ${DEFAULT_ON.has(name)?'checked':''}>
+    const l=document.createElement('label'); l.className='chk';
+    l.innerHTML=`<input type="checkbox" data-exam="${i}" checked>
       <span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.5L11 2" fill="none" stroke="#1a1500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       <span class="lbl">${name}</span>`;
     checksEl.appendChild(l);
   });
-
-  // Prüfungen im Dokument aufbauen
   const examsDoc = document.getElementById('p_exams');
   EXAMS.forEach((name,i)=>{
-    const d=document.createElement('div');
-    d.className='exam';d.dataset.exam=i;
+    const d=document.createElement('div'); d.className='exam'; d.dataset.exam=i;
     d.innerHTML=`<span class="tick">☑</span><span>${name}</span>`;
     examsDoc.appendChild(d);
   });
 
-  const fmt = v => { if(!v) return ''; const [y,m,d]=v.split('-'); return `${d}.${m}.${y}`; };
   const val = id => document.getElementById(id).value.trim();
   const set = (id,txt) => document.getElementById(id).textContent = txt;
 
   function render(){
     const name = val('f_name') || '—';
     ['p_name1','p_name2','p_name3','p_name4','p_name5'].forEach(id=>set(id,name));
-    set('p_pass', val('f_pass'));
-    set('p_dienst', val('f_dienst'));
-    set('p_from', fmt(val('f_from')));
-    set('p_to', fmt(val('f_to')));
-    set('p_rank', val('f_rank'));
-    set('p_area', val('f_area'));
-
+    set('p_pass',val('f_pass')); set('p_dienst',val('f_dienst'));
+    set('p_from',val('f_from')); set('p_to',val('f_to'));
+    set('p_rank',val('f_rank')); set('p_area',val('f_area'));
     const notes = val('f_notes');
     document.getElementById('p_notesblock').style.display = notes ? '' : 'none';
-    set('p_notes', notes);
-
-    set('p_place', `${val('f_place')}, ${fmt(val('f_date'))}`);
-    set('p_s1n', val('f_s1n')); set('p_s1r', val('f_s1r'));
-    set('p_s2n', val('f_s2n')); set('p_s2r', val('f_s2r'));
-
+    set('p_notes',notes);
+    set('p_place',`${val('f_place')}, ${val('f_date')}`);
+    set('p_s1n',val('f_s1n')); set('p_s1r',val('f_s1r'));
+    set('p_s2n',val('f_s2n')); set('p_s2r',val('f_s2r'));
     document.querySelectorAll('#checks input').forEach(cb=>{
-      const el = examsDoc.querySelector(`.exam[data-exam="${cb.dataset.exam}"]`);
-      el.classList.toggle('off', !cb.checked);
+      examsDoc.querySelector(`.exam[data-exam="${cb.dataset.exam}"]`).classList.toggle('off',!cb.checked);
     });
   }
-
-  document.querySelectorAll('input,textarea').forEach(el=>{
-    el.addEventListener('input', render);
-    el.addEventListener('change', render);
+  document.querySelectorAll('.editor input,.editor textarea').forEach(el=>{
+    if(el.id==='f_url') return;
+    el.addEventListener('input',render); el.addEventListener('change',render);
   });
 
+  // ---- CSV Parser (mit Anführungszeichen-Unterstützung) ----
+  function parseCSV(text){
+    const rows=[]; let row=[],cur='',q=false;
+    for(let i=0;i<text.length;i++){
+      const c=text[i];
+      if(q){
+        if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; }
+        else cur+=c;
+      } else {
+        if(c==='"') q=true;
+        else if(c===','){ row.push(cur); cur=''; }
+        else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
+        else if(c==='\r'){}
+        else cur+=c;
+      }
+    }
+    if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+    return rows.filter(r=>r.some(c=>c.trim()!==''));
+  }
+
+  let PEOPLE=[];
+
+  async function loadSheet(){
+    const url=val('f_url'); const st=document.getElementById('status');
+    if(!url){ st.textContent='Bitte CSV-URL einfügen.'; st.className='status err'; return; }
+    st.textContent='Lade…'; st.className='status';
+    try{
+      const res=await fetch(url);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const rows=parseCSV(await res.text());
+      if(rows.length<2) throw new Error('Keine Datenzeilen gefunden.');
+      const head=rows[0].map(h=>h.trim().toLowerCase());
+      const idx=n=>head.indexOf(n);
+      const map={name:idx('name'),pass:idx('reisepass'),dienst:idx('dienstnr'),
+        from:idx('von'),to:idx('bis'),rank:idx('rang'),area:idx('bereich'),
+        pruef:idx('pruefungen'),notes:idx('anmerkungen'),place:idx('ort'),date:idx('datum'),
+        s1n:idx('sig1_name'),s1r:idx('sig1_funktion'),s2n:idx('sig2_name'),s2r:idx('sig2_funktion')};
+      if(map.name<0) throw new Error('Spalte "Name" fehlt in der Kopfzeile.');
+      PEOPLE=rows.slice(1).map(r=>{
+        const g=k=>map[k]>=0?(r[map[k]]||'').trim():'';
+        return {name:g('name'),pass:g('pass'),dienst:g('dienst'),from:g('from'),to:g('to'),
+          rank:g('rank'),area:g('area'),pruef:g('pruef'),notes:g('notes'),place:g('place'),
+          date:g('date'),s1n:g('s1n'),s1r:g('s1r'),s2n:g('s2n'),s2r:g('s2r')};
+      }).filter(p=>p.name);
+      const sel=document.getElementById('f_person');
+      sel.innerHTML='<option value="">— Person wählen —</option>'+
+        PEOPLE.map((p,i)=>`<option value="${i}">${p.name}</option>`).join('');
+      st.textContent=`${PEOPLE.length} Person(en) geladen.`; st.className='status ok';
+    }catch(e){
+      st.textContent='Fehler: '+e.message+' (Sheet im Web als CSV veröffentlicht?)';
+      st.className='status err';
+    }
+  }
+
+  function pickPerson(){
+    const i=document.getElementById('f_person').value;
+    if(i==='') return;
+    const p=PEOPLE[i];
+    const put=(id,v)=>{ document.getElementById(id).value=v||''; };
+    put('f_name',p.name); put('f_pass',p.pass); put('f_dienst',p.dienst);
+    put('f_from',p.from); put('f_to',p.to); put('f_rank',p.rank); put('f_area',p.area);
+    put('f_notes',p.notes); put('f_place',p.place||'Los Santos'); put('f_date',p.date);
+    put('f_s1n',p.s1n); put('f_s1r',p.s1r); put('f_s2n',p.s2n); put('f_s2r',p.s2r);
+    const raw=(p.pruef||'').trim();
+    const all=raw.toUpperCase()==='ALLE';
+    const wanted=new Set(raw.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean));
+    document.querySelectorAll('#checks input').forEach(cb=>{
+      const label=EXAMS[cb.dataset.exam].toLowerCase();
+      cb.checked = all || wanted.has(label);
+    });
+    render();
+  }
+
   function resetForm(){
-    document.getElementById('f_name').value='';
-    document.getElementById('f_pass').value='';
-    document.getElementById('f_dienst').value='';
-    document.getElementById('f_from').value='';
-    document.getElementById('f_to').value='';
-    document.getElementById('f_rank').value='';
-    document.getElementById('f_area').value='';
-    document.getElementById('f_notes').value='';
+    ['f_name','f_pass','f_dienst','f_from','f_to','f_rank','f_area','f_notes','f_date','f_s1n','f_s1r','f_s2n','f_s2r'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f_place').value='Los Santos';
-    document.getElementById('f_date').value='';
     document.querySelectorAll('#checks input').forEach(cb=>cb.checked=false);
     render();
   }
