@@ -9,6 +9,7 @@
     --ink:#111114;--paper:#ffffff;--panel:#1c1f26;--panel2:#252932;--panel-line:#343945;
     --field:#2e333e;--field-line:#414855;--text:#e7e9ee;--muted:#9aa1ad;
     --accent:#c9a94f;--ok:#4caf7d;--err:#d76a6a;
+    --data:#999999;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
@@ -82,37 +83,37 @@
   .sheet{width:210mm;min-height:297mm;background:var(--paper);color:var(--ink);padding:26mm 24mm 20mm;box-shadow:0 24px 60px rgba(0,0,0,.55);font-family:'Georgia','Times New Roman',serif;position:relative;}
   .doc-head{display:flex;justify-content:space-between;align-items:flex-start;}
   .doc-title{font-size:29px;line-height:1.15;font-weight:400;}
-  .doc-title .light{color:#9a9a9a;}
+  .doc-title .light{color:var(--data);}
 
-  .logo-top{width:96px;height:96px;flex:0 0 96px;display:grid;place-items:center;}
+  .logo-top{width:135px;height:135px;flex:0 0 135px;display:grid;place-items:center;}
   .logo-top img{max-width:100%;max-height:100%;object-fit:contain;}
-  .logo-seal{width:88px;height:88px;flex:0 0 88px;display:grid;place-items:center;margin:0 auto;}
+  .logo-seal{width:74px;height:74px;flex:0 0 74px;display:grid;place-items:center;margin:0 auto;}
   .logo-seal img{max-width:100%;max-height:100%;object-fit:contain;}
   .logo-top.empty,.logo-seal.empty{border:2px dashed #c9ccd2;border-radius:8px;color:#9a9a9a;font-family:'Segoe UI',sans-serif;font-size:10px;text-align:center;padding:6px;}
 
-  .person{margin-top:26px;font-weight:700;line-height:1.5;font-size:14.5px;color:#5f6167;}
-  .body{margin-top:22px;font-size:13.6px;line-height:1.62;}
+  .person{margin-top:26px;font-weight:700;line-height:1.5;font-size:14.5px;color:var(--data);}
+  .body{margin-top:22px;font-size:13.6px;line-height:1.62;color:var(--ink);}
   .body p{margin:0 0 15px;}
-  .nm{color:#6f7278;font-weight:700;}
-  .dt{color:#4a4d53;font-weight:700;}
-  .rank{color:#9a9a9a;font-weight:400;}
+  .nm,.dt,.rank{color:var(--data);font-weight:700;}
+  .rank{font-weight:400;}
 
-  .exams{margin:18px 0 6px;display:grid;grid-template-columns:1fr 1fr;gap:8px 30px;}
-  .exam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13.6px;}
-  .exam .tick{width:15px;height:15px;border:1.4px solid #16181c;border-radius:2px;display:grid;place-items:center;flex:0 0 15px;font-size:11px;line-height:1;}
+  .exams{margin:18px 0 6px;display:grid;grid-template-columns:1fr 1fr;gap:9px 30px;}
+  .exam{display:flex;align-items:center;gap:11px;font-weight:700;font-size:13.6px;}
+  .exam .tick{width:17px;height:17px;border:2px solid #16181c;border-radius:3px;display:grid;place-items:center;flex:0 0 17px;background:#fff;}
+  .exam .tick svg{width:13px;height:13px;display:block;}
   .exam.off{display:none;}
 
   .notes{margin-top:34px;text-align:center;}
   .notes h3{margin:0 0 4px;font-size:14.5px;font-weight:700;}
-  .notes p{margin:0;font-size:13.6px;}
+  .notes p{margin:0;font-size:13.6px;color:var(--ink);}
 
-  .place{margin-top:40px;font-size:13.6px;font-weight:700;color:#4a4d53;}
-  .place b{color:#111;}
+  .place{margin-top:40px;font-size:13.6px;font-weight:700;color:var(--data);}
+  .place b{color:var(--data);font-weight:700;}
 
   .signs{margin-top:46px;display:flex;justify-content:space-between;align-items:flex-end;text-align:center;}
   .sign{flex:1;}
-  .sign .name{font-family:'Segoe Script','Brush Script MT',cursive;font-size:23px;border-bottom:1px solid #16181c;display:inline-block;padding:0 18px 3px;margin-bottom:6px;min-width:150px;}
-  .sign .role{font-size:12px;font-family:'Georgia',serif;}
+  .sign .name{font-family:'Segoe Script','Brush Script MT',cursive;font-size:23px;border-bottom:1px solid #16181c;display:inline-block;padding:0 18px 3px;margin-bottom:6px;min-width:150px;color:var(--ink);}
+  .sign .role{font-size:12px;font-family:'Georgia',serif;color:var(--ink);}
   .seal{flex:0 0 96px;}
 
   @media (max-width:1100px){
@@ -138,7 +139,7 @@
     <div class="editor-head">
       <div class="brandline"><span class="dot"></span>Federal Investigation Bureau</div>
       <h1>Arbeitszeugnis-Generator</h1>
-      <p>Logo laden, Sheet laden, Agent wählen, PDF speichern.</p>
+      <p>Sheet lädt automatisch. Agent wählen, PDF speichern.</p>
     </div>
 
     <div class="editor-body">
@@ -148,7 +149,7 @@
           <div class="logo-thumb" id="logoThumb"><span class="ph">Kein Logo</span></div>
           <div class="logo-meta">
             <div class="lbl">FIB-Wappen</div>
-            <div class="sub">PNG mit transparentem Hintergrund empfohlen. Erscheint oben + beim Siegel.</div>
+            <div class="sub">PNG mit transparentem Hintergrund. Oben groß, unten als kleines Siegel.</div>
             <div class="logo-btns">
               <label class="mini" style="margin:0;">Hochladen<input type="file" id="logoFile" accept="image/*" style="display:none;"></label>
               <button class="mini warn" onclick="clearLogo()">Entfernen</button>
@@ -158,19 +159,11 @@
       </fieldset>
 
       <fieldset>
-        <legend>Google Sheet</legend>
-        <div class="sync">
-          <label>Veröffentlichte CSV-URL (Datei → Freigeben → Im Web veröffentlichen → CSV)</label>
-          <div class="row">
-            <input type="text" id="f_url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
-            <button class="btn-load" onclick="loadSheet()">Laden</button>
-          </div>
-          <div class="status" id="status">Noch nicht geladen. Liest ab Zeile 9, Spalten B–AB.</div>
-        </div>
-        <div class="fld" style="margin-top:12px;">
-          <label>Agent auswählen</label>
-          <select id="f_person" onchange="pickPerson()"><option value="">— erst Sheet laden —</option></select>
-        </div>
+        <legend>Agent auswählen</legend>
+        <input type="text" id="f_search" placeholder="Name oder ID suchen…" oninput="filterPeople()" style="margin-bottom:8px;">
+        <select id="f_person" onchange="pickPerson()" size="6" style="height:auto;"><option value="">— lädt… —</option></select>
+        <div class="status" id="status" style="margin-top:8px;">Lade Agentenliste…</div>
+        <button class="mini" onclick="loadSheet()" style="margin-top:8px;">Liste aktualisieren</button>
       </fieldset>
 
       <fieldset>
@@ -248,10 +241,14 @@
   </main>
 
 <script>
-  // Prüfungen: [Kürzel im Sheet, Anzeigename im Zeugnis]
+  // ==== Fest hinterlegter, veröffentlichter CSV-Link ====
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRm3fzNz0nTZau9tuXk9DnRfB9Q6_EYyWoSMbPwIx-IEMkM57f-lrvxeTVpQbuQ_rAA2QA6lssEgDff/pub?output=csv";
+
+  // Prüfungen in Sheet-Reihenfolge: [Spalten-Kürzel, Anzeigename]
   const EXAMS = [
     ["GA","Grundausbildung"],
     ["EVS","Eventschulung"],
+    ["LST","Leitstellen Prüfung"],
     ["AKS","Korruptions Prüfung"],
     ["TST","Tactical Shooting Training"],
     ["VHF/EL","Verhandlungs- und Einsatzleiter Prüfung"],
@@ -260,9 +257,9 @@
     ["FTK","Flugausbildung"]
   ];
   const LOGO_KEY = "fib_zeugnis_logo";
-  const HEADER_ROW = 9; // Kopfzeile im Sheet
+  const HEADER_ROW = 9;
 
-  // ---- Checkbox-Editor ----
+  // Checkbox-Editor
   const checksEl = document.getElementById('checks');
   EXAMS.forEach(([code,name],i)=>{
     const l=document.createElement('label'); l.className='chk';
@@ -274,18 +271,16 @@
   const examsDoc = document.getElementById('p_exams');
   EXAMS.forEach(([code,name],i)=>{
     const d=document.createElement('div'); d.className='exam'; d.dataset.exam=i;
-    d.innerHTML=`<span class="tick">☑</span><span>${name}</span>`;
+    d.innerHTML=`<span class="tick"><svg viewBox="0 0 14 14"><path d="M2 7.5l3 3.2L12 3" fill="none" stroke="#1a7f45" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>${name}</span>`;
     examsDoc.appendChild(d);
   });
 
   const val = id => document.getElementById(id).value.trim();
   const set = (id,txt) => document.getElementById(id).textContent = txt;
 
-  // ---- Logo ----
+  // Logo
   function applyLogo(dataUrl){
-    const top=document.getElementById('logoTop');
-    const seal=document.getElementById('logoSeal');
-    const thumb=document.getElementById('logoThumb');
+    const top=document.getElementById('logoTop'), seal=document.getElementById('logoSeal'), thumb=document.getElementById('logoThumb');
     if(dataUrl){
       top.classList.remove('empty'); top.innerHTML=`<img src="${dataUrl}" alt="Logo">`;
       seal.classList.remove('empty'); seal.innerHTML=`<img src="${dataUrl}" alt="Siegel">`;
@@ -299,11 +294,8 @@
   document.getElementById('logoFile').addEventListener('change',e=>{
     const file=e.target.files[0]; if(!file) return;
     const reader=new FileReader();
-    reader.onload=ev=>{
-      const url=ev.target.result; applyLogo(url);
-      try{ localStorage.setItem(LOGO_KEY,url); }
-      catch(err){ alert('Logo konnte nicht dauerhaft gespeichert werden (Bild evtl. zu groß). Es bleibt für diese Sitzung aktiv.'); }
-    };
+    reader.onload=ev=>{ const url=ev.target.result; applyLogo(url);
+      try{ localStorage.setItem(LOGO_KEY,url); }catch(err){ alert('Logo zu groß für dauerhaftes Speichern – bleibt für diese Sitzung aktiv.'); } };
     reader.readAsDataURL(file);
   });
   function clearLogo(){ applyLogo(null); localStorage.removeItem(LOGO_KEY); document.getElementById('logoFile').value=''; }
@@ -326,81 +318,84 @@
     });
   }
   document.querySelectorAll('.editor input,.editor textarea').forEach(el=>{
-    if(el.id==='f_url'||el.id==='logoFile') return;
+    if(el.id==='logoFile'||el.id==='f_search') return;
     el.addEventListener('input',render); el.addEventListener('change',render);
   });
 
-  // ---- CSV Parser ----
   function parseCSV(text){
     const rows=[]; let row=[],cur='',q=false;
-    for(let i=0;i<text.length;i++){
-      const c=text[i];
+    for(let i=0;i<text.length;i++){ const c=text[i];
       if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
       else { if(c==='"') q=true;
         else if(c===','){ row.push(cur); cur=''; }
         else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
         else if(c==='\r'){}
-        else cur+=c; }
-    }
+        else cur+=c; } }
     if(cur!==''||row.length){ row.push(cur); rows.push(row); }
-    return rows; // KEIN Leerzeilen-Filter, damit Zeilennummern stimmen
+    return rows;
   }
-
-  // Häkchen-Erkennung: was zählt als "bestanden"?
-  function isChecked(v){
-    const s=(v||'').toString().trim().toLowerCase();
-    if(s==='') return false;
-    return ['true','wahr','x','✓','✔','ja','1','yes','y','ok'].includes(s);
-  }
+  function isTrue(v){ return (v||'').toString().trim().toLowerCase()==='true'; }
 
   let PEOPLE=[];
 
   async function loadSheet(){
-    const url=val('f_url'); const st=document.getElementById('status');
-    if(!url){ st.textContent='Bitte CSV-URL einfügen.'; st.className='status err'; return; }
+    const st=document.getElementById('status');
+    const url = CSV_URL;
     st.textContent='Lade…'; st.className='status';
     try{
-      const res=await fetch(url);
+      const res=await fetch(url,{redirect:'follow'});
       if(!res.ok) throw new Error('HTTP '+res.status);
-      const allRows=parseCSV(await res.text());
-      // Kopfzeile = Zeile 9 (Index 8)
-      const headRow=allRows[HEADER_ROW-1];
-      if(!headRow) throw new Error('Zeile '+HEADER_ROW+' nicht gefunden.');
-      const head=headRow.map(h=>(h||'').trim().toLowerCase());
+      const text=await res.text();
+      if(text.trim().startsWith('<')) throw new Error('HTML statt CSV – Sheet nicht öffentlich veröffentlicht?');
+      const allRows=parseCSV(text);
+
+      // Kopfzeile suchen: Zeile mit "name" und "ranks" (robust, falls sich Zeilennr. verschiebt)
+      let headIdx=HEADER_ROW-1;
+      const looksLikeHead=r=>{ const l=r.map(x=>(x||'').trim().toLowerCase()); return l.includes('name')&&l.includes('ranks'); };
+      if(!allRows[headIdx]||!looksLikeHead(allRows[headIdx])){
+        const found=allRows.findIndex(looksLikeHead);
+        if(found>=0) headIdx=found; else throw new Error('Kopfzeile (Name/Ranks) nicht gefunden.');
+      }
+      const head=allRows[headIdx].map(h=>(h||'').trim().toLowerCase());
       const idx=n=>head.indexOf(n.toLowerCase());
 
-      const map={
-        name:idx('name'), id:idx('id'), dn:idx('dn'),
-        rank:idx('ranks'), abt:idx('abteilungen')
-      };
-      // Prüfungs-Spalten anhand Kürzel finden
+      // Abteilungen: es gibt zwei Spalten ("Abteilungen" + Folgespalte) → beide finden
+      const abtStart=idx('abteilungen');
+      const map={ name:idx('name'), id:idx('id'), dn:idx('dn'), rank:idx('ranks'), abt:abtStart, abt2:abtStart>=0?abtStart+1:-1 };
       const examCols=EXAMS.map(([code])=>idx(code));
-
-      if(map.name<0) throw new Error('Spalte "Name" in Zeile '+HEADER_ROW+' nicht gefunden.');
-
+      if(map.name<0) throw new Error('Spalte "Name" nicht gefunden.');
       const missing=EXAMS.filter((e,i)=>examCols[i]<0).map(e=>e[0]);
 
-      const dataRows=allRows.slice(HEADER_ROW); // ab Zeile 10
+      const dataRows=allRows.slice(headIdx+1);
       PEOPLE=dataRows.map(r=>{
-        const g=i=>i>=0?(r[i]||'').trim():'';
-        return {
-          name:g(map.name), id:g(map.id), dn:g(map.dn),
-          rank:g(map.rank), abt:g(map.abt),
-          exams:examCols.map(ci=>ci>=0?isChecked(r[ci]):false)
-        };
-      }).filter(p=>p.name);
+        const g=i=>i>=0?(r[i]||'').trim().replace(/\s+/g,' '):'';
+        const a1=g(map.abt), a2=g(map.abt2);
+        const abt=[a1,a2].filter(Boolean).join(' | ');
+        return { name:g(map.name), id:g(map.id), dn:g(map.dn), rank:g(map.rank), abt:abt,
+          exams:examCols.map(ci=>ci>=0?isTrue(r[ci]):false) };
+      }).filter(p=>p.name && p.name!=='-'); // Leerzeilen & Platzhalter raus
 
-      const sel=document.getElementById('f_person');
-      sel.innerHTML='<option value="">— Agent wählen —</option>'+
-        PEOPLE.map((p,i)=>`<option value="${i}">${p.name}${p.id?' (ID '+p.id+')':''}</option>`).join('');
-
+      renderPersonOptions(PEOPLE.map((p,i)=>i));
       let msg=`${PEOPLE.length} Agent(en) geladen.`;
-      if(missing.length) msg+=' ⚠ Nicht gefundene Prüfungs-Spalten: '+missing.join(', ');
+      if(missing.length) msg+=' ⚠ Prüfungs-Spalten nicht gefunden: '+missing.join(', ');
       st.textContent=msg; st.className='status '+(missing.length?'err':'ok');
     }catch(e){
-      st.textContent='Fehler: '+e.message+' (Sheet im Web als CSV veröffentlicht?)';
+      st.textContent='Fehler: '+e.message;
       st.className='status err';
     }
+  }
+
+  function renderPersonOptions(indices){
+    const sel=document.getElementById('f_person');
+    sel.innerHTML='<option value="">— Agent wählen —</option>'+
+      indices.map(i=>{const p=PEOPLE[i];return `<option value="${i}">${p.name}${p.id?' (ID '+p.id+')':''}</option>`;}).join('');
+  }
+  function filterPeople(){
+    const q=val('f_search').toLowerCase();
+    const idxs=PEOPLE.map((p,i)=>i).filter(i=>{
+      const p=PEOPLE[i]; return !q || p.name.toLowerCase().includes(q) || (p.id||'').includes(q);
+    });
+    renderPersonOptions(idxs);
   }
 
   function pickPerson(){
@@ -408,15 +403,9 @@
     if(i==='') return;
     const p=PEOPLE[i];
     const put=(id,v)=>{ document.getElementById(id).value=v||''; };
-    put('f_name',p.name);
-    put('f_pass',p.id);      // Reisepass ← ID
-    put('f_dienst',p.dn);    // Dienstnr ← DN
-    put('f_rank',p.rank);    // Rang ← Ranks
-    put('f_area',p.abt);     // Hauptbereich ← Abteilungen
-    // Von/Bis/Ort/Datum/Unterzeichner bleiben wie eingestellt
-    document.querySelectorAll('#checks input').forEach(cb=>{
-      cb.checked = !!p.exams[cb.dataset.exam];
-    });
+    put('f_name',p.name); put('f_pass',p.id); put('f_dienst',p.dn);
+    put('f_rank',p.rank); put('f_area',p.abt);
+    document.querySelectorAll('#checks input').forEach(cb=>{ cb.checked = !!p.exams[cb.dataset.exam]; });
     render();
   }
 
@@ -428,6 +417,7 @@
   }
 
   render();
+  loadSheet();
 </script>
 </body>
 </html>
