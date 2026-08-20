@@ -44,9 +44,21 @@
   .sync .row{gap:8px;}
   .btn-load{background:var(--accent);color:#1a1500;border:1px solid var(--accent);border-radius:8px;padding:9px 12px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;transition:.15s;}
   .btn-load:hover{filter:brightness(1.08);}
-  .status{font-size:11.5px;margin-top:9px;min-height:15px;color:var(--muted);}
+  .status{font-size:11.5px;margin-top:9px;min-height:15px;color:var(--muted);line-height:1.4;}
   .status.ok{color:var(--ok);}
   .status.err{color:var(--err);}
+
+  .logo-drop{display:flex;align-items:center;gap:14px;background:var(--panel2);border:1px solid var(--panel-line);border-radius:10px;padding:12px;}
+  .logo-thumb{width:60px;height:60px;flex:0 0 60px;border-radius:8px;border:1px dashed var(--field-line);display:grid;place-items:center;overflow:hidden;background:#fff;}
+  .logo-thumb img{width:100%;height:100%;object-fit:contain;}
+  .logo-thumb .ph{font-size:10px;color:#888;text-align:center;padding:4px;}
+  .logo-meta{flex:1;min-width:0;}
+  .logo-meta .lbl{font-size:12.5px;color:var(--text);font-weight:600;}
+  .logo-meta .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+  .logo-btns{display:flex;gap:7px;margin-top:8px;}
+  .mini{font-size:11.5px;padding:6px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--field-line);background:var(--field);color:var(--text);}
+  .mini:hover{border-color:var(--muted);}
+  .mini.warn:hover{border-color:var(--err);color:var(--err);}
 
   .checks{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px;}
   .chk{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--text);background:var(--field);border:1px solid var(--field-line);border-radius:8px;padding:8px 10px;cursor:pointer;user-select:none;transition:.15s;}
@@ -71,12 +83,12 @@
   .doc-head{display:flex;justify-content:space-between;align-items:flex-start;}
   .doc-title{font-size:29px;line-height:1.15;font-weight:400;}
   .doc-title .light{color:#9a9a9a;}
-  .crest{width:96px;height:96px;flex:0 0 96px;border:2.5px solid #16181c;border-radius:50%;display:grid;place-items:center;text-align:center;position:relative;font-family:'Georgia',serif;}
-  .crest::before{content:"";position:absolute;inset:6px;border:1px solid #16181c;border-radius:50%;}
-  .crest .fib{font-size:26px;font-weight:700;letter-spacing:1px;line-height:1;}
-  .crest .ring{position:absolute;font-size:6.2px;letter-spacing:1.5px;color:#16181c;width:100%;text-align:center;font-weight:600;}
-  .crest .ring.top{top:9px;}
-  .crest .ring.bot{bottom:9px;}
+
+  .logo-top{width:96px;height:96px;flex:0 0 96px;display:grid;place-items:center;}
+  .logo-top img{max-width:100%;max-height:100%;object-fit:contain;}
+  .logo-seal{width:88px;height:88px;flex:0 0 88px;display:grid;place-items:center;margin:0 auto;}
+  .logo-seal img{max-width:100%;max-height:100%;object-fit:contain;}
+  .logo-top.empty,.logo-seal.empty{border:2px dashed #c9ccd2;border-radius:8px;color:#9a9a9a;font-family:'Segoe UI',sans-serif;font-size:10px;text-align:center;padding:6px;}
 
   .person{margin-top:26px;font-weight:700;line-height:1.5;font-size:14.5px;color:#5f6167;}
   .body{margin-top:22px;font-size:13.6px;line-height:1.62;}
@@ -102,8 +114,6 @@
   .sign .name{font-family:'Segoe Script','Brush Script MT',cursive;font-size:23px;border-bottom:1px solid #16181c;display:inline-block;padding:0 18px 3px;margin-bottom:6px;min-width:150px;}
   .sign .role{font-size:12px;font-family:'Georgia',serif;}
   .seal{flex:0 0 96px;}
-  .seal .crest{width:78px;height:78px;margin:0 auto;}
-  .seal .crest .fib{font-size:20px;}
 
   @media (max-width:1100px){
     body{flex-direction:column;}
@@ -117,6 +127,7 @@
     .editor{display:none;}
     .stage{padding:0;overflow:visible;height:auto;background:#fff;}
     .sheet{box-shadow:none;margin:0;width:auto;min-height:auto;padding:20mm 22mm;}
+    .logo-top.empty,.logo-seal.empty{border:none;}
     @page{size:A4;margin:0;}
   }
 </style>
@@ -127,10 +138,25 @@
     <div class="editor-head">
       <div class="brandline"><span class="dot"></span>Federal Investigation Bureau</div>
       <h1>Arbeitszeugnis-Generator</h1>
-      <p>Sheet laden, Person wählen, PDF speichern.</p>
+      <p>Logo laden, Sheet laden, Agent wählen, PDF speichern.</p>
     </div>
 
     <div class="editor-body">
+      <fieldset>
+        <legend>Logo</legend>
+        <div class="logo-drop">
+          <div class="logo-thumb" id="logoThumb"><span class="ph">Kein Logo</span></div>
+          <div class="logo-meta">
+            <div class="lbl">FIB-Wappen</div>
+            <div class="sub">PNG mit transparentem Hintergrund empfohlen. Erscheint oben + beim Siegel.</div>
+            <div class="logo-btns">
+              <label class="mini" style="margin:0;">Hochladen<input type="file" id="logoFile" accept="image/*" style="display:none;"></label>
+              <button class="mini warn" onclick="clearLogo()">Entfernen</button>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
       <fieldset>
         <legend>Google Sheet</legend>
         <div class="sync">
@@ -139,10 +165,10 @@
             <input type="text" id="f_url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
             <button class="btn-load" onclick="loadSheet()">Laden</button>
           </div>
-          <div class="status" id="status">Noch nicht geladen.</div>
+          <div class="status" id="status">Noch nicht geladen. Liest ab Zeile 9, Spalten B–AB.</div>
         </div>
         <div class="fld" style="margin-top:12px;">
-          <label>Person auswählen</label>
+          <label>Agent auswählen</label>
           <select id="f_person" onchange="pickPerson()"><option value="">— erst Sheet laden —</option></select>
         </div>
       </fieldset>
@@ -151,8 +177,8 @@
         <legend>Person</legend>
         <div class="fld"><label>Voller Name</label><input type="text" id="f_name" value="Filip Vonwanze"></div>
         <div class="row">
-          <div class="fld"><label>Reisepass-Nr.</label><input type="text" id="f_pass" value="176902"></div>
-          <div class="fld"><label>Dienst-Nr.</label><input type="text" id="f_dienst" value="32"></div>
+          <div class="fld"><label>Reisepass-Nr. (ID)</label><input type="text" id="f_pass" value="176902"></div>
+          <div class="fld"><label>Dienst-Nr. (DN)</label><input type="text" id="f_dienst" value="32"></div>
         </div>
       </fieldset>
 
@@ -162,8 +188,8 @@
           <div class="fld"><label>Von</label><input type="text" id="f_from" value="30.06.2026" placeholder="TT.MM.JJJJ"></div>
           <div class="fld"><label>Bis</label><input type="text" id="f_to" value="17.08.2026" placeholder="TT.MM.JJJJ"></div>
         </div>
-        <div class="fld"><label>Rang / Position</label><input type="text" id="f_rank" value="27. Divisional Director"></div>
-        <div class="fld"><label>Hauptbereich</label><input type="text" id="f_area" value="TD Curator"></div>
+        <div class="fld"><label>Rang / Position (aus Ranks)</label><input type="text" id="f_rank" value="27. Divisional Director"></div>
+        <div class="fld"><label>Hauptbereich (aus Abteilungen)</label><input type="text" id="f_area" value="TD Curator"></div>
       </fieldset>
 
       <fieldset>
@@ -199,7 +225,7 @@
     <article class="sheet" id="sheet">
       <div class="doc-head">
         <div class="doc-title">Arbeitszeugnis<br>des Federal <span class="light">Investigation Bureau</span></div>
-        <div class="crest"><span class="ring top">★ DEPARTMENT OF JUSTICE ★</span><span class="fib">FIB</span><span class="ring bot">FEDERAL INVESTIGATION</span></div>
+        <div class="logo-top empty" id="logoTop">Logo</div>
       </div>
       <div class="person">Herr <span id="p_name1">Filip Vonwanze</span><br>Reisepass Nr. <span id="p_pass">176902</span><br>Dienst Nr. <span id="p_dienst">32</span></div>
       <div class="body">
@@ -215,18 +241,30 @@
       <div class="place">Ort, Datum: <b id="p_place">Los Santos, 18.07.2026</b></div>
       <div class="signs">
         <div class="sign"><div class="name" id="p_s1n">Dan Reacher</div><div class="role" id="p_s1r">Assistant Director of FIB</div></div>
-        <div class="seal"><div class="crest"><span class="ring top">★ FIB ★</span><span class="fib">FIB</span><span class="ring bot">JUSTICE</span></div></div>
+        <div class="seal"><div class="logo-seal empty" id="logoSeal">Siegel</div></div>
         <div class="sign"><div class="name" id="p_s2n">Eko Plaste</div><div class="role" id="p_s2r">Director of FIB</div></div>
       </div>
     </article>
   </main>
 
 <script>
-  const EXAMS = ["Grundausbildung","Jura Prüfung","Event Prüfung","VHF/EL - Prüfung","Tactical Shooting Training","Flugausbildung","Leitstellen Prüfung","Korruptions Prüfung","Undercover"];
+  // Prüfungen: [Kürzel im Sheet, Anzeigename im Zeugnis]
+  const EXAMS = [
+    ["GA","Grundausbildung"],
+    ["EVS","Eventschulung"],
+    ["AKS","Korruptions Prüfung"],
+    ["TST","Tactical Shooting Training"],
+    ["VHF/EL","Verhandlungs- und Einsatzleiter Prüfung"],
+    ["JUR","Jura Prüfung"],
+    ["UC","Undercover"],
+    ["FTK","Flugausbildung"]
+  ];
+  const LOGO_KEY = "fib_zeugnis_logo";
+  const HEADER_ROW = 9; // Kopfzeile im Sheet
 
   // ---- Checkbox-Editor ----
   const checksEl = document.getElementById('checks');
-  EXAMS.forEach((name,i)=>{
+  EXAMS.forEach(([code,name],i)=>{
     const l=document.createElement('label'); l.className='chk';
     l.innerHTML=`<input type="checkbox" data-exam="${i}" checked>
       <span class="box"><svg viewBox="0 0 12 12"><path d="M1 6l3.2 3.5L11 2" fill="none" stroke="#1a1500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -234,7 +272,7 @@
     checksEl.appendChild(l);
   });
   const examsDoc = document.getElementById('p_exams');
-  EXAMS.forEach((name,i)=>{
+  EXAMS.forEach(([code,name],i)=>{
     const d=document.createElement('div'); d.className='exam'; d.dataset.exam=i;
     d.innerHTML=`<span class="tick">☑</span><span>${name}</span>`;
     examsDoc.appendChild(d);
@@ -242,6 +280,34 @@
 
   const val = id => document.getElementById(id).value.trim();
   const set = (id,txt) => document.getElementById(id).textContent = txt;
+
+  // ---- Logo ----
+  function applyLogo(dataUrl){
+    const top=document.getElementById('logoTop');
+    const seal=document.getElementById('logoSeal');
+    const thumb=document.getElementById('logoThumb');
+    if(dataUrl){
+      top.classList.remove('empty'); top.innerHTML=`<img src="${dataUrl}" alt="Logo">`;
+      seal.classList.remove('empty'); seal.innerHTML=`<img src="${dataUrl}" alt="Siegel">`;
+      thumb.innerHTML=`<img src="${dataUrl}" alt="Logo">`;
+    } else {
+      top.classList.add('empty'); top.textContent='Logo';
+      seal.classList.add('empty'); seal.textContent='Siegel';
+      thumb.innerHTML='<span class="ph">Kein Logo</span>';
+    }
+  }
+  document.getElementById('logoFile').addEventListener('change',e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const url=ev.target.result; applyLogo(url);
+      try{ localStorage.setItem(LOGO_KEY,url); }
+      catch(err){ alert('Logo konnte nicht dauerhaft gespeichert werden (Bild evtl. zu groß). Es bleibt für diese Sitzung aktiv.'); }
+    };
+    reader.readAsDataURL(file);
+  });
+  function clearLogo(){ applyLogo(null); localStorage.removeItem(LOGO_KEY); document.getElementById('logoFile').value=''; }
+  (function(){ try{ const s=localStorage.getItem(LOGO_KEY); if(s) applyLogo(s); }catch(e){} })();
 
   function render(){
     const name = val('f_name') || '—';
@@ -260,28 +326,31 @@
     });
   }
   document.querySelectorAll('.editor input,.editor textarea').forEach(el=>{
-    if(el.id==='f_url') return;
+    if(el.id==='f_url'||el.id==='logoFile') return;
     el.addEventListener('input',render); el.addEventListener('change',render);
   });
 
-  // ---- CSV Parser (mit Anführungszeichen-Unterstützung) ----
+  // ---- CSV Parser ----
   function parseCSV(text){
     const rows=[]; let row=[],cur='',q=false;
     for(let i=0;i<text.length;i++){
       const c=text[i];
-      if(q){
-        if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; }
-        else cur+=c;
-      } else {
-        if(c==='"') q=true;
+      if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+      else { if(c==='"') q=true;
         else if(c===','){ row.push(cur); cur=''; }
         else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
         else if(c==='\r'){}
-        else cur+=c;
-      }
+        else cur+=c; }
     }
     if(cur!==''||row.length){ row.push(cur); rows.push(row); }
-    return rows.filter(r=>r.some(c=>c.trim()!==''));
+    return rows; // KEIN Leerzeilen-Filter, damit Zeilennummern stimmen
+  }
+
+  // Häkchen-Erkennung: was zählt als "bestanden"?
+  function isChecked(v){
+    const s=(v||'').toString().trim().toLowerCase();
+    if(s==='') return false;
+    return ['true','wahr','x','✓','✔','ja','1','yes','y','ok'].includes(s);
   }
 
   let PEOPLE=[];
@@ -293,25 +362,41 @@
     try{
       const res=await fetch(url);
       if(!res.ok) throw new Error('HTTP '+res.status);
-      const rows=parseCSV(await res.text());
-      if(rows.length<2) throw new Error('Keine Datenzeilen gefunden.');
-      const head=rows[0].map(h=>h.trim().toLowerCase());
-      const idx=n=>head.indexOf(n);
-      const map={name:idx('name'),pass:idx('reisepass'),dienst:idx('dienstnr'),
-        from:idx('von'),to:idx('bis'),rank:idx('rang'),area:idx('bereich'),
-        pruef:idx('pruefungen'),notes:idx('anmerkungen'),place:idx('ort'),date:idx('datum'),
-        s1n:idx('sig1_name'),s1r:idx('sig1_funktion'),s2n:idx('sig2_name'),s2r:idx('sig2_funktion')};
-      if(map.name<0) throw new Error('Spalte "Name" fehlt in der Kopfzeile.');
-      PEOPLE=rows.slice(1).map(r=>{
-        const g=k=>map[k]>=0?(r[map[k]]||'').trim():'';
-        return {name:g('name'),pass:g('pass'),dienst:g('dienst'),from:g('from'),to:g('to'),
-          rank:g('rank'),area:g('area'),pruef:g('pruef'),notes:g('notes'),place:g('place'),
-          date:g('date'),s1n:g('s1n'),s1r:g('s1r'),s2n:g('s2n'),s2r:g('s2r')};
+      const allRows=parseCSV(await res.text());
+      // Kopfzeile = Zeile 9 (Index 8)
+      const headRow=allRows[HEADER_ROW-1];
+      if(!headRow) throw new Error('Zeile '+HEADER_ROW+' nicht gefunden.');
+      const head=headRow.map(h=>(h||'').trim().toLowerCase());
+      const idx=n=>head.indexOf(n.toLowerCase());
+
+      const map={
+        name:idx('name'), id:idx('id'), dn:idx('dn'),
+        rank:idx('ranks'), abt:idx('abteilungen')
+      };
+      // Prüfungs-Spalten anhand Kürzel finden
+      const examCols=EXAMS.map(([code])=>idx(code));
+
+      if(map.name<0) throw new Error('Spalte "Name" in Zeile '+HEADER_ROW+' nicht gefunden.');
+
+      const missing=EXAMS.filter((e,i)=>examCols[i]<0).map(e=>e[0]);
+
+      const dataRows=allRows.slice(HEADER_ROW); // ab Zeile 10
+      PEOPLE=dataRows.map(r=>{
+        const g=i=>i>=0?(r[i]||'').trim():'';
+        return {
+          name:g(map.name), id:g(map.id), dn:g(map.dn),
+          rank:g(map.rank), abt:g(map.abt),
+          exams:examCols.map(ci=>ci>=0?isChecked(r[ci]):false)
+        };
       }).filter(p=>p.name);
+
       const sel=document.getElementById('f_person');
-      sel.innerHTML='<option value="">— Person wählen —</option>'+
-        PEOPLE.map((p,i)=>`<option value="${i}">${p.name}</option>`).join('');
-      st.textContent=`${PEOPLE.length} Person(en) geladen.`; st.className='status ok';
+      sel.innerHTML='<option value="">— Agent wählen —</option>'+
+        PEOPLE.map((p,i)=>`<option value="${i}">${p.name}${p.id?' (ID '+p.id+')':''}</option>`).join('');
+
+      let msg=`${PEOPLE.length} Agent(en) geladen.`;
+      if(missing.length) msg+=' ⚠ Nicht gefundene Prüfungs-Spalten: '+missing.join(', ');
+      st.textContent=msg; st.className='status '+(missing.length?'err':'ok');
     }catch(e){
       st.textContent='Fehler: '+e.message+' (Sheet im Web als CSV veröffentlicht?)';
       st.className='status err';
@@ -323,16 +408,14 @@
     if(i==='') return;
     const p=PEOPLE[i];
     const put=(id,v)=>{ document.getElementById(id).value=v||''; };
-    put('f_name',p.name); put('f_pass',p.pass); put('f_dienst',p.dienst);
-    put('f_from',p.from); put('f_to',p.to); put('f_rank',p.rank); put('f_area',p.area);
-    put('f_notes',p.notes); put('f_place',p.place||'Los Santos'); put('f_date',p.date);
-    put('f_s1n',p.s1n); put('f_s1r',p.s1r); put('f_s2n',p.s2n); put('f_s2r',p.s2r);
-    const raw=(p.pruef||'').trim();
-    const all=raw.toUpperCase()==='ALLE';
-    const wanted=new Set(raw.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean));
+    put('f_name',p.name);
+    put('f_pass',p.id);      // Reisepass ← ID
+    put('f_dienst',p.dn);    // Dienstnr ← DN
+    put('f_rank',p.rank);    // Rang ← Ranks
+    put('f_area',p.abt);     // Hauptbereich ← Abteilungen
+    // Von/Bis/Ort/Datum/Unterzeichner bleiben wie eingestellt
     document.querySelectorAll('#checks input').forEach(cb=>{
-      const label=EXAMS[cb.dataset.exam].toLowerCase();
-      cb.checked = all || wanted.has(label);
+      cb.checked = !!p.exams[cb.dataset.exam];
     });
     render();
   }
