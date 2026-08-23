@@ -241,7 +241,7 @@
         <p>Hier ist eine übersichtliche Auflistung der Prüfungen, die <span class="nm" id="p_name3">Luiz Jones</span> im Rahmen seiner FIB-Karriere absolviert hat:</p>
         <div class="exams" id="p_exams"></div>
         <p>Diese Prüfungen spiegeln die umfassende Ausbildungen und Qualifikationen wider, die <span id="p_anrede3">Herr</span> <span class="nm" id="p_name4">Luiz Jones</span> im Federal Investigation Bureau durchlaufen hat.</p>
-        <p id="p_closing">Luiz Jones zeichnete sich...</p>
+        <p id="p_closing"></p>
         <p>Das Federal Investigation Bureau (FIB) bedankt sich für die erfolgreiche Zusammenarbeit und wünscht Ihnen alles Gute für Ihre zukünftigen Vorhaben.</p>
       </div>
 
@@ -331,7 +331,12 @@
         ? '<svg viewBox="0 0 14 14"><path d="M2.5 7.5l3 3.2L11.5 3" fill="none" stroke="#1a7f45" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
         : '';
     });
-    set('p_closing', val('f_closing').replace(/\{NAME\}/g,name));
+    (function(){
+      const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const safe = esc(val('f_closing'));
+      const withName = safe.replace(/\{NAME\}/g, '<span class="nm">'+esc(name)+'</span>');
+      document.getElementById('p_closing').innerHTML = withName;
+    })();
     const notes=val('f_notes');
     document.getElementById('p_notesblock').style.display=notes?'':'none';
     set('p_notes',notes);
