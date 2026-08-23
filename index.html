@@ -89,8 +89,8 @@
   .sign{flex:1;text-align:center;}
   .sign .sn{font-family:'Great Vibes',cursive;font-size:30px;line-height:1;border-bottom:1px solid #16181c;display:inline-block;padding:0 18px 4px;margin-bottom:5px;}
   .sign .sr{font-size:11px;}
-  .stamp{flex:0 0 150px;display:grid;place-items:center;}
-  .stamp svg{width:150px;height:auto;transform:rotate(-7deg);opacity:.82;}
+  .stamp{flex:0 0 130px;display:grid;place-items:center;}
+  .stamp svg{width:130px;height:130px;transform:rotate(-7deg);opacity:.82;}
 
   @media (max-width:1100px){body{flex-direction:column;}.editor{width:100%;flex:none;height:auto;position:static;}.stage{padding:20px;}.actions{position:static;background:none;padding:16px 0 0;}}
   @media print{body{display:block;background:#fff;}.editor{display:none;}.stage{padding:0;overflow:visible;height:auto;background:#fff;}.sheet{box-shadow:none;margin:0;}@page{size:A4;margin:0;}}
@@ -207,22 +207,27 @@
           <div class="place">Ort, Datum: <b id="p_place">Los Santos, 31.07.2026</b></div>
           <div class="signs">
             <div class="sign"><div class="sn" id="p_s1n">Asan Diop</div><div class="sr" id="p_s1r">Assistant Director of FIB</div></div>
-            <div class="stamp"><svg viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
+            <div class="stamp"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.4"/></filter>
+    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.5"/></filter>
+    <path id="circTop" d="M 30,100 A 70,70 0 0 1 170,100" fill="none"/>
+    <path id="circBot" d="M 32,100 A 68,68 0 0 0 168,100" fill="none"/>
   </defs>
-  <g fill="none" stroke="#1a1a1a" stroke-width="2.4" filter="url(#rough)">
-    <rect x="6" y="6" width="188" height="98" rx="4"/>
-    <rect x="12" y="12" width="176" height="86" rx="3" stroke-width="1.2"/>
+  <g filter="url(#rough)">
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#1a1a1a" stroke-width="2.6"/>
+    <circle cx="100" cy="100" r="80" fill="none" stroke="#1a1a1a" stroke-width="1.3"/>
+    <circle cx="100" cy="100" r="46" fill="none" stroke="#1a1a1a" stroke-width="1.3"/>
+    <text font-family="'Arial Narrow',Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="2.5" fill="#1a1a1a">
+      <textPath href="#circTop" startOffset="50%" text-anchor="middle">FEDERAL INVESTIGATION BUREAU</textPath>
+    </text>
+    <text font-family="'Arial Narrow',Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2" fill="#1a1a1a">
+      <textPath href="#circBot" startOffset="50%" text-anchor="middle">OFFIZIELL BESTÄTIGT</textPath>
+    </text>
+    <text x="100" y="115" font-family="'Arial Narrow',Arial,sans-serif" font-size="42" font-weight="800" letter-spacing="3" fill="#1a1a1a" text-anchor="middle">FIB</text>
+    <text x="100" y="152" font-size="16" fill="#1a1a1a" text-anchor="middle" font-weight="700">&#9733;</text>
+    <text x="60" y="150" font-size="11" fill="#1a1a1a" text-anchor="middle">&#9733;</text>
+    <text x="140" y="150" font-size="11" fill="#1a1a1a" text-anchor="middle">&#9733;</text>
   </g>
-  <g filter="url(#rough)" fill="#1a1a1a" font-family="'Arial Narrow',Arial,sans-serif" text-anchor="middle">
-    <text x="100" y="30" font-size="10.5" font-weight="700" letter-spacing="1.5">FEDERAL INVESTIGATION</text>
-    <text x="100" y="42" font-size="10.5" font-weight="700" letter-spacing="1.5">BUREAU</text>
-    <text x="100" y="74" font-size="30" font-weight="800" letter-spacing="3">FIB</text>
-    <text x="100" y="92" font-size="8" font-weight="700" letter-spacing="2">OFFIZIELL BESTÄTIGT</text>
-  </g>
-  <line x1="18" y1="52" x2="182" y2="52" stroke="#1a1a1a" stroke-width="1" filter="url(#rough)"/>
-  <line x1="18" y1="80" x2="182" y2="80" stroke="#1a1a1a" stroke-width="1" filter="url(#rough)"/>
 </svg></div>
             <div class="sign"><div class="sn" id="p_s2n">Eko Plaste</div><div class="sr" id="p_s2r">Director of FIB</div></div>
           </div>
