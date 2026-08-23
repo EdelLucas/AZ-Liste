@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root{--panel:#1c1f26;--panel2:#252932;--panel-line:#343945;--field:#2e333e;--field-line:#414855;--text:#e7e9ee;--muted:#9aa1ad;--accent:#c9a94f;--ok:#4caf7d;--err:#d76a6a;--data:#999999;}
   *{box-sizing:border-box;}
@@ -95,7 +94,15 @@
   .pdfmode .sheet{width:210mm;height:297mm;min-height:297mm;}
   .pdfmode .frame{height:283mm;min-height:283mm;}
   @media (max-width:1100px){body{flex-direction:column;}.editor{width:100%;flex:none;height:auto;position:static;}.stage{padding:20px;}.actions{position:static;background:none;padding:16px 0 0;}}
-  @media print{body{display:block;background:#fff;}.editor{display:none;}.stage{padding:0;overflow:visible;height:auto;background:#fff;}.sheet{box-shadow:none;margin:0;}@page{size:A4;margin:0;}}
+  @media print{
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
+    html,body{margin:0;padding:0;background:#fff;display:block;height:auto;}
+    .editor{display:none !important;}
+    .stage{padding:0;margin:0;overflow:visible;height:auto;background:#fff;display:block;}
+    .sheet{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:297mm;page-break-after:avoid;page-break-inside:avoid;}
+    .frame{height:283mm;min-height:283mm;}
+    @page{size:A4 portrait;margin:0;}
+  }
 </style>
 </head>
 <body>
@@ -172,7 +179,7 @@
     </div>
     <div class="actions">
       <button class="btn-reset" onclick="resetForm()">Leeren</button>
-      <button class="btn-print" onclick="exportPDF()">Als PDF speichern</button>
+      <button class="btn-print" onclick="window.print()">Als PDF speichern (Drucken)</button>
     </div>
   </aside>
 
@@ -349,24 +356,6 @@
   function resetForm(){['f_name','f_pass','f_dienst','f_from','f_to','f_rank','f_area','f_notes','f_date'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f_place').value='Los Santos';
     document.querySelectorAll('#checks input').forEach(cb=>cb.checked=false);render();}
-
-  function exportPDF(){
-    const el=document.getElementById('sheet');
-    const nm=(val('f_name')||'Zeugnis').replace(/\s+/g,'_');
-    const id=val('f_pass');
-    const opt={
-      margin:0,
-      filename:'AZ_'+(id?id+'-':'')+nm+'.pdf',
-      image:{type:'jpeg',quality:0.98},
-      html2canvas:{scale:3,useCORS:true,backgroundColor:'#ffffff',scrollX:0,scrollY:0,windowWidth:el.scrollWidth,windowHeight:el.scrollHeight},
-      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
-      pagebreak:{mode:['avoid-all','css']}
-    };
-    document.body.classList.add('pdfmode');
-    const run=()=>html2pdf().set(opt).from(el).save().then(()=>document.body.classList.remove('pdfmode')).catch(()=>document.body.classList.remove('pdfmode'));
-    if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(()=>setTimeout(run,150)); }
-    else setTimeout(run,150);
-  }
 
   render(); loadSheet();
 </script>
