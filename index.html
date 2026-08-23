@@ -95,7 +95,8 @@
   /* Pruefungen: alle 8, zweispaltig, Georgia */
   .exams{margin:14px 0 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;}
   .exam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13.5px;font-family:'Georgia',serif;color:var(--ink);}
-  .exam .tick{width:14px;height:14px;border:1.2px solid var(--ink);display:grid;place-items:center;flex:0 0 14px;font-size:12px;line-height:1;font-family:'Segoe UI',sans-serif;}
+  .exam .tick{width:15px;height:15px;border:1.3px solid var(--ink);border-radius:2px;display:grid;place-items:center;flex:0 0 15px;background:#fff;}
+  .exam .tick svg{width:12px;height:12px;display:block;}
 
   .notes{margin-top:24px;text-align:center;font-family:'Georgia',serif;}
   .notes h3{margin:0 0 3px;font-size:13.5px;font-weight:700;color:var(--ink);}
@@ -326,7 +327,9 @@
     // Kästchen: alle 8, gesetzt=☑ leer=☐
     document.querySelectorAll('#checks input').forEach(cb=>{
       const t=examsDoc.querySelector('.tick[data-tick="'+cb.dataset.exam+'"]');
-      t.textContent = cb.checked ? '\u2611' : '\u2610';
+      t.innerHTML = cb.checked
+        ? '<svg viewBox="0 0 14 14"><path d="M2.5 7.5l3 3.2L11.5 3" fill="none" stroke="#1a7f45" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        : '';
     });
     set('p_closing', val('f_closing').replace(/\{NAME\}/g,name));
     const notes=val('f_notes');
