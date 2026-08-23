@@ -82,10 +82,10 @@
   .logo-top.empty{border:2px dashed #ccc;border-radius:8px;color:#9a9a9a;font-family:sans-serif;font-size:10px;text-align:center;padding:6px;}
 
   /* Person oben: Name/Reisepass/Dienst -> grau + fett */
-  .person{margin-top:22px;font-weight:700;line-height:1.6;font-size:13.5px;color:var(--data);font-family:'Georgia',serif;}
+  .person{margin-top:22px;font-weight:700;line-height:1.6;font-size:14px;color:var(--data);font-family:'Georgia',serif;}
 
   /* Fliesstext: normal (nicht fett), schwarz, Georgia 13px */
-  .body{margin-top:18px;font-size:13.5px;line-height:1.6;color:var(--ink);font-weight:400;font-family:'Georgia',serif;}
+  .body{margin-top:18px;font-size:14px;line-height:1.6;color:var(--ink);font-weight:400;font-family:'Georgia',serif;}
   .body p{margin:0 0 14px;}
 
   /* Dynamische Felder im Text: Name, Datum, Abteilung -> grau + fett; Rang -> grau normal */
@@ -94,13 +94,13 @@
 
   /* Pruefungen: alle 8, zweispaltig, Georgia */
   .exams{margin:14px 0 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;}
-  .exam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13.5px;font-family:'Georgia',serif;color:var(--ink);}
+  .exam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;font-family:'Georgia',serif;color:var(--ink);}
   .exam .tick{width:15px;height:15px;border:1.3px solid var(--ink);border-radius:2px;display:grid;place-items:center;flex:0 0 15px;background:#fff;}
   .exam .tick svg{width:12px;height:12px;display:block;}
 
   .notes{margin-top:24px;text-align:center;font-family:'Georgia',serif;}
-  .notes h3{margin:0 0 3px;font-size:13.5px;font-weight:700;color:var(--ink);}
-  .notes p{margin:0;font-size:13.5px;font-weight:700;color:var(--data);}
+  .notes h3{margin:0 0 3px;font-size:14px;font-weight:700;color:var(--ink);}
+  .notes p{margin:0;font-size:14px;font-weight:700;color:var(--data);}
 
   /* Ort/Datum unten: 11px */
   .place{margin-top:28px;font-size:11px;font-weight:700;color:var(--ink);font-family:'Georgia',serif;}
@@ -369,14 +369,14 @@
       const head=all[hi].map(h=>(h||'').trim().toLowerCase());
       const idx=n=>head.indexOf(n.toLowerCase());
       const abt=idx('abteilungen');
-      const map={name:idx('name'),id:idx('id'),dn:idx('dn'),rank:idx('ranks'),abt:abt,abt2:abt>=0?abt+1:-1};
+      const map={name:idx('name'),id:idx('id'),dn:idx('dn'),rank:idx('ranks'),abt:abt,abt2:abt>=0?abt+1:-1,invite:(idx('invite date')>=0?idx('invite date'):(idx('invite')>=0?idx('invite'):idx('invitedate')))};
       // Prüfungsspalten im Sheet finden
       const examCol={}; EXAMS.forEach(([code],i)=>{ examCol[i]=idx(code); });
       if(map.name<0)throw new Error('Spalte Name fehlt');
       PEOPLE=all.slice(hi+1).map(r=>{ const g=i=>i>=0?(r[i]||'').trim().replace(/\s+/g,' '):'';
         const a=[g(map.abt),g(map.abt2)].filter(Boolean).join(' | ');
         const ex={}; EXAMS.forEach((e,i)=>{ ex[i]=examCol[i]>=0?isTrue(r[examCol[i]]):false; });
-        return {name:g(map.name),id:g(map.id),dn:g(map.dn),rank:g(map.rank),abt:a,exams:ex}; })
+        return {name:g(map.name),id:g(map.id),dn:g(map.dn),rank:g(map.rank),abt:a,invite:g(map.invite),exams:ex}; })
         .filter(p=>p.name&&p.name!=='-');
       renderOpts(PEOPLE.map((p,i)=>i));
       st.textContent=PEOPLE.length+' Agent(en) geladen.'; st.className='status ok';
@@ -390,6 +390,7 @@
   function pickPerson(){ const i=document.getElementById('f_person').value; if(i==='')return; const p=PEOPLE[i];
     const put=(id,v)=>document.getElementById(id).value=v||'';
     put('f_name',p.name);put('f_pass',p.id);put('f_dienst',padDN(p.dn));put('f_rank',p.rank);put('f_area',p.abt);
+    if(p.invite) put('f_from',p.invite);
     document.querySelectorAll('#checks input').forEach(cb=>{cb.checked=!!p.exams[cb.dataset.exam];});
     render(); }
   function resetForm(){ ['f_name','f_pass','f_dienst','f_from','f_to','f_rank','f_area','f_notes','f_date'].forEach(id=>document.getElementById(id).value='');
