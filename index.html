@@ -179,7 +179,7 @@
     </div>
     <div class="actions">
       <button class="btn-reset" onclick="resetForm()">Leeren</button>
-      <button class="btn-print" onclick="window.print()">Als PDF speichern (Drucken)</button>
+      <button class="btn-print" onclick="printDoc()">Als PDF speichern (Drucken)</button>
     </div>
   </aside>
 
@@ -356,6 +356,16 @@
   function resetForm(){['f_name','f_pass','f_dienst','f_from','f_to','f_rank','f_area','f_notes','f_date'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f_place').value='Los Santos';
     document.querySelectorAll('#checks input').forEach(cb=>cb.checked=false);render();}
+
+  function printDoc(){
+    const nm=(val('f_name')||'Zeugnis').replace(/\s+/g,'_');
+    const id=val('f_pass');
+    const fname='AZ_'+(id?id+'-':'')+nm;
+    const orig=document.title;
+    document.title=fname;              // Browser schlaegt diesen Namen als Datei vor
+    window.print();
+    setTimeout(()=>{document.title=orig;},500);
+  }
 
   render(); loadSheet();
 </script>
