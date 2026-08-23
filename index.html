@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FIB Arbeitszeugnis-Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --paper:#ffffff;--ink:#1a1a1a;--panel:#1c1f26;--panel2:#252932;--panel-line:#343945;
@@ -72,20 +76,20 @@
   .stage{flex:1;overflow-y:auto;height:100vh;padding:40px;display:flex;justify-content:center;align-items:flex-start;background:radial-gradient(1200px 600px at 70% -10%,rgba(201,169,79,.06),transparent 60%),#1a1d24;}
 
   /* ===================== DOKUMENT – exakt nach PDF ===================== */
-  .sheet{width:210mm;min-height:297mm;background:var(--paper);color:var(--ink);padding:18mm 20mm 16mm;box-shadow:0 24px 60px rgba(0,0,0,.55);font-family:'Georgia',serif;position:relative;}
+  .sheet{width:210mm;min-height:297mm;background:var(--paper);color:var(--ink);padding:18mm 20mm 16mm;box-shadow:0 24px 60px rgba(0,0,0,.55);font-family:'Tinos','Times New Roman',serif;position:relative;}
 
   .doc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
-  .doc-title{font-size:22px;line-height:1.25;font-weight:400;letter-spacing:.2px;font-family:'Georgia',serif;}
+  .doc-title{font-size:22px;line-height:1.25;font-weight:400;letter-spacing:.2px;font-family:'Tinos','Times New Roman',serif;}
   .doc-title .light{color:var(--data);}
   .logo-top{width:115px;height:115px;flex:0 0 115px;display:grid;place-items:center;margin-top:0;}
   .logo-top img{max-width:100%;max-height:100%;object-fit:contain;}
   .logo-top.empty{border:2px dashed #ccc;border-radius:8px;color:#9a9a9a;font-family:sans-serif;font-size:10px;text-align:center;padding:6px;}
 
   /* Person oben: Name/Reisepass/Dienst -> grau + fett */
-  .person{margin-top:20px;font-weight:700;line-height:1.55;font-size:13px;color:var(--data);font-family:'Georgia',serif;}
+  .person{margin-top:20px;font-weight:700;line-height:1.55;font-size:13px;color:var(--data);font-family:'Tinos','Times New Roman',serif;}
 
   /* Fliesstext: normal (nicht fett), schwarz, Georgia 13px */
-  .body{margin-top:18px;font-size:13px;line-height:1.55;color:var(--ink);font-weight:400;font-family:'Georgia',serif;}
+  .body{margin-top:18px;font-size:13px;line-height:1.55;color:var(--ink);font-weight:400;font-family:'Tinos','Times New Roman',serif;}
   .body p{margin:0 0 12px;}
 
   /* Dynamische Felder im Text: Name, Datum, Abteilung -> grau + fett; Rang -> grau normal */
@@ -94,21 +98,21 @@
 
   /* Pruefungen: alle 8, zweispaltig, Georgia */
   .exams{margin:12px 0 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 40px;}
-  .exam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;font-family:'Georgia',serif;color:var(--ink);}
+  .exam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;font-family:'Tinos','Times New Roman',serif;color:var(--ink);}
   .exam .tick{width:14px;height:14px;border:1.2px solid var(--ink);display:grid;place-items:center;flex:0 0 14px;font-size:12px;line-height:1;font-family:'Segoe UI',sans-serif;}
 
-  .notes{margin-top:24px;text-align:center;font-family:'Georgia',serif;}
+  .notes{margin-top:24px;text-align:center;font-family:'Tinos','Times New Roman',serif;}
   .notes h3{margin:0 0 3px;font-size:13px;font-weight:700;color:var(--ink);}
   .notes p{margin:0;font-size:13px;font-weight:700;color:var(--data);}
 
   /* Ort/Datum unten: 11px */
-  .place{margin-top:28px;font-size:11px;font-weight:700;color:var(--ink);font-family:'Georgia',serif;}
+  .place{margin-top:28px;font-size:11px;font-weight:700;color:var(--ink);font-family:'Tinos','Times New Roman',serif;}
   .place b{color:var(--data);font-weight:700;}
 
   .signs{margin-top:40px;display:flex;justify-content:space-between;align-items:flex-end;text-align:center;gap:16px;}
   .sign{flex:1;}
   .sign .sname{font-family:'Segoe Script','Brush Script MT',cursive;font-size:22px;border-bottom:1px solid var(--ink);display:inline-block;padding:0 16px 3px;margin-bottom:6px;min-width:150px;color:var(--ink);}
-  .sign .srole{font-size:12px;font-family:'Georgia',serif;color:var(--ink);}
+  .sign .srole{font-size:12px;font-family:'Tinos','Times New Roman',serif;color:var(--ink);}
   .seal{flex:0 0 100px;display:grid;place-items:center;}
   .seal img{width:92px;height:92px;object-fit:contain;}
 
@@ -127,6 +131,7 @@
     @page{size:A4;margin:0;}
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -215,7 +220,7 @@
 
     <div class="actions">
       <button class="btn-reset" onclick="resetForm()">Leeren</button>
-      <button class="btn-print" onclick="window.print()">Als PDF speichern</button>
+      <button class="btn-print" onclick="exportPDF()">Als PDF speichern</button>
     </div>
   </aside>
 
@@ -390,6 +395,27 @@
   function resetForm(){ ['f_name','f_pass','f_dienst','f_from','f_to','f_rank','f_area','f_notes','f_date'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f_place').value='Los Santos';
     document.querySelectorAll('#checks input').forEach(cb=>cb.checked=false); render(); }
+
+
+  function exportPDF(){
+    const el=document.getElementById('sheet');
+    const name=(document.getElementById('f_name').value.trim()||'Zeugnis').replace(/\s+/g,'_');
+    const id=(document.getElementById('f_pass').value.trim()||'');
+    const fname='AZ_'+(id?id+'-':'')+name+'.pdf';
+    const opt={
+      margin:0,
+      filename:fname,
+      image:{type:'jpeg',quality:0.98},
+      html2canvas:{scale:3,useCORS:true,backgroundColor:'#ffffff'},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+    };
+    // kurz warten, damit Font sicher geladen ist
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(()=>{ html2pdf().set(opt).from(el).save(); });
+    } else {
+      html2pdf().set(opt).from(el).save();
+    }
+  }
 
   render(); loadSheet();
 </script>
