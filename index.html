@@ -141,12 +141,12 @@
 
       <fieldset>
         <legend>Satz über den Agent (fett+kursiv)</legend>
-        <div class="fld"><textarea id="f_agentline" style="min-height:70px;">{NAME} war ein äußerst zuverlässiger und engagierter Agent, der stets mit vollem Einsatz für das FIB tätig war.</textarea></div>
+        <div class="fld"><textarea id="f_agentline" style="min-height:70px;">{NAME} war {EIN} äußerst zuverlässige{R} und engagierte{R} {AGENT}, {DER} stets mit vollem Einsatz für das FIB tätig war.</textarea></div>
       </fieldset>
 
       <fieldset>
         <legend>Schlusstext</legend>
-        <div class="fld"><textarea id="f_closing" style="min-height:100px;">{NAME} zeichnete sich während seiner Dienstzeit durch umfangreiche Erfahrung, besonderen Mut und hohe Zuverlässigkeit aus. Durch seine ausgeprägte Kameradschaft und stets loyale Art war er ein geschätztes Mitglied der Dienststelle und ein verlässlicher Ansprechpartner für Kollegen und Vorgesetzte.</textarea></div>
+        <div class="fld"><textarea id="f_closing" style="min-height:100px;">{NAME} zeichnete sich während {SEINER} Dienstzeit durch umfangreiche Erfahrung, besonderen Mut und hohe Zuverlässigkeit aus. Durch {SEINE} ausgeprägte Kameradschaft und stets loyale Art war {ER} ein geschätztes Mitglied der Dienststelle und {EIN} verlässliche{R} Ansprechpartner{IN} für Kollegen und Vorgesetzte.</textarea></div>
       </fieldset>
 
       <fieldset>
@@ -194,7 +194,7 @@
           <div class="body">
             <p><span id="p_anrede1">Herr</span> <span class="nm" id="p_name1">Luiz Jones</span> war vom <span class="dt" id="p_from">21.06.2026</span> bis zum <span class="dt" id="p_to">30.07.2026</span> im Federal Investigation Bureau als <span class="rank" id="p_rank">17. Commander</span> tätig.</p>
             <p>Während dieser Zeit war <span id="p_pron">er</span> für verschiedene Aufgaben aber hauptsächlich im Bereich <span id="p_artikel">der</span> <span class="nm" id="p_area">FW</span> des Federal Investigation Bureau verantwortlich.</p>
-            <p>Hier ist eine übersichtliche Auflistung der Prüfungen, die <span class="nm" id="p_name2">Luiz Jones</span> im Rahmen seiner FIB-Karriere absolviert hat:</p>
+            <p>Hier ist eine übersichtliche Auflistung der Prüfungen, die <span class="nm" id="p_name2">Luiz Jones</span> im Rahmen <span id="p_seiner">seiner</span> FIB-Karriere absolviert hat:</p>
             <div class="exams" id="p_exams"></div>
             <p>Diese Prüfungen spiegeln die umfassende Ausbildungen und Qualifikationen wider, die <span id="p_anrede2">Herr</span> <span class="nm" id="p_name3">Luiz Jones</span> im Federal Investigation Bureau durchlaufen hat.</p>
             <p id="p_closing"></p>
@@ -240,6 +240,7 @@
     const pron=anrede==='Frau'?'sie':'er';
     set('p_anrede1',anrede); set('p_anrede2',anrede); set('p_pron',pron);
     set('p_artikel',document.getElementById('f_artikel').value);
+    set('p_seiner', anrede==='Frau'?'ihrer':'seiner');
     ['p_name1','p_name2','p_name3'].forEach(id=>set(id,name));
     set('p_from',val('f_from')); set('p_to',val('f_to'));
     set('p_rank',val('f_rank')); set('p_area',val('f_area'));
@@ -250,8 +251,19 @@
       t.innerHTML = cb.checked ? '<svg viewBox="0 0 14 14"><path d="M2.5 7.5l3 3.2L11.5 3" fill="none" stroke="#1a7f45" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
     });
     const nameSpan = '<span class="nm">'+esc(name)+'</span>';
-    document.getElementById('p_closing').innerHTML = esc(val('f_closing')).replace(/\{NAME\}/g,nameSpan);
-    document.getElementById('p_agentline').innerHTML = esc(val('f_agentline')).replace(/\{NAME\}/g,nameSpan);
+    const w = anrede==='Frau';
+    const G = {
+      'R': w?'':'r', 'ER': w?'sie':'er', 'SEINER': w?'ihrer':'seiner',
+      'SEINE': w?'ihre':'seine', 'EIN': w?'eine':'ein',
+      'AGENT': w?'Agentin':'Agent', 'DER': w?'die':'der', 'IN': w?'in':''
+    };
+    function applyGender(txt){
+      let t = esc(txt).replace(/\{NAME\}/g,nameSpan);
+      t = t.replace(/\{(R|ER|SEINER|SEINE|EIN|AGENT|DER|IN)\}/g, (m,k)=>G[k]);
+      return t;
+    }
+    document.getElementById('p_closing').innerHTML = applyGender(val('f_closing'));
+    document.getElementById('p_agentline').innerHTML = applyGender(val('f_agentline'));
     const notes=val('f_notes');
     document.getElementById('p_notesblock').style.display=notes?'':'none';
     set('p_notes',notes);
